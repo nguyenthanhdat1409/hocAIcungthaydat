@@ -393,10 +393,13 @@ function renderCurriculum(){
 
   /* Nhịp 1 buổi 90 phút */
   html += `<div class="beatWrap"><h3 class="beatHead">⏱️ Nhịp 1 buổi học 90 phút</h3><div class="beatBar">`;
-  SESSION_BEAT.forEach(([name, min]) => {
+  SESSION_BEAT.forEach(([name, min], i) => {
     const p = phaseOf(name);
-    html += `<div class="beatBlock" style="background:${p.bg};color:${p.fg};flex:${min}">
-        <span class="bIc">${p.ic}</span><span class="bName">${esc(name)}</span><span class="bMin">${min}'</span></div>`;
+    html += `<div class="beatBlock" style="--bbg:${p.bg};--bfg:${p.fg};animation-delay:${i*80}ms">
+        <span class="bStep">Bước ${i+1}</span>
+        <span class="bIc">${p.ic}</span>
+        <span class="bName">${esc(name)}</span>
+        <span class="bMin">${min} phút</span></div>`;
   });
   html += `</div></div>`;
 
