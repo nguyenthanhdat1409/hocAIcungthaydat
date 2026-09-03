@@ -603,9 +603,16 @@ function openPlan(li, mi, lsi){
 function toggleCoachPanel(btn){
   const panel = document.getElementById("coachPanel");
   if(!panel) return;
-  const open = panel.classList.toggle("hidden");
-  btn.classList.toggle("on", !open);
-  if(!open){ panel.scrollIntoView({behavior:"smooth", block:"nearest"}); }
+  const nowHidden = panel.classList.toggle("hidden");
+  btn.classList.toggle("on", !nowHidden);
+  if(!nowHidden){
+    const scroller = document.getElementById("lessonBody");
+    const doScroll = () => {
+      if(scroller){ scroller.scrollTo({top: panel.offsetTop - 12, behavior:"smooth"}); }
+      else { panel.scrollIntoView({behavior:"smooth", block:"start"}); }
+    };
+    (window.requestAnimationFrame || setTimeout)(doScroll);
+  }
 }
 /* Ảnh trong images/<mã bài>.<ext>: thử jpg→png→webp→jpeg; không có thì bỏ để lộ tranh SVG */
 function photoFallback(img){
