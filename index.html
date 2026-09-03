@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Học AI Vui 🤖</title>
+<meta name="description" content="Khởi đầu học AI cho mọi người — bài học trực quan, vui nhộn, dễ hiểu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;600;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap&subset=vietnamese" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+
+<!-- ===================== THANH ĐIỀU HƯỚNG ===================== -->
+<header id="nav">
+  <div class="navInner">
+    <a class="brand" href="#home" onclick="go('home');return false;">
+      <span class="brandFace">🤖</span>
+      <span class="brandText">Học AI Vui<small>Hiểu AI trong tầm tay</small></span>
+    </a>
+    <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">☰</button>
+    <nav class="navLinks" id="navLinks">
+      <a data-nav="home"    href="#home"    onclick="go('home');return false;">🏠 Trang chủ</a>
+      <a data-nav="baihoc"  href="#baihoc"  onclick="go('baihoc');return false;">📚 Bài học</a>
+      <a data-nav="kiemtra" href="#kiemtra" onclick="go('kiemtra');return false;">🏆 Kiểm tra</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== CÁC TRANG ===================== -->
+<main id="pages">
+
+  <!-- ---------- TRANG CHỦ ---------- -->
+  <section id="home" class="page">
+    <div class="hero">
+      <div class="heroText">
+        <span class="pill">🌟 Dành cho người mới bắt đầu</span>
+        <h1>Học <span class="grad">Trí tuệ nhân tạo</span><br>dễ như trò chuyện! 🤖</h1>
+        <p class="lead">Xin chào 👋 Cùng khám phá AI là gì, hoạt động ra sao và dùng thế nào cho đúng — qua những bài học ngắn, trực quan và vui nhộn.</p>
+        <div class="heroBtns">
+          <button class="btn light" onclick="go('baihoc')">📚 Bắt đầu học</button>
+          <button class="btn ghost" onclick="go('kiemtra')">🏆 Làm kiểm tra</button>
+        </div>
+        <div class="heroStats">
+          <div><b id="statLessons">0</b><span>bài học</span></div>
+          <div><b id="statTopics">0</b><span>chủ đề</span></div>
+          <div><b id="statQuiz">0</b><span>câu hỏi</span></div>
+        </div>
+      </div>
+      <div class="heroArt">
+        <div class="heroBubble b1">💡</div>
+        <div class="heroBubble b2">🧠</div>
+        <div class="heroBubble b3">💬</div>
+        <div class="heroBubble b4">⚡</div>
+        <div class="heroAvatar">🤖</div>
+      </div>
+    </div>
+
+    <h2 class="sectionHead">✨ Vì sao học AI cùng chúng mình?</h2>
+    <div class="featGrid" id="featGrid"></div>
+
+    <h2 class="sectionHead">🎯 Các chủ đề bạn sẽ khám phá</h2>
+    <div class="skillGrid" id="skillGrid"></div>
+
+    <div class="ctaBanner">
+      <div>
+        <h3>Sẵn sàng chưa nào? 🚀</h3>
+        <p>Làm thử bài kiểm tra nhanh để xem mình đã hiểu AI tới đâu nhé!</p>
+      </div>
+      <button class="btn light" onclick="go('kiemtra')">Vào kiểm tra ➜</button>
+    </div>
+  </section>
+
+  <!-- ---------- BÀI HỌC ---------- -->
+  <section id="baihoc" class="page hidden">
+    <div class="pageHead">
+      <h2 class="sectionHead">📚 Bài học</h2>
+      <p class="sectionSub">Chọn một chủ đề để bắt đầu — bấm vào thẻ để xem nội dung nha!</p>
+    </div>
+    <div class="lessonGrid" id="lessonGrid"></div>
+  </section>
+
+  <!-- ---------- KIỂM TRA (màn giới thiệu) ---------- -->
+  <section id="kiemtra" class="page hidden">
+    <div class="card hero quizIntro">
+      <div class="avatar">🤖</div>
+      <h1>Thử tài hiểu biết<br><span class="grad">về AI!</span></h1>
+      <p class="intro"><b id="quizCount">0 câu</b> · kiến thức nền tảng về trí tuệ nhân tạo.<br>Trả lời đúng để chinh phục <b>3 sao ⭐</b> nhé! 🚀</p>
+      <div class="rules">
+        <div class="rule up"><div class="ic">✅</div><div><div class="tt">Đúng +1 sao</div><div class="dd">Câu sau khó hơn</div></div></div>
+        <div class="rule down"><div class="ic">❌</div><div><div class="tt">Sai −1 sao</div><div class="dd">Câu sau dễ lại</div></div></div>
+        <div class="rule rand"><div class="ic">🎲</div><div><div class="tt">Ngẫu nhiên</div><div class="dd">Mỗi lần một bộ mới</div></div></div>
+      </div>
+      <div class="tags" id="quizTags"></div>
+      <button class="btn pulseBtn" onclick="startQuiz()">Bắt đầu luôn! 🎮</button>
+    </div>
+  </section>
+
+</main>
+
+<footer id="footer">
+  <p>Made with 💜 · Học AI vui mỗi ngày</p>
+</footer>
+
+<!-- ===================== TRÌNH CHƠI (Kiểm tra) ===================== -->
+<div id="runner" class="hidden">
+  <div class="runnerTop" id="runnerTop">
+    <button class="exitBtn" onclick="exitRunner()" aria-label="Thoát">✕</button>
+    <div class="starBox" id="starBox"></div>
+    <div class="barWrap"><div class="bar" id="bar"></div></div>
+    <div class="counter" id="counter">1/10</div>
+  </div>
+  <div class="app">
+    <div class="card" id="qCard"></div>
+    <div class="card result hidden" id="resultCard"></div>
+  </div>
+</div>
+
+<!-- ===================== MODAL BÀI HỌC ===================== -->
+<div id="lessonModal" class="modal hidden" onclick="closeLesson(event)">
+  <div class="modalBox" onclick="event.stopPropagation()">
+    <button class="modalClose" onclick="closeLesson()" aria-label="Đóng">✕</button>
+    <div id="lessonBody"></div>
+  </div>
+</div>
+
+<script src="app.js?v=1"></script>
+</body>
+</html>
