@@ -420,6 +420,10 @@ function buildLessonBody(ls){
   } else {
     body += `<p>${esc(capFirst(ls.content||""))}</p>`;
   }
+  const note = (window.LESSON_NOTES && window.LESSON_NOTES[ls.code]) || "";
+  if(note){
+    body += `<div class="secTitle" data-icon="📖">Nội dung bài học</div>${note}`;
+  }
   if(ls.challenge){
     const ch = esc(ls.challenge.replace(/^Thử thách:\s*/,"").replace(/^Mini project:\s*/,""));
     const isProj = /mini project/i.test(ls.challenge);
