@@ -429,6 +429,19 @@ function renderCurriculum(){
   host.innerHTML = html;
   host.classList.toggle("coachOn", coachMode);
   if(curSearch) applyCurSearch();
+  observeReveal();
+}
+
+/* Hiệu ứng: hiện dần khi cuộn tới */
+let _revObserver = null;
+function observeReveal(){
+  const targets = document.querySelectorAll("#curriculum .lvSection, #curriculum .modCard");
+  if(!("IntersectionObserver" in window)){ targets.forEach(t => t.classList.add("in")); return; }
+  if(_revObserver) _revObserver.disconnect();
+  _revObserver = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if(en.isIntersecting){ en.target.classList.add("in"); _revObserver.unobserve(en.target); } });
+  }, {rootMargin:"0px 0px -8% 0px", threshold:0.06});
+  targets.forEach(t => { t.classList.add("reveal"); _revObserver.observe(t); });
 }
 
 function renderLevel(lv, li){
@@ -515,10 +528,10 @@ function openPlan(li, mi, lsi){
   const ls = m.lessons[lsi];
   const c = LEVEL_COLORS[li];
   let rows = "";
-  (ls.plan90 || []).forEach(step => {
+  (ls.plan90 || []).forEach((step, si) => {
     const p = phaseOf(step.phase);
-    rows += `<div class="planRow" style="border-left-color:${p.fg}">
-        <div class="planTime" style="background:${p.bg};color:${p.fg}">${p.ic} ${esc(step.time)}</div>
+    rows += `<div class="planRow" style="--pc:${p.fg};--pbg:${p.bg};animation-delay:${si*60}ms">
+        <div class="planIco" style="background:${p.bg};color:${p.fg}">${p.ic}</div>
         <div class="planMain"><div class="planPhase" style="color:${p.fg}">${esc(step.phase)}</div>
           <div class="planAct">${esc(step.activity)}</div></div>
       </div>`;
@@ -529,9 +542,9 @@ function openPlan(li, mi, lsi){
        <div><h2>${esc(ls.code)} · ${esc(ls.name)}</h2><p>${esc(ls.content)}</p></div>
      </div>
      <div class="lContent">
-       <div class="planMeta">🧩 MODULE ${esc(m.code)} – ${esc(m.name)} · ⏱️ ${ls.duration_minutes||90} phút</div>
+       <div class="planMeta">🧩 MODULE ${esc(m.code)} – ${esc(m.name)}</div>
        ${ls.challenge?`<div class="tipBox">🏆 <b>Thử thách:</b> ${esc(ls.challenge.replace(/^Thử thách:\s*/,"").replace(/^Mini project:\s*/,""))}</div>`:""}
-       <div class="secTitle" data-icon="🗺️">Giáo án 90 phút</div>
+       <div class="secTitle" data-icon="🗺️">Các bước lên lớp</div>
        <div class="planList">${rows}</div>
      </div>`;
   document.getElementById("lessonModal").classList.remove("hidden");
