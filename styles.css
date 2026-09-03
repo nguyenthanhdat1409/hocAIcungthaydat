@@ -1405,3 +1405,48 @@ h1,h2,h3{letter-spacing:.2px}
 .lessonBar .coachQ.on{background:#fff;color:var(--vio);box-shadow:0 0 0 5px rgba(255,255,255,.3)}
 
 @media(max-width:600px){ .lessonBar h2{font-size:19px} }
+
+/* =========================================================
+   TRẮC NGHIỆM TRONG BÀI (v14)
+   ========================================================= */
+.lquiz{margin-top:6px;display:flex;flex-direction:column;gap:14px}
+.lqBar{position:sticky;top:0;z-index:2;padding:2px 0 6px}
+.lqBadge{display:inline-block;background:#EDE9FE;color:#5B21B6;font-weight:800;font-size:13px;
+  padding:6px 14px;border-radius:999px}
+.lq{background:#F8FAFC;border:1px solid #EEF2F7;border-radius:16px;padding:14px 16px}
+.lqQ{font-weight:700;color:var(--ink);font-size:15px;line-height:1.4;margin-bottom:10px}
+.lqOpts{display:flex;flex-direction:column;gap:8px}
+.lqOpt{display:flex;align-items:center;gap:10px;text-align:left;width:100%;
+  background:#fff;border:2px solid #E7EAF3;border-radius:12px;padding:10px 12px;
+  font:inherit;font-size:14.5px;color:#334155;cursor:pointer;transition:.14s}
+.lqOpt:hover:not(:disabled){border-color:#C7D2FE;background:#F5F3FF;transform:translateX(2px)}
+.lqOpt:disabled{cursor:default}
+.lqDot{flex:0 0 auto;width:18px;height:18px;border-radius:50%;border:2px solid #CBD5E1;transition:.14s}
+.lqOpt.correct{border-color:#22C55E;background:#ECFDF5;color:#166534;font-weight:700}
+.lqOpt.correct .lqDot{border-color:#22C55E;background:#22C55E}
+.lqOpt.wrong{border-color:#EF4444;background:#FEF2F2;color:#991B1B;font-weight:700}
+.lqOpt.wrong .lqDot{border-color:#EF4444;background:#EF4444}
+.lqResult{margin-top:4px;background:linear-gradient(135deg,#FEF9C3,#FDE68A);border:2px solid #FCD34D;
+  border-radius:14px;padding:14px;text-align:center;font-size:15px;color:#78350F;font-weight:600;animation:scaleIn .3s ease}
+.lqResult b{color:#B45309}
+
+/* =========================================================
+   TỐI ƯU ĐỘ MƯỢT (v14)
+   ========================================================= */
+/* Nền gradient cố định bằng lớp riêng (mượt hơn background-attachment:fixed) */
+body{background:#8B5CF6}
+body::before{content:"";position:fixed;inset:0;z-index:-1;
+  background:linear-gradient(140deg,#8B5CF6 0%,#EC4899 45%,#F59E0B 100%)}
+
+/* Bỏ qua vẽ các phần ngoài màn hình trên trang lộ trình dài (cuộn mượt hơn) */
+.modCard{content-visibility:auto;contain-intrinsic-size:0 76px}
+.lvSection{content-visibility:auto;contain-intrinsic-size:0 620px}
+
+/* Giảm chi phí blur của thanh điều hướng khi cuộn */
+#nav{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+
+/* Chỉ báo trình duyệt tối ưu biến đổi của các phần tử hay hover/animate */
+.lsRow,.modCard,.beatBlock,.featCard,.skillCard,.learnItem,.lqOpt{will-change:auto}
+
+/* Ảnh banner: nền chờ nhẹ trong lúc tải */
+.lessonPhoto{background:rgba(255,255,255,.06)}

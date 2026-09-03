@@ -432,6 +432,51 @@ function buildLessonBody(ls){
   return body;
 }
 
+/* Trắc nghiệm trong bài (10 câu). Dữ liệu ở lesson_quiz.js (window.LESSON_QUIZ). */
+function renderLessonQuiz(ls){
+  const qs = (window.LESSON_QUIZ && window.LESSON_QUIZ[ls.code]) || [];
+  if(!qs.length) return "";
+  let h = `<div class="secTitle" data-icon="📝">Luyện tập (${qs.length} câu)</div>
+    <div class="lquiz" id="lquiz" data-total="${qs.length}" data-done="0" data-score="0">
+      <div class="lqBar"><span class="lqBadge" id="lqScore">Chọn đáp án để tự kiểm tra nhé!</span></div>`;
+  qs.forEach((item, qi) => {
+    const pairs = shuffle(item.o.map((t, i) => [t, i === item.a]));
+    h += `<div class="lq"><div class="lqQ"><b>Câu ${qi+1}.</b> ${esc(item.q)}</div><div class="lqOpts">`;
+    pairs.forEach(([t, ok]) => {
+      h += `<button class="lqOpt" data-ok="${ok?1:0}" onclick="lqPick(this)"><span class="lqDot"></span><span>${esc(t)}</span></button>`;
+    });
+    h += `</div></div>`;
+  });
+  h += `<div class="lqEnd" id="lqEnd"></div></div>`;
+  return h;
+}
+function lqPick(btn){
+  const q = btn.closest(".lq");
+  if(q.classList.contains("answered")) return;
+  q.classList.add("answered");
+  const ok = btn.dataset.ok === "1";
+  btn.classList.add(ok ? "correct" : "wrong");
+  q.querySelectorAll(".lqOpt").forEach(b => {
+    b.disabled = true;
+    if(b.dataset.ok === "1") b.classList.add("correct");
+  });
+  const quiz = document.getElementById("lquiz");
+  const total = +quiz.dataset.total;
+  const score = (+quiz.dataset.score) + (ok ? 1 : 0);
+  const done = (+quiz.dataset.done) + 1;
+  quiz.dataset.score = score; quiz.dataset.done = done;
+  const badge = document.getElementById("lqScore");
+  if(badge) badge.textContent = `Đúng ${score}/${done}` + (done < total ? ` · còn ${total-done} câu` : "");
+  try{ ok ? sfx.correct() : sfx.wrong(); }catch{}
+  if(done === total){
+    const pass = Math.round(score / total * 100);
+    const tier = pass >= 80 ? "Xuất sắc! 🏆" : pass >= 50 ? "Khá lắm, cố thêm nhé! 💪" : "Ôn lại bài chút nha! 📖";
+    const end = document.getElementById("lqEnd");
+    if(end) end.innerHTML = `<div class="lqResult">🎉 Hoàn thành: <b>${score}/${total}</b> (${pass}%) — ${tier}</div>`;
+    if(pass >= 60){ try{ burst(12); }catch{} }
+  }
+}
+
 function curriculumStats(){
   const C = window.CURRICULUM && window.CURRICULUM.program;
   if(!C) return {levels:0, modules:0, lessons:0};
@@ -583,7 +628,7 @@ function openPlan(li, mi, lsi){
 
   /* Minh hoạ: tranh SVG theo chủ đề (mặc định) + ảnh trong images/<mã>.<ext> nếu có */
   const art = window.LessonArt ? window.LessonArt.svg(ls, c) : "";
-  const photo = `<img class="lessonPhoto" alt="" src="images/${encodeURIComponent(ls.code)}.png" data-code="${esc(ls.code)}" data-try="0" onerror="photoFallback(this)">`;
+  const photo = `<img class="lessonPhoto" alt="" loading="lazy" decoding="async" src="images/${encodeURIComponent(ls.code)}.png" data-code="${esc(ls.code)}" data-try="0" onerror="photoFallback(this)">`;
 
   /* Panel cho giáo viên (ẩn, mở bằng nút ?) */
   let steps = "";
@@ -612,6 +657,7 @@ function openPlan(li, mi, lsi){
      </div>
      <div class="lContent">
        ${buildLessonBody(ls)}
+       ${renderLessonQuiz(ls)}
        <div class="coachPanel hidden" id="coachPanel">
          <div class="coachPanelHead">🎓 Gợi ý cho giáo viên <span>(bấm dấu ? để ẩn)</span></div>
          ${coach}
