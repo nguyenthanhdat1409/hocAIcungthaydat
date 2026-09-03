@@ -579,7 +579,7 @@ function openPlan(li, mi, lsi){
 
   /* Minh hoạ: tranh SVG theo chủ đề (mặc định) + ảnh trong images/<mã>.<ext> nếu có */
   const art = window.LessonArt ? window.LessonArt.svg(ls, c) : "";
-  const photo = `<img class="lessonPhoto" alt="" src="images/${encodeURIComponent(ls.code)}.jpg" data-code="${esc(ls.code)}" data-try="0" onerror="photoFallback(this)">`;
+  const photo = `<img class="lessonPhoto" alt="" src="images/${encodeURIComponent(ls.code)}.png" data-code="${esc(ls.code)}" data-try="0" onerror="photoFallback(this)">`;
 
   /* Panel cho giáo viên (ẩn, mở bằng nút ?) */
   let steps = "";
@@ -632,7 +632,7 @@ function toggleCoachPanel(btn){
 }
 /* Ảnh trong images/<mã bài>.<ext>: thử jpg→png→webp→jpeg; không có thì bỏ để lộ tranh SVG */
 function photoFallback(img){
-  const exts = ["jpg","png","webp","jpeg"];
+  const exts = ["png","jpg","webp","jpeg"];
   let t = (parseInt(img.dataset.try, 10) || 0) + 1;
   if(t < exts.length){ img.dataset.try = t; img.src = "images/" + encodeURIComponent(img.dataset.code) + "." + exts[t]; }
   else { img.remove(); }
