@@ -390,12 +390,33 @@ function lessonEmoji(ls, li){
 }
 function capFirst(s){ s = String(s||"").trim(); return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
+/* Emoji cho từng ý học (giúp nội dung sinh động, không cần ảnh ngoài) */
+const POINT_MAP = [
+  [/bật|tắt|khởi động|\bmở\b|đóng/i, "🔌"],
+  [/nhận diện|nhận biết|phân biệt|gọi tên|quan sát|tìm hiểu/i, "🔎"],
+  [/tạo|\blàm\b|\bvẽ\b|viết|soạn|thiết kế|dựng/i, "✏️"],
+  [/lưu|sắp xếp|đặt tên|quản lý|tổ chức/i, "💾"],
+  [/an toàn|bảo vệ|riêng tư|mật khẩu|cẩn thận/i, "🛡️"],
+  [/kiểm tra|kiểm chứng|so sánh|đánh giá|đúng sai/i, "✅"],
+  [/chuột/i, "🖱️"], [/bàn phím|gõ|đánh máy/i, "⌨️"], [/màn hình|cửa sổ/i, "🖥️"],
+  [/thư mục|tệp|file/i, "📁"], [/internet|web|mạng|trình duyệt/i, "🌐"],
+  [/trò chơi|game/i, "🎮"], [/âm thanh|nghe|nói|giọng/i, "🎤"], [/ảnh|hình|vẽ/i, "🖼️"],
+];
+function pointEmoji(text, i){
+  for(const [re, e] of POINT_MAP){ if(re.test(text)) return e; }
+  for(const [re, e] of EMOJI_MAP){ if(re.test(text)) return e; }
+  return ["📌","✨","🎯","💡","🔹","🌈"][i % 6];
+}
+
 /* Soạn phần thân bài học cho người học (không phải giáo án của coach) */
 function buildLessonBody(ls){
   const pts = String(ls.content||"").split(/[,;]|\bvà\b/).map(s=>s.trim()).filter(s=>s.length>1);
   let body = `<p>Trong bài này, chúng mình cùng khám phá về <b>${esc(ls.name.toLowerCase())}</b>.</p>`;
   if(pts.length > 1){
-    body += `<div class="secTitle" data-icon="🔍">Em sẽ học được gì?</div><ul>${pts.map(p=>`<li>${esc(capFirst(p))}</li>`).join("")}</ul>`;
+    body += `<div class="secTitle" data-icon="🔍">Em sẽ học được gì?</div>
+      <div class="learnGrid">${pts.map((p,i)=>
+        `<div class="learnItem" style="animation-delay:${i*70}ms"><span class="liIco">${pointEmoji(p,i)}</span><span class="liTxt">${esc(capFirst(p))}</span></div>`
+      ).join("")}</div>`;
   } else {
     body += `<p>${esc(capFirst(ls.content||""))}</p>`;
   }
