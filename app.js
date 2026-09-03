@@ -601,8 +601,9 @@ function openPlan(li, mi, lsi){
     `<div class="lessonHero" style="--lc:${c}">
        <div class="lessonArt">${art}</div>
        ${photo}
-       <div class="heroShade"></div>
-       <div class="heroCap"><span class="lhCode">Bài ${esc(ls.code)}</span><h2>${esc(ls.name)}</h2></div>
+     </div>
+     <div class="lessonBar" style="background:linear-gradient(135deg,${c},${c}cc)">
+       <div class="lessonBarText"><span class="lhCode">Bài ${esc(ls.code)}</span><h2>${esc(ls.name)}</h2></div>
        <button class="coachQ" onclick="toggleCoachPanel(this)" title="Gợi ý cho giáo viên" aria-label="Gợi ý cho giáo viên">?</button>
      </div>
      <div class="lContent">

@@ -1380,3 +1380,28 @@ h1,h2,h3{letter-spacing:.2px}
   font-size:22px;background:#fff;box-shadow:0 3px 8px rgba(30,27,75,.08)}
 .learnItem .liTxt{font-weight:600;font-size:14.5px;color:#334155;line-height:1.35}
 .learnItem:hover .liIco{transform:scale(1.1) rotate(-6deg);transition:transform .16s}
+
+/* =========================================================
+   BANNER ẢNH: hiện trọn ảnh (không cắt) + tiêu đề thanh riêng (v11)
+   ========================================================= */
+.lessonHero{position:relative;height:auto;aspect-ratio:16/9;overflow:hidden;border-radius:28px 28px 0 0;background:#0b1020}
+.lessonArt{position:absolute;inset:0;z-index:1}
+.lessonArt .artSvg{width:100%;height:100%;display:block}
+/* Hiện TRỌN ảnh, không cắt; phần trống lấp bằng tranh nền */
+.lessonPhoto{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:2;animation:fadeUp .35s ease}
+
+/* Thanh tiêu đề nằm DƯỚI ảnh, không đè lên ảnh */
+.lessonBar{position:relative;display:flex;align-items:center;gap:12px;padding:14px 18px;color:#fff}
+.lessonBarText{flex:1;min-width:0}
+.lessonBar .lhCode{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.4px;color:#fff;
+  background:rgba(255,255,255,.22);padding:3px 11px;border-radius:999px;margin-bottom:6px}
+.lessonBar h2{font-size:22px;color:#fff;line-height:1.18;text-shadow:0 2px 6px rgba(30,27,75,.3)}
+.lessonBar .coachQ{position:static;flex:0 0 auto;width:38px;height:38px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.7);background:rgba(255,255,255,.18);color:#fff;
+  font-family:var(--font-display);font-weight:800;font-size:20px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .18s, background .18s, color .18s, box-shadow .18s}
+.lessonBar .coachQ:hover{background:#fff;color:var(--ink);transform:scale(1.1)}
+.lessonBar .coachQ.on{background:#fff;color:var(--vio);box-shadow:0 0 0 5px rgba(255,255,255,.3)}
+
+@media(max-width:600px){ .lessonBar h2{font-size:19px} }
