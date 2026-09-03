@@ -11,7 +11,7 @@ images/1.1.2.png
 images/2.3.4.webp
 ```
 
-- Định dạng hỗ trợ (tự dò theo thứ tự): `.jpg` → `.png` → `.webp` → `.jpeg`
+- Định dạng hỗ trợ (tự dò theo thứ tự): `.png` → `.jpg` → `.webp` → `.jpeg`
 - Nếu **không có** ảnh cho bài đó, web tự hiện **tranh SVG vẽ theo chủ đề** (không cần làm gì thêm).
 - Kích thước gợi ý: ngang, khoảng **800×450** (tỉ lệ 16:9) cho đẹp trên banner.
 
