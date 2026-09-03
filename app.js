@@ -238,6 +238,116 @@ const LESSONS = [
         <li>Chỉ cần <b>tò mò, chịu thử và tử tế</b> là em đã đi trước rồi.</li>
       </ul>
       <div class="tipBox"><b>Ghi nhớ:</b> Tương lai không thuộc về AI, mà thuộc về <b>những người biết hợp tác với AI</b>. Em hoàn toàn có thể là một trong số đó!</div>`},
+
+  {icon:"👁️", color:"#7C3AED", title:"Bài 10: Máy tính 'nhìn' như thế nào?",
+    desc:"Vì sao điện thoại nhận ra khuôn mặt, phân biệt được chó với mèo.",
+    body:`
+      <p>Con người nhìn bằng mắt, còn máy tính "nhìn" bằng một khả năng gọi là <b>thị giác máy tính</b>. Nhưng với máy, một tấm ảnh chỉ là <b>rất nhiều ô màu nhỏ</b> (điểm ảnh) ghép lại.</p>
+      <div class="secTitle" data-icon="🔢">Ảnh với máy là gì?</div>
+      <p>Mỗi bức ảnh được máy đọc thành <b>các con số</b> chỉ màu sắc từng điểm. Từ những con số đó, AI tìm ra <b>đường nét, hình khối</b> — như hai mắt, một mũi để biết đó là khuôn mặt.</p>
+      <div class="secTitle" data-icon="🐶">Nó dùng để làm gì?</div>
+      <ul>
+        <li>📱 <b>Mở khoá</b> điện thoại bằng khuôn mặt.</li>
+        <li>🚗 Xe tự lái <b>nhận ra</b> người đi bộ, biển báo.</li>
+        <li>🍎 App <b>phân loại</b> trái cây, cây cỏ qua ảnh chụp.</li>
+      </ul>
+      <div class="secTitle" data-icon="⚠️">Nó vẫn nhầm được</div>
+      <p>Nếu thiếu sáng, bị che, hay gặp thứ chưa từng học, máy có thể <b>nhận nhầm</b>. Vì vậy với việc quan trọng, con người vẫn cần <b>kiểm tra lại</b>.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>Với máy, ảnh chỉ là <b>các ô màu = những con số</b>.</li>
+        <li>AI tìm <b>đường nét, hình khối</b> để nhận ra vật.</li>
+        <li>Thiếu sáng hay vật lạ thì máy vẫn có thể <b>nhìn nhầm</b>.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> Máy tính không "thấy" như em. Nó <b>tính toán từ các con số</b> để đoán trong ảnh có gì.</div>`},
+
+  {icon:"🎤", color:"#06B6D4", title:"Bài 11: Máy tính 'nghe' và 'nói'",
+    desc:"Vì sao trợ lý ảo hiểu được lời em và trả lời bằng giọng nói.",
+    body:`
+      <p>Khi em nói "Hôm nay trời thế nào?", trợ lý ảo phải làm hai việc: <b>nghe hiểu</b> lời em, rồi <b>nói lại</b> câu trả lời. Cả hai đều nhờ AI.</p>
+      <div class="secTitle" data-icon="👂">Bước 1: Nghe hiểu</div>
+      <p>AI biến <b>âm thanh giọng nói</b> thành chữ (giống ghi chép lại lời em), rồi mới hiểu em muốn gì. Đây là lý do đôi khi nó <b>nghe nhầm</b> nếu em nói nhỏ hoặc ồn quá.</p>
+      <div class="secTitle" data-icon="🗣️">Bước 2: Nói lại</div>
+      <p>Sau khi tìm ra câu trả lời, AI biến <b>chữ thành giọng nói</b> để đọc cho em nghe. Giọng đọc ngày nay nghe rất tự nhiên, gần như người thật.</p>
+      <div class="secTitle" data-icon="🌟">Em gặp ở đâu?</div>
+      <ul>
+        <li>🔊 Trợ lý ảo trên điện thoại, loa thông minh.</li>
+        <li>📖 App <b>đọc sách</b> thành tiếng cho người khiếm thị.</li>
+        <li>🎬 Tự tạo <b>phụ đề</b> cho video.</li>
+      </ul>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>AI <b>nghe</b> bằng cách đổi giọng nói thành chữ để hiểu.</li>
+        <li>AI <b>nói</b> bằng cách đổi chữ thành giọng đọc.</li>
+        <li>Ồn ào hay nói nhỏ có thể khiến AI <b>nghe nhầm</b>.</li>
+      </ul>
+      <div class="tipBox"><b>Mẹo:</b> Nói <b>rõ ràng, chậm rãi</b> ở nơi yên tĩnh thì trợ lý ảo hiểu em chính xác hơn.</div>`},
+
+  {icon:"🦾", color:"#22C55E", title:"Bài 12: Robot và AI",
+    desc:"Robot có phải lúc nào cũng thông minh? AI giúp robot điều gì?",
+    body:`
+      <p>Nhiều bạn nghĩ AI là <b>robot</b>. Thật ra hai thứ khác nhau: <b>robot</b> là cái máy có thân, tay chân; còn <b>AI</b> là "bộ não" giúp nó biết phải làm gì.</p>
+      <div class="secTitle" data-icon="🤖">Robot có luôn thông minh không?</div>
+      <p>Không. Nhiều robot chỉ làm <b>đúng một việc lặp lại</b> (như cánh tay lắp ráp trong nhà máy) — chúng <b>không có AI</b>. Robot trở nên "thông minh" khi được gắn AI để <b>nhìn, nghe và quyết định</b>.</p>
+      <div class="secTitle" data-icon="✨">AI giúp robot làm gì?</div>
+      <ul>
+        <li>🧹 Robot hút bụi <b>tránh vật cản</b>, tự tìm đường.</li>
+        <li>📦 Robot kho hàng <b>tự lấy và giao</b> đúng gói.</li>
+        <li>🚁 Thiết bị bay <b>giữ thăng bằng</b>, né chướng ngại.</li>
+      </ul>
+      <div class="secTitle" data-icon="💡">Điều thú vị</div>
+      <p>AI có thể tồn tại <b>không cần thân thể</b> (như chatbot trong điện thoại). Ngược lại, một robot không có AI thì chỉ là cỗ máy làm theo lệnh cứng.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li><b>Robot ≠ AI</b>: robot là thân máy, AI là bộ não.</li>
+        <li>Không phải robot nào cũng thông minh.</li>
+        <li>AI giúp robot <b>nhìn, nghe, quyết định</b> linh hoạt hơn.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> AI là <b>phần suy nghĩ</b>, robot là <b>phần hành động</b>. Ghép lại mới thành robot thông minh.</div>`},
+
+  {icon:"🎮", color:"#F59E0B", title:"Bài 13: AI trong trò chơi",
+    desc:"Vì sao 'quái' trong game biết đuổi theo, và máy chơi cờ giỏi đến vậy.",
+    body:`
+      <p>Chơi game một mình mà vẫn thấy <b>có đối thủ</b>? Đó là nhờ AI điều khiển các nhân vật máy để trận đấu thêm hào hứng.</p>
+      <div class="secTitle" data-icon="👾">AI làm gì trong game?</div>
+      <ul>
+        <li>🏃 Điều khiển <b>nhân vật máy</b> đuổi theo, né tránh, phối hợp.</li>
+        <li>⚖️ Chỉnh <b>độ khó</b> cho vừa sức người chơi.</li>
+        <li>🗺️ Tạo <b>màn chơi, bản đồ</b> mới lạ mỗi lần.</li>
+      </ul>
+      <div class="secTitle" data-icon="♟️">Máy chơi cờ siêu giỏi</div>
+      <p>Có những AI chơi cờ vua, cờ vây <b>giỏi hơn cả nhà vô địch</b>. Chúng làm được vì <b>thử rất nhiều nước đi</b> trong đầu và chọn nước tốt nhất — nhanh hơn con người rất nhiều.</p>
+      <div class="secTitle" data-icon="🧠">Điều đáng nhớ</div>
+      <p>Giỏi cờ không có nghĩa AI "thông minh toàn diện". Nó chỉ <b>cực giỏi đúng trò đó</b>, đem sang việc khác lại chịu thua.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>AI điều khiển nhân vật máy, chỉnh độ khó, tạo màn chơi.</li>
+        <li>Máy chơi cờ giỏi nhờ <b>thử rất nhiều nước đi</b> thật nhanh.</li>
+        <li>AI giỏi game vẫn chỉ <b>giỏi một việc cụ thể</b>.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> Đối thủ máy trong game là một dạng AI. Nó giúp cuộc chơi vui hơn, nhưng vẫn <b>chỉ giỏi trong game đó</b> thôi.</div>`},
+
+  {icon:"🎭", color:"#EF4444", title:"Bài 14: Deepfake & tin giả",
+    desc:"AI có thể tạo ảnh, video giả như thật — làm sao để không bị lừa.",
+    body:`
+      <p>AI tạo sinh giỏi đến mức làm được <b>ảnh, giọng nói, video giả</b> trông như thật. Loại nội dung giả này gọi là <b>deepfake</b>. Biết về nó giúp em không bị lừa.</p>
+      <div class="secTitle" data-icon="🕵️">Vì sao cần cảnh giác?</div>
+      <p>Kẻ xấu có thể dùng deepfake để <b>tung tin sai</b>, giả giọng người thân để lừa tiền, hoặc bịa lời người nổi tiếng chưa từng nói.</p>
+      <div class="secTitle" data-icon="🔍">Mẹo nhận biết</div>
+      <ul>
+        <li>👀 Xem kỹ chỗ <b>bất thường</b>: mắt, tay, ánh sáng, chữ trong ảnh hơi "sai sai".</li>
+        <li>🔗 <b>Kiểm nguồn</b>: tin thật thường có ở nhiều trang uy tín, không chỉ một chỗ lạ.</li>
+        <li>🤔 Tin nào khiến em <b>quá tức giận hoặc quá sốc</b> — hãy dừng lại, kiểm tra trước khi tin.</li>
+      </ul>
+      <div class="secTitle" data-icon="🛑">Khi nghi ngờ</div>
+      <p>Đừng vội <b>chia sẻ</b>. Hỏi người lớn em tin tưởng, hoặc tra ở nguồn chính thống. Không lan truyền tin chưa kiểm chứng cũng là <b>giúp cộng đồng</b>.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li><b>Deepfake</b> là ảnh/video/giọng giả do AI tạo, trông như thật.</li>
+        <li>Nhận biết bằng cách soi chi tiết bất thường và <b>kiểm nguồn</b>.</li>
+        <li>Nghi ngờ thì <b>đừng chia sẻ</b>, hãy kiểm tra trước.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> "Thấy tận mắt" không còn chắc là thật. Hãy <b>kiểm chứng trước khi tin và chia sẻ</b>.</div>`},
 ];
 
 /* ------- NGÂN HÀNG CÂU HỎI (Kiểm tra) -------
@@ -254,6 +364,8 @@ const BANK = {
     {topic:"ungdung", q:"Loa thông minh trong nhà dùng AI để làm gì?", opts:["Nghe và trả lời câu hỏi","Nấu cơm","Quét nhà","Tưới cây"], a:0},
     {topic:"khainiem", q:"AI tạo sinh có thể làm gì?", opts:["Viết văn, vẽ tranh theo yêu cầu","Giặt quần áo","Rửa bát","Đá bóng"], a:0},
     {topic:"antoan", q:"Với AI, em KHÔNG nên chia sẻ điều gì?", opts:["Mật khẩu, địa chỉ nhà","Một câu hỏi Toán","Tên loài hoa","Màu em thích"], a:0},
+    {topic:"hoatdong", q:"Với máy tính, một bức ảnh thực chất là gì?", opts:["Nhiều ô màu = những con số","Một bài hát","Một mùi hương","Một cơn gió"], a:0},
+    {topic:"ungdung", q:"Robot hút bụi dùng AI để làm gì?", opts:["Tránh vật cản, tự tìm đường","Hát ru","Pha trà","Gấp quần áo"], a:0},
   ],
   2: [
     {topic:"hoatdong", q:"Muốn AI nhận ra con mèo, ta cần cho nó xem gì?", opts:["Nhiều ảnh mèo có gán nhãn","Một câu thơ","Một bản nhạc buồn","Một hộp bút màu"], a:0},
@@ -263,6 +375,8 @@ const BANK = {
     {topic:"antoan", q:"Vì sao không nên tin AI 100%?", opts:["AI đôi khi bịa hoặc trả lời sai","AI luôn buồn ngủ","AI sợ ánh sáng","AI chỉ nói tiếng Anh"], a:0},
     {topic:"prompt", q:"Cách nào giúp prompt cho kết quả tốt hơn?", opts:["Giao vai và nói rõ khuôn dạng","Viết thật ngắn kiểu 'làm đi'","Gõ toàn chữ in hoa","Không nói gì cả"], a:0},
     {topic:"ungdung", q:"AI tạo sinh 'sáng tạo' bằng cách nào?", opts:["Đoán phần tiếp theo hợp lý nhất","Hỏi ý ông Bụt","Tra từ điển giấy","Bấm số ngẫu nhiên"], a:0},
+    {topic:"khainiem", q:"Câu nào ĐÚNG về robot và AI?", opts:["Robot là thân máy, AI là 'bộ não'","Robot nào cũng có AI","AI phải có tay chân mới chạy được","Robot và AI là một thứ y hệt"], a:0},
+    {topic:"hoatdong", q:"Trợ lý ảo 'nghe hiểu' lời em bằng cách nào?", opts:["Đổi giọng nói thành chữ rồi hiểu","Đọc suy nghĩ trong đầu","Nhìn nét mặt","Ngửi mùi"], a:0},
   ],
   3: [
     {topic:"prompt", q:"Prompt nào rõ ràng và dễ cho kết quả tốt nhất?", opts:["Giải thích cho học sinh lớp 5 vì sao trời mưa, trong 3 câu","Nói gì đó","Kể chuyện","Viết đi"], a:0},
@@ -273,6 +387,9 @@ const BANK = {
     {topic:"prompt", q:"'Giao vai cho AI' nghĩa là gì?", opts:["Nói AI đóng vai ai đó, ví dụ thầy giáo vui tính","Tặng quà cho AI","Đặt tên cho máy tính","Tắt máy rồi bật lại"], a:0},
     {topic:"ungdung", q:"Kỹ năng nào con người giữ vững mà AI khó thay?", opts:["Sáng tạo và thấu cảm","Sạc pin nhanh","Lưu nhiều dữ liệu","Tính toán số lớn"], a:0},
     {topic:"antoan", q:"Đâu là cách dùng AI trung thực khi làm bài?", opts:["Nói thật là mình có dùng AI hỗ trợ","Chép y nguyên rồi nhận là của mình","Giấu không cho ai biết","Xoá lịch sử trò chuyện"], a:0},
+    {topic:"antoan", q:"'Deepfake' là gì?", opts:["Ảnh/video/giọng giả do AI tạo, trông như thật","Một trò chơi điện tử","Một loại máy ảnh","Một kiểu tóc"], a:0},
+    {topic:"antoan", q:"Thấy một tin gây sốc trên mạng, em nên làm gì trước?", opts:["Kiểm chứng nguồn trước khi tin và chia sẻ","Chia sẻ ngay cho thật nhiều người","Tin luôn vì thấy 'tận mắt'","Bình luận tức giận"], a:0},
+    {topic:"ungdung", q:"Vì sao AI chơi cờ có thể thắng nhà vô địch?", opts:["Thử rất nhiều nước đi rồi chọn nước tốt nhất","Vì nó biết tuốt mọi thứ","Vì nó may mắn","Vì nó làm đối thủ sợ"], a:0},
   ],
 };
 
