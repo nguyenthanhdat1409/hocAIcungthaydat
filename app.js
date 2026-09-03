@@ -560,13 +560,10 @@ function openPlan(li, mi, lsi){
   const m = lv.modules[mi];
   const ls = m.lessons[lsi];
   const c = LEVEL_COLORS[li];
-  const em = lessonEmoji(ls, li);
 
-  /* Minh hoạ (thay ảnh): emoji lớn theo chủ đề + vài hạt trang trí */
-  const decor = shuffle(DECOR).slice(0, 5).map((d, k) =>
-    `<span class="illuDot d${k}">${d}</span>`).join("");
-  const illu = `<div class="lessonIllu" style="--lc:${c}">
-      ${decor}<div class="illuMain">${em}</div></div>`;
+  /* Minh hoạ: tranh SVG theo chủ đề (mặc định) + ảnh trong images/<mã>.<ext> nếu có */
+  const art = window.LessonArt ? window.LessonArt.svg(ls, c) : "";
+  const photo = `<img class="lessonPhoto" alt="" src="images/${encodeURIComponent(ls.code)}.jpg" data-code="${esc(ls.code)}" data-try="0" onerror="photoFallback(this)">`;
 
   /* Panel cho giáo viên (ẩn, mở bằng nút ?) */
   let steps = "";
@@ -585,9 +582,11 @@ function openPlan(li, mi, lsi){
   coach += `<div class="secTitle" data-icon="🗺️">Các bước lên lớp (90')</div><div class="planList">${steps}</div>`;
 
   document.getElementById("lessonBody").innerHTML =
-    `<div class="lessonHead" style="background:linear-gradient(135deg,${c},${c}cc)">
-       ${illu}
-       <div class="lhText"><span class="lhCode">Bài ${esc(ls.code)}</span><h2>${esc(ls.name)}</h2></div>
+    `<div class="lessonHero" style="--lc:${c}">
+       <div class="lessonArt">${art}</div>
+       ${photo}
+       <div class="heroShade"></div>
+       <div class="heroCap"><span class="lhCode">Bài ${esc(ls.code)}</span><h2>${esc(ls.name)}</h2></div>
        <button class="coachQ" onclick="toggleCoachPanel(this)" title="Gợi ý cho giáo viên" aria-label="Gợi ý cho giáo viên">?</button>
      </div>
      <div class="lContent">
@@ -607,6 +606,13 @@ function toggleCoachPanel(btn){
   const open = panel.classList.toggle("hidden");
   btn.classList.toggle("on", !open);
   if(!open){ panel.scrollIntoView({behavior:"smooth", block:"nearest"}); }
+}
+/* Ảnh trong images/<mã bài>.<ext>: thử jpg→png→webp→jpeg; không có thì bỏ để lộ tranh SVG */
+function photoFallback(img){
+  const exts = ["jpg","png","webp","jpeg"];
+  let t = (parseInt(img.dataset.try, 10) || 0) + 1;
+  if(t < exts.length){ img.dataset.try = t; img.src = "images/" + encodeURIComponent(img.dataset.code) + "." + exts[t]; }
+  else { img.remove(); }
 }
 
 /* --- Tìm kiếm realtime --- */
