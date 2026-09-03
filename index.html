@@ -7,7 +7,7 @@
 <meta name="description" content="Khởi đầu học AI cho mọi người — bài học trực quan, vui nhộn, dễ hiểu.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;600;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap&subset=vietnamese" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=1">
+<link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
 
@@ -43,7 +43,7 @@
         </div>
         <div class="heroStats">
           <div><b id="statLessons">0</b><span>bài học</span></div>
-          <div><b id="statTopics">0</b><span>chủ đề</span></div>
+          <div><b id="statTopics">0</b><span>module</span></div>
           <div><b id="statQuiz">0</b><span>câu hỏi</span></div>
         </div>
       </div>
@@ -71,13 +71,9 @@
     </div>
   </section>
 
-  <!-- ---------- BÀI HỌC ---------- -->
+  <!-- ---------- BÀI HỌC (LỘ TRÌNH ĐẦY ĐỦ) ---------- -->
   <section id="baihoc" class="page hidden">
-    <div class="pageHead">
-      <h2 class="sectionHead">📚 Bài học</h2>
-      <p class="sectionSub">Chọn một chủ đề để bắt đầu — bấm vào thẻ để xem nội dung nha!</p>
-    </div>
-    <div class="lessonGrid" id="lessonGrid"></div>
+    <div id="curriculum"></div>
   </section>
 
   <!-- ---------- KIỂM TRA (màn giới thiệu) ---------- -->
@@ -124,6 +120,7 @@
   </div>
 </div>
 
-<script src="app.js?v=1"></script>
+<script src="curriculum.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>

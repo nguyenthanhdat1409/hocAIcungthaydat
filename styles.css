@@ -1000,3 +1000,133 @@ h1,h2,h3{font-family:'Baloo 2',cursive; margin:0; line-height:1.15}
   .rule{display:flex; align-items:center; gap:10px; text-align:left}
   .rule .dd{margin-top:0}
 }
+
+/* =========================================================
+   LỘ TRÌNH ĐẦY ĐỦ (curriculum) — thêm cho SPEC 192 bài
+   ========================================================= */
+#curriculum{max-width:1080px;margin:0 auto;padding:6px 16px 40px}
+
+/* Đầu trang lộ trình */
+.curHero{text-align:center;padding:26px 18px;border-radius:26px;
+  background:linear-gradient(135deg,#F5F3FF,#EFF6FF);border:2px solid #EDE9FE;margin-bottom:22px}
+.curTitle{font-family:"Baloo 2",system-ui;font-size:clamp(22px,4vw,34px);color:var(--ink);margin:10px 0 4px;line-height:1.2}
+.curTagline{color:#5B21B6;font-weight:600;margin:0 0 14px}
+.curNums{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.curNums>div{background:#fff;border-radius:16px;padding:10px 18px;min-width:92px;box-shadow:0 6px 18px rgba(124,58,237,.10)}
+.curNums b{display:block;font-family:"Baloo 2";font-size:26px;color:var(--vio);line-height:1}
+.curNums span{font-size:12px;color:#64748B}
+.curDuration{color:#475569;font-weight:600;margin:6px 0 0}
+
+/* Nhịp 90 phút */
+.beatWrap,.prinWrap{margin:22px 0}
+.beatHead{font-family:"Baloo 2";font-size:18px;color:var(--ink);margin:0 0 12px}
+.beatBar{display:flex;gap:6px;border-radius:16px;overflow:hidden}
+.beatBlock{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:12px 6px;border-radius:12px;text-align:center;min-width:0}
+.beatBlock .bIc{font-size:18px}
+.beatBlock .bName{font-size:11px;font-weight:700;line-height:1.15;margin:3px 0}
+.beatBlock .bMin{font-size:12px;font-weight:800;opacity:.85}
+
+/* Nguyên tắc */
+.prinGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.prinCard{background:#fff;border:2px solid #F1F5F9;border-left:5px solid var(--vio);
+  border-radius:14px;padding:12px 14px;font-size:14px;color:#334155;box-shadow:0 4px 12px rgba(0,0,0,.04)}
+
+/* Thanh công cụ */
+.curTools{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between;
+  margin:20px 0 14px;position:sticky;top:calc(var(--nav-h) + 4px);z-index:20;
+  background:rgba(255,255,255,.9);backdrop-filter:blur(6px);padding:10px;border-radius:16px}
+.coachToggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.coachToggle input{display:none}
+.tglTrack{width:46px;height:26px;background:#CBD5E1;border-radius:20px;position:relative;transition:.2s}
+.tglDot{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.coachToggle input:checked + .tglTrack{background:var(--vio)}
+.coachToggle input:checked + .tglTrack .tglDot{transform:translateX(20px)}
+.tglLbl{font-weight:700;color:var(--ink);font-size:14px}
+.curSearch{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #E2E8F0;
+  border-radius:14px;padding:8px 12px;flex:1;min-width:200px;max-width:420px}
+.curSearch input{border:0;outline:0;font:inherit;flex:1;background:transparent}
+
+/* Thanh nhảy level */
+.lvJump{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.lvChipJump{border:2px solid var(--lc);color:var(--lc);background:#fff;font-weight:700;
+  border-radius:999px;padding:8px 16px;cursor:pointer;font-size:14px;transition:.15s}
+.lvChipJump:hover{background:var(--lc);color:#fff}
+.lvChipJump em{font-style:normal;opacity:.7;font-size:12px}
+
+/* Level */
+.lvSection{margin:0 0 34px;scroll-margin-top:calc(var(--nav-h) + 70px);transition:.2s}
+.lvSection.dim{opacity:.28}
+.lvHead{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:20px 20px 0 0;
+  background:var(--lc);color:#fff}
+.lvBadge{flex:0 0 auto;width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;font-family:"Baloo 2";font-size:24px;font-weight:800}
+.lvName{font-weight:700;opacity:.95;font-size:13px;letter-spacing:.5px}
+.optTag{background:rgba(255,255,255,.28);padding:1px 8px;border-radius:999px;font-size:11px;margin-left:6px}
+.lvTitle{font-family:"Baloo 2";font-size:clamp(18px,3vw,24px);margin:2px 0 4px;line-height:1.15}
+.lvMeta{font-size:12.5px;opacity:.92}
+.gradBox{background:var(--lcSoft);border:2px solid var(--lc);border-top:0;color:#1f2937;
+  padding:14px 18px;font-weight:600;font-size:14px;line-height:1.5}
+.modList{background:var(--lcSoft);border:2px solid var(--lc);border-top:0;border-radius:0 0 20px 20px;
+  padding:14px;display:flex;flex-direction:column;gap:10px}
+
+/* Module accordion */
+.modCard{background:#fff;border:2px solid #EEF2F7;border-radius:16px;overflow:hidden;transition:.15s}
+.modCard.hasProj{border-color:#FCD34D;box-shadow:0 4px 14px rgba(250,204,21,.18)}
+.modHead{width:100%;display:flex;align-items:center;gap:10px;padding:14px 16px;background:none;border:0;
+  cursor:pointer;text-align:left;font:inherit}
+.modArrow{transition:.2s;color:#94A3B8;font-size:16px}
+.modCard.open .modArrow{transform:rotate(90deg)}
+.modTitle{flex:1;font-size:15px;color:var(--ink)}
+.modTitle b{color:var(--vio)}
+.modCount{color:#94A3B8;font-weight:600;font-size:13px}
+.projFlag{background:#FEF3C7;color:#92400E;font-weight:800;font-size:11px;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.modBody{display:none;padding:0 16px 16px}
+.modCard.open .modBody{display:block;animation:fadeUp .25s ease}
+
+/* Thông tin cho coach */
+.coachInfo{display:none;background:#F8FAFF;border:1px dashed #C7D2FE;border-radius:12px;
+  padding:10px 12px;margin-bottom:10px;font-size:13px;color:#334155}
+.coachInfo ul{margin:6px 0 0;padding-left:18px}
+.coachOn .coachInfo{display:block}
+
+/* Danh sách bài học */
+.lsList{display:flex;flex-direction:column;gap:8px}
+.lsRow{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;
+  background:#F8FAFC;border:1px solid #EEF2F7;cursor:pointer;transition:.12s}
+.lsRow:hover{background:#F1F5FF;border-color:#C7D2FE;transform:translateX(2px)}
+.lsCode{flex:0 0 auto;font-family:"Baloo 2";font-weight:800;color:var(--vio);background:#EDE9FE;
+  border-radius:8px;padding:4px 8px;font-size:12.5px;min-width:46px;text-align:center}
+.lsMain{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.lsName{font-weight:700;color:var(--ink);font-size:14.5px}
+.lsDesc{font-size:12.5px;color:#64748B;line-height:1.35}
+.lsChal{font-size:12px;color:#B45309;font-weight:600;margin-top:2px}
+.lsGo{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--cyan);white-space:nowrap}
+.lsRow mark{background:#FEF08A;border-radius:3px;padding:0 1px}
+
+/* Card PROJECT & Tổng kết cho bé */
+.projCard{margin-top:12px;background:#FFFBEB;border:2px solid #FCD34D;border-radius:14px;
+  padding:12px 14px;font-size:13.5px;color:#78350F}
+.teacherRecap{display:none;margin-top:12px;background:#ECFDF5;border:2px solid #6EE7B7;border-radius:14px;padding:14px}
+.coachOn .teacherRecap{display:block}
+.teacherRecap .trHead{font-family:"Baloo 2";font-weight:800;color:#047857;margin-bottom:6px}
+.teacherRecap p{margin:0;font-size:13.5px;color:#065F46;line-height:1.55}
+
+/* Modal giáo án 90' */
+.planMeta{font-size:13px;color:#64748B;font-weight:600;margin-bottom:12px}
+.planList{display:flex;flex-direction:column;gap:10px}
+.planRow{display:flex;gap:12px;background:#fff;border:1px solid #EEF2F7;border-left:5px solid #ccc;
+  border-radius:12px;padding:12px;box-shadow:0 3px 10px rgba(0,0,0,.04)}
+.planTime{flex:0 0 auto;height:fit-content;font-weight:800;font-size:12.5px;border-radius:999px;padding:5px 11px;white-space:nowrap}
+.planMain{flex:1;min-width:0}
+.planPhase{font-family:"Baloo 2";font-weight:800;font-size:15px;margin-bottom:3px}
+.planAct{font-size:13.5px;color:#334155;line-height:1.5}
+
+@media(max-width:600px){
+  #curriculum{padding:6px 10px 40px}
+  .beatBlock .bName{font-size:10px}
+  .lsGo{display:none}
+  .lsRow{gap:8px;padding:10px}
+  .curTools{position:static}
+  .planRow{flex-direction:column;gap:8px}
+}
