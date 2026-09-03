@@ -355,10 +355,57 @@ function hi(s, term){
   try{ return t.replace(new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") + ")", "ig"), "<mark>$1</mark>"); }catch{ return t; }
 }
 
-const COACH_KEY = "hocai_coach_v1";
-let coachMode = (()=>{ try{ return localStorage.getItem(COACH_KEY) === "1"; }catch{ return false; } })();
 let curSearch = "";
 let _lessonMap = []; // [levelIdx][moduleIdx][lessonIdx] -> lesson (để mở modal)
+
+/* Emoji minh hoạ theo chủ đề của bài (thay cho ảnh) */
+const EMOJI_MAP = [
+  [/deepfake|tin giả|lừa|giả mạo/i, "🎭"],
+  [/an toàn|riêng tư|bảo mật|mật khẩu/i, "🛡️"],
+  [/prompt|câu lệnh|ra lệnh|hỏi ai/i, "💬"],
+  [/robot/i, "🦾"],
+  [/ảnh|hình|nhìn|thị giác|vẽ|tranh/i, "🖼️"],
+  [/âm thanh|giọng|nghe|nói|nhạc|hát/i, "🎤"],
+  [/game|trò chơi|cờ /i, "🎮"],
+  [/video|phim|quay/i, "🎬"],
+  [/dữ liệu|số liệu|bảng|thống kê|biểu đồ/i, "📊"],
+  [/internet|web|mạng|trình duyệt|online/i, "🌐"],
+  [/email|thư điện tử/i, "✉️"],
+  [/thư mục|tệp|file|lưu/i, "📁"],
+  [/bàn phím|gõ|đánh máy|typing|wpm/i, "⌨️"],
+  [/chuột/i, "🖱️"],
+  [/màn hình|cửa sổ/i, "🖥️"],
+  [/scratch|lập trình|khối lệnh|thuật toán|flowchart|code|biến|vòng lặp|điều kiện/i, "🧩"],
+  [/máy tính|phần cứng|bộ phận|thiết bị/i, "💻"],
+  [/trình chiếu|slide|thuyết trình/i, "📑"],
+  [/bản đồ|vị trí|định vị/i, "🗺️"],
+  [/cảm xúc|tư duy|sáng tạo|ý tưởng/i, "💡"],
+  [/trí tuệ nhân tạo|máy học|mô hình|\bai\b|chatbot|học sâu|mạng nơ|neural/i, "🤖"],
+];
+const DECOR = ["✨","🌟","💫","⭐","🎈","🌈","🔆","💠"];
+function lessonEmoji(ls, li){
+  const text = (ls.name + " " + (ls.content||""));
+  for(const [re, e] of EMOJI_MAP){ if(re.test(text)) return e; }
+  return ["💡","🧠","🚀","🌟"][li] || "📘";
+}
+function capFirst(s){ s = String(s||"").trim(); return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+/* Soạn phần thân bài học cho người học (không phải giáo án của coach) */
+function buildLessonBody(ls){
+  const pts = String(ls.content||"").split(/[,;]|\bvà\b/).map(s=>s.trim()).filter(s=>s.length>1);
+  let body = `<p>Trong bài này, chúng mình cùng khám phá về <b>${esc(ls.name.toLowerCase())}</b>.</p>`;
+  if(pts.length > 1){
+    body += `<div class="secTitle" data-icon="🔍">Em sẽ học được gì?</div><ul>${pts.map(p=>`<li>${esc(capFirst(p))}</li>`).join("")}</ul>`;
+  } else {
+    body += `<p>${esc(capFirst(ls.content||""))}</p>`;
+  }
+  if(ls.challenge){
+    const ch = esc(ls.challenge.replace(/^Thử thách:\s*/,"").replace(/^Mini project:\s*/,""));
+    const isProj = /mini project/i.test(ls.challenge);
+    body += `<div class="tipBox">${isProj?"🛠️ <b>Dự án nhỏ:</b>":"🏆 <b>Cùng thử thách:</b>"} ${ch}</div>`;
+  }
+  return body;
+}
 
 function curriculumStats(){
   const C = window.CURRICULUM && window.CURRICULUM.program;
@@ -408,12 +455,9 @@ function renderCurriculum(){
   data.principles.forEach(p => { html += `<div class="prinCard">${esc(p)}</div>`; });
   html += `</div></div>`;
 
-  /* Thanh công cụ: chế độ Coach + tìm kiếm */
+  /* Thanh công cụ: tìm kiếm */
   html += `<div class="curTools">
-      <label class="coachToggle"><input type="checkbox" id="coachChk" ${coachMode?"checked":""} onchange="toggleCoach(this.checked)">
-        <span class="tglTrack"><span class="tglDot"></span></span>
-        <span class="tglLbl">🎓 Dành cho Coach</span></label>
-      <div class="curSearch"><span>🔎</span><input id="curSearchInput" type="search" placeholder="Tìm bài học, nội dung, trò chơi…" oninput="onCurSearch(this.value)" value="${esc(curSearch)}"></div>
+      <div class="curSearch"><span>🔎</span><input id="curSearchInput" type="search" placeholder="Tìm bài học theo tên hoặc nội dung…" oninput="onCurSearch(this.value)" value="${esc(curSearch)}"></div>
     </div>`;
 
   /* Thanh nhảy tới level */
@@ -430,7 +474,6 @@ function renderCurriculum(){
   html += `</div>`;
 
   host.innerHTML = html;
-  host.classList.toggle("coachOn", coachMode);
   if(curSearch) applyCurSearch();
   observeReveal();
 }
@@ -478,32 +521,25 @@ function renderModule(m, li, mi){
     </button>
     <div class="modBody">`;
 
-  if(coachMode && m.warmup_ritual){
-    h += `<div class="coachInfo"><b>🔥 Khởi động module:</b> ${esc(m.warmup_ritual)}</div>`;
-  }
-  if(coachMode && Array.isArray(m.games_pool) && m.games_pool.length){
-    h += `<div class="coachInfo"><b>🎮 Kho trò chơi:</b><ul>${m.games_pool.map(g=>`<li>${esc(g)}</li>`).join("")}</ul></div>`;
-  }
-
   h += `<div class="lsList">`;
   m.lessons.forEach((ls, lsi) => {
+    const em = lessonEmoji(ls, li);
     h += `<div class="lsRow" data-ls="${li}-${mi}-${lsi}" onclick="openPlan(${li},${mi},${lsi})">
-        <span class="lsCode">${esc(ls.code)}</span>
+        <span class="lsEmoji">${em}</span>
         <span class="lsMain">
           <span class="lsName">${esc(ls.name)}</span>
           <span class="lsDesc">${esc(ls.content)}</span>
-          ${ls.challenge?`<span class="lsChal">🏆 ${esc(ls.challenge)}</span>`:""}
         </span>
-        <span class="lsGo">Giáo án 90' ➜</span>
+        <span class="lsGo">Vào bài học ➜</span>
       </div>`;
   });
   h += `</div>`;
 
   if(hasProj){
-    h += `<div class="projCard">★ <b>PROJECT MODULE:</b> ${esc(m.module_project)}</div>`;
+    h += `<div class="projCard">★ <b>DỰ ÁN MODULE:</b> ${esc(m.module_project)}</div>`;
   }
   if(m.teacher_recap){
-    h += `<div class="teacherRecap"><div class="trHead">📣 Tổng kết cho bé</div><p><b>Hôm nay con đã học được…</b> ${esc(m.teacher_recap)}</p></div>`;
+    h += `<div class="teacherRecap"><div class="trHead">📣 Tóm tắt cho bé</div><p><b>Qua module này, con đã học được…</b> ${esc(m.teacher_recap.replace(/^Qua module này, con đã học được:\s*/,""))}</p></div>`;
   }
 
   h += `</div></div>`;
@@ -518,41 +554,59 @@ function jumpLevel(i){
   const el = document.getElementById("lv" + i);
   if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
 }
-function toggleCoach(on){
-  coachMode = !!on;
-  try{ localStorage.setItem(COACH_KEY, coachMode ? "1" : "0"); }catch{}
-  renderCurriculum();
-}
-
-/* --- Modal giáo án 90 phút (tái dùng #lessonModal) --- */
+/* --- Modal BÀI HỌC (người học đọc). Phần giáo án cho coach giấu sau nút ? --- */
 function openPlan(li, mi, lsi){
   const lv = window.CURRICULUM.program.levels[li];
   const m = lv.modules[mi];
   const ls = m.lessons[lsi];
   const c = LEVEL_COLORS[li];
-  let rows = "";
+  const em = lessonEmoji(ls, li);
+
+  /* Minh hoạ (thay ảnh): emoji lớn theo chủ đề + vài hạt trang trí */
+  const decor = shuffle(DECOR).slice(0, 5).map((d, k) =>
+    `<span class="illuDot d${k}">${d}</span>`).join("");
+  const illu = `<div class="lessonIllu" style="--lc:${c}">
+      ${decor}<div class="illuMain">${em}</div></div>`;
+
+  /* Panel cho giáo viên (ẩn, mở bằng nút ?) */
+  let steps = "";
   (ls.plan90 || []).forEach((step, si) => {
     const p = phaseOf(step.phase);
-    rows += `<div class="planRow" style="--pc:${p.fg};--pbg:${p.bg};animation-delay:${si*60}ms">
+    steps += `<div class="planRow" style="--pc:${p.fg};animation-delay:${si*50}ms">
         <div class="planIco" style="background:${p.bg};color:${p.fg}">${p.ic}</div>
         <div class="planMain"><div class="planPhase" style="color:${p.fg}">${esc(step.phase)}</div>
           <div class="planAct">${esc(step.activity)}</div></div>
       </div>`;
   });
+  let coach = "";
+  if(m.warmup_ritual) coach += `<div class="coachNote"><b>🔥 Khởi động module:</b> ${esc(m.warmup_ritual)}</div>`;
+  if(Array.isArray(m.games_pool) && m.games_pool.length)
+    coach += `<div class="coachNote"><b>🎮 Kho trò chơi:</b><ul>${m.games_pool.map(g=>`<li>${esc(g)}</li>`).join("")}</ul></div>`;
+  coach += `<div class="secTitle" data-icon="🗺️">Các bước lên lớp (90')</div><div class="planList">${steps}</div>`;
+
   document.getElementById("lessonBody").innerHTML =
     `<div class="lessonHead" style="background:linear-gradient(135deg,${c},${c}cc)">
-       <div class="lh-ic">📘</div>
-       <div><h2>${esc(ls.code)} · ${esc(ls.name)}</h2><p>${esc(ls.content)}</p></div>
+       ${illu}
+       <div class="lhText"><span class="lhCode">Bài ${esc(ls.code)}</span><h2>${esc(ls.name)}</h2></div>
+       <button class="coachQ" onclick="toggleCoachPanel(this)" title="Gợi ý cho giáo viên" aria-label="Gợi ý cho giáo viên">?</button>
      </div>
      <div class="lContent">
-       <div class="planMeta">🧩 MODULE ${esc(m.code)} – ${esc(m.name)}</div>
-       ${ls.challenge?`<div class="tipBox">🏆 <b>Thử thách:</b> ${esc(ls.challenge.replace(/^Thử thách:\s*/,"").replace(/^Mini project:\s*/,""))}</div>`:""}
-       <div class="secTitle" data-icon="🗺️">Các bước lên lớp</div>
-       <div class="planList">${rows}</div>
+       ${buildLessonBody(ls)}
+       <div class="coachPanel hidden" id="coachPanel">
+         <div class="coachPanelHead">🎓 Gợi ý cho giáo viên <span>(bấm dấu ? để ẩn)</span></div>
+         ${coach}
+       </div>
      </div>`;
   document.getElementById("lessonModal").classList.remove("hidden");
   document.body.style.overflow = "hidden";
   sfx.pop();
+}
+function toggleCoachPanel(btn){
+  const panel = document.getElementById("coachPanel");
+  if(!panel) return;
+  const open = panel.classList.toggle("hidden");
+  btn.classList.toggle("on", !open);
+  if(!open){ panel.scrollIntoView({behavior:"smooth", block:"nearest"}); }
 }
 
 /* --- Tìm kiếm realtime --- */

@@ -3,8 +3,8 @@
   --cyan:#06B6D4; --yel:#FACC15; --ink:#1E1B4B; --card:#FFFFFF;
   --ok:#22C55E; --bad:#EF4444; --half:#F59E0B;
   --nav-h:66px;
-  --font-display:"Fredoka","Baloo 2",system-ui,sans-serif;
-  --font-body:"Nunito","Be Vietnam Pro",system-ui,sans-serif;
+  --font-display:"Baloo 2",system-ui,sans-serif;
+  --font-body:"Be Vietnam Pro",system-ui,sans-serif;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
@@ -1277,3 +1277,50 @@ h1,h2,h3{letter-spacing:.2px}
   .beatBlock{padding:14px 8px}
   .beatBlock .bName{font-size:12.5px}
 }
+
+/* =========================================================
+   BÀI HỌC KIỂU NGƯỜI HỌC + PANEL "?" CHO GIÁO VIÊN (v5)
+   ========================================================= */
+
+/* Tóm tắt cho bé: hiện luôn (không còn ẩn theo chế độ coach) */
+.teacherRecap{display:block !important;margin-top:12px}
+
+/* Icon emoji minh hoạ trong danh sách bài */
+.lsEmoji{flex:0 0 auto;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;background:#fff;border:1px solid #EEF2F7;box-shadow:0 2px 6px rgba(30,27,75,.06);transition:transform .16s}
+.lsRow:hover .lsEmoji{transform:scale(1.12) rotate(-6deg)}
+
+/* ---- Đầu modal: minh hoạ + tên bài + nút ? ---- */
+.lessonHead{position:relative;align-items:center;padding:22px 22px 20px}
+.lessonIllu{position:relative;flex:0 0 auto;width:96px;height:96px;border-radius:24px;overflow:hidden;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.35),rgba(255,255,255,.12));
+  border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center}
+.illuMain{font-size:54px;z-index:2;filter:drop-shadow(0 5px 8px rgba(0,0,0,.22));animation:float 3s ease-in-out infinite}
+.illuDot{position:absolute;font-size:15px;opacity:.9;animation:floaty 4s ease-in-out infinite}
+.illuDot.d0{top:8px;left:9px}
+.illuDot.d1{top:11px;right:11px;animation-delay:.4s}
+.illuDot.d2{bottom:9px;left:13px;animation-delay:.8s}
+.illuDot.d3{bottom:12px;right:9px;animation-delay:1.2s}
+.illuDot.d4{top:44%;left:8px;font-size:12px;opacity:.7;animation-delay:.6s}
+.lhText{flex:1;min-width:0}
+.lhCode{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.4px;color:#fff;
+  background:rgba(255,255,255,.24);padding:3px 11px;border-radius:999px;margin-bottom:7px}
+.lessonHead h2{font-size:23px;color:#fff;text-shadow:0 2px 0 rgba(30,27,75,.2);line-height:1.2}
+
+/* Nút dấu hỏi (?) — coach bấm để xem giáo án */
+.coachQ{position:absolute;right:16px;bottom:16px;width:36px;height:36px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.65);background:rgba(255,255,255,.2);color:#fff;
+  font-family:var(--font-display);font-weight:800;font-size:19px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:transform .18s, background .18s, color .18s, box-shadow .18s}
+.coachQ:hover{background:#fff;color:var(--ink);transform:scale(1.1)}
+.coachQ.on{background:#fff;color:var(--vio);box-shadow:0 0 0 5px rgba(255,255,255,.3)}
+
+/* ---- Panel giáo viên ---- */
+.coachPanel{margin-top:20px;padding:16px;border-radius:18px;background:#F8FAFF;border:2px dashed #C7D2FE;
+  animation:planIn .32s ease}
+.coachPanelHead{font-family:var(--font-display);font-weight:800;color:var(--vio);font-size:16px;margin-bottom:12px}
+.coachPanelHead span{font-family:var(--font-body);font-weight:600;font-size:12px;color:#94A3B8}
+.coachNote{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;margin-bottom:10px;
+  font-size:13.5px;color:#334155;line-height:1.5}
+.coachNote ul{margin:6px 0 0;padding-left:18px}
+.coachPanel .secTitle{margin-top:8px}
