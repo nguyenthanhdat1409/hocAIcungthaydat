@@ -51,6 +51,12 @@ const LESSONS = [
       </ul>
       <div class="secTitle" data-icon="🤖">AI khác gì phần mềm thường?</div>
       <p>Phần mềm thường làm <b>đúng y hệt</b> điều người ta lập trình. Còn AI có thể <b>học từ ví dụ</b> để tự cải thiện — càng nhiều dữ liệu, càng làm tốt hơn.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>AI là khi <b>máy tính làm việc thông minh</b> như nhận diện, hiểu lời, gợi ý.</li>
+        <li>Em gặp AI mỗi ngày: mở khoá khuôn mặt, gợi ý video, chỉ đường.</li>
+        <li>Khác phần mềm thường, AI biết <b>học từ ví dụ</b> để giỏi dần.</li>
+      </ul>
       <div class="tipBox"><b>Ghi nhớ:</b> AI không "thông minh như người". Nó giỏi <b>một việc cụ thể</b> nhờ được học từ rất nhiều ví dụ.</div>`},
 
   {icon:"🧠", color:"#06B6D4", title:"Bài 2: AI học như thế nào?",
@@ -65,6 +71,12 @@ const LESSONS = [
       </ul>
       <div class="secTitle" data-icon="⚠️">Vì sao AI đôi khi sai?</div>
       <p>Nếu ví dụ để học bị <b>thiếu</b> hoặc <b>lệch</b>, AI sẽ đoán sai. Ví dụ chỉ học ảnh mèo lông vàng thì có thể không nhận ra mèo đen.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>AI học bằng cách xem <b>rất nhiều ví dụ</b> (dữ liệu).</li>
+        <li>Ba bước: <b>cho ví dụ → luyện tập → kiểm tra</b>.</li>
+        <li>Dữ liệu thiếu hoặc lệch thì AI sẽ <b>đoán sai</b>.</li>
+      </ul>
       <div class="tipBox"><b>Ghi nhớ:</b> Dữ liệu tốt → AI tốt. "Rác vào thì rác ra".</div>`},
 
   {icon:"💬", color:"#F59E0B", title:"Bài 3: Cách ra lệnh cho AI (prompt)",
@@ -80,7 +92,152 @@ const LESSONS = [
       <div class="secTitle" data-icon="🔁">So sánh</div>
       <p>❌ "Kể về chó." → quá chung chung.<br>
          ✅ "Giải thích cho học sinh lớp 5 vì sao chó là bạn của con người, trong 3 câu ngắn."</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li><b>Prompt</b> là câu lệnh em gõ cho AI; càng rõ, kết quả càng tốt.</li>
+        <li>Prompt tốt có: <b>việc cần làm + bối cảnh + yêu cầu cụ thể</b>.</li>
+        <li>Chưa ưng thì <b>nói rõ muốn sửa gì</b> rồi yêu cầu lại.</li>
+      </ul>
       <div class="tipBox"><b>Mẹo:</b> Nếu chưa ưng, hãy <b>nói rõ muốn sửa gì</b> rồi yêu cầu lại — cứ trò chuyện nhiều lượt.</div>`},
+
+  {icon:"🌍", color:"#22C55E", title:"Bài 4: AI quanh ta",
+    desc:"Điểm mặt những nơi AI đang lặng lẽ giúp em mỗi ngày.",
+    body:`
+      <p>AI không chỉ nằm trong phim khoa học viễn tưởng. Nó đang <b>ở ngay trong túi em</b>, trong nhà em, và giúp rất nhiều việc mà em ít khi để ý.</p>
+      <div class="secTitle" data-icon="🏠">AI ở trong nhà</div>
+      <ul>
+        <li>🔊 <b>Loa thông minh</b> nghe và trả lời câu hỏi của em.</li>
+        <li>📺 App phim <b>gợi ý</b> bộ phim hợp gu em.</li>
+        <li>📷 Điện thoại tự <b>làm ảnh đẹp hơn</b> khi em chụp.</li>
+      </ul>
+      <div class="secTitle" data-icon="🚗">AI khi ra ngoài</div>
+      <ul>
+        <li>🗺️ Bản đồ tránh <b>đường kẹt xe</b>, chỉ lối nhanh hơn.</li>
+        <li>🌐 Công cụ <b>dịch</b> giúp em hiểu tiếng nước ngoài.</li>
+        <li>✉️ Hộp thư tự <b>lọc thư rác</b> để em không bị làm phiền.</li>
+      </ul>
+      <div class="secTitle" data-icon="⚕️">AI giúp việc lớn</div>
+      <p>Bác sĩ dùng AI để <b>xem ảnh chụp</b> tìm bệnh sớm; nhà khoa học dùng AI để <b>dự báo thời tiết</b> và tìm thuốc mới. AI là một công cụ mạnh khi ở trong tay con người biết dùng.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>AI đang giúp em ở khắp nơi: <b>trong nhà, khi ra ngoài</b>, và cả việc lớn.</li>
+        <li>Loa thông minh, gợi ý phim, bản đồ, dịch, lọc thư rác… đều nhờ AI.</li>
+        <li>AI giúp cả <b>bác sĩ và nhà khoa học</b> làm việc khó.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> AI giống một <b>trợ lý</b> âm thầm. Nó gợi ý và giúp việc, còn <b>quyết định cuối</b> vẫn là ở con người.</div>`},
+
+  {icon:"✨", color:"#8B5CF6", title:"Bài 5: AI tạo sinh là gì?",
+    desc:"Loại AI biết viết văn, vẽ tranh, làm nhạc — và cách nó hoạt động.",
+    body:`
+      <p><b>AI tạo sinh</b> (generative AI) là loại AI có thể <b>tạo ra cái mới</b>: một đoạn văn, một bức tranh, một bản nhạc… dựa trên yêu cầu của em.</p>
+      <div class="secTitle" data-icon="🎨">Nó làm được gì?</div>
+      <ul>
+        <li>✍️ <b>Viết:</b> kể chuyện, làm thơ, tóm tắt bài dài.</li>
+        <li>🖼️ <b>Vẽ:</b> tạo hình từ một câu mô tả của em.</li>
+        <li>💡 <b>Gợi ý:</b> cho ý tưởng khi em bí, giải thích bài khó.</li>
+      </ul>
+      <div class="secTitle" data-icon="🔮">Vì sao nó "sáng tạo" được?</div>
+      <p>Nó đã học từ <b>rất nhiều</b> văn bản và hình ảnh, nên nó <b>đoán</b> chữ (hoặc nét vẽ) tiếp theo hợp lý nhất. Nói cách khác, nó giống một người <b>đoán từ tiếp theo</b> cực giỏi, chứ không thật sự "hiểu" như con người.</p>
+      <div class="secTitle" data-icon="⚖️">Điều cần nhớ</div>
+      <p>Vì chỉ là <b>đoán</b>, đôi khi nó tạo ra thứ <b>nghe rất xuôi tai nhưng sai sự thật</b>. Sản phẩm của AI là điểm khởi đầu tốt, nhưng em nên <b>đọc lại và tự chỉnh</b>.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li><b>AI tạo sinh</b> tạo ra cái mới: viết, vẽ, gợi ý ý tưởng.</li>
+        <li>Nó "sáng tạo" bằng cách <b>đoán</b> phần tiếp theo hợp lý nhất.</li>
+        <li>Vì chỉ đoán nên đôi khi <b>nghe xuôi tai mà sai</b> — cần đọc lại.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> AI tạo sinh là bạn <b>đồng hành ý tưởng</b>, không phải để em chép y nguyên rồi nộp. Hãy để nó gợi ý, còn bài làm là của em.</div>`},
+
+  {icon:"⚠️", color:"#EF4444", title:"Bài 6: Khi AI trả lời sai",
+    desc:"Vì sao AI đôi khi 'nói chắc như đúng rồi' mà vẫn sai.",
+    body:`
+      <p>AI rất giỏi, nhưng <b>không phải lúc nào cũng đúng</b>. Biết vì sao nó sai giúp em dùng AI thông minh hơn.</p>
+      <div class="secTitle" data-icon="🌀">3 kiểu sai thường gặp</div>
+      <ul>
+        <li><b>Bịa thông tin:</b> AI đôi khi "tự tin" đưa ra tên, con số, sự kiện <b>không có thật</b>.</li>
+        <li><b>Lỗi thời:</b> AI chỉ biết những gì đã học, nên có thể <b>không biết tin mới nhất</b>.</li>
+        <li><b>Thiên lệch:</b> nếu dữ liệu học bị lệch, câu trả lời cũng <b>lệch theo</b>.</li>
+      </ul>
+      <div class="secTitle" data-icon="🕵️">Cách tự bảo vệ mình</div>
+      <ul>
+        <li>✅ <b>Kiểm chứng</b> thông tin quan trọng ở nguồn đáng tin (sách, trang chính thống).</li>
+        <li>❓ Hỏi lại AI: "Bạn chắc không? Dựa vào đâu?" để nó tự soát.</li>
+        <li>🧠 Dùng <b>hiểu biết của em</b> để xem câu trả lời có hợp lý không.</li>
+      </ul>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>AI có thể sai: <b>bịa thông tin, lỗi thời, thiên lệch</b>.</li>
+        <li>Luôn <b>kiểm chứng</b> thông tin quan trọng ở nguồn đáng tin.</li>
+        <li>Dùng <b>hiểu biết của mình</b> để xem câu trả lời có hợp lý không.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> Đừng tin AI 100%. Hãy coi câu trả lời của nó như lời của một <b>người bạn thông minh nhưng đôi khi nhầm</b> — nghe rồi vẫn tự kiểm tra.</div>`},
+
+  {icon:"🛡️", color:"#EF4444", title:"Bài 7: Dùng AI an toàn & tử tế",
+    desc:"Những quy tắc vàng để dùng AI vừa an toàn cho mình, vừa tốt cho người khác.",
+    body:`
+      <p>AI là công cụ mạnh. Dùng đúng thì rất có ích; dùng sai có thể gây hại. Đây là vài quy tắc giúp em dùng AI <b>an toàn và có trách nhiệm</b>.</p>
+      <div class="secTitle" data-icon="🔒">Giữ an toàn cho bản thân</div>
+      <ul>
+        <li>🙅 <b>Không chia sẻ</b> thông tin cá nhân nhạy cảm: mật khẩu, địa chỉ nhà, số điện thoại.</li>
+        <li>🧑‍🤝‍🧑 Khi gặp nội dung khó hiểu hay đáng lo, hãy <b>hỏi người lớn</b> em tin tưởng.</li>
+        <li>⏰ AI rất cuốn, nhớ <b>cân bằng</b> giữa dùng máy và nghỉ ngơi, vui chơi ngoài đời.</li>
+      </ul>
+      <div class="secTitle" data-icon="💛">Tử tế và trung thực</div>
+      <ul>
+        <li>🚫 Không dùng AI để <b>trêu chọc, bắt nạt</b> hay làm phiền ai.</li>
+        <li>📝 Khi AI giúp làm bài, hãy <b>nói thật</b> là em có dùng AI — đó là sự trung thực.</li>
+        <li>🎨 Tôn trọng công sức người khác, không lấy sản phẩm AI mạo danh <b>hoàn toàn của mình</b>.</li>
+      </ul>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li><b>Không chia sẻ</b> thông tin cá nhân nhạy cảm cho AI.</li>
+        <li>Gặp điều đáng lo thì <b>hỏi người lớn</b> tin tưởng; nhớ cân bằng nghỉ ngơi.</li>
+        <li>Dùng AI <b>trung thực và tử tế</b>, không để trêu chọc hay bắt nạt ai.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> Quy tắc đơn giản nhất: dùng AI theo cách mà em thấy <b>tự hào khi kể cho ba mẹ, thầy cô</b> nghe.</div>`},
+
+  {icon:"💬", color:"#F59E0B", title:"Bài 8: Bí kíp viết prompt hay hơn",
+    desc:"Vài mẹo nhỏ giúp câu lệnh của em cho ra kết quả xịn hơn hẳn.",
+    body:`
+      <p>Ở Bài 3 em đã biết prompt là gì. Bài này là <b>vài bí kíp</b> để prompt của em ngày càng "cao thủ".</p>
+      <div class="secTitle" data-icon="🎭">1. Giao vai cho AI</div>
+      <p>Nói cho AI biết nó <b>đóng vai ai</b>. Ví dụ: "Hãy đóng vai một <b>thầy giáo dạy Toán vui tính</b>, giải thích phép nhân cho em lớp 3."</p>
+      <div class="secTitle" data-icon="📐">2. Nói rõ khuôn dạng</div>
+      <p>Em muốn kết quả trông thế nào? Hãy nói ra: "trả lời bằng <b>3 gạch đầu dòng</b>", "viết thành <b>một bài thơ 4 câu</b>", "giải thích <b>ngắn gọn dễ hiểu</b>".</p>
+      <div class="secTitle" data-icon="🧩">3. Cho ví dụ mẫu</div>
+      <p>Đưa cho AI một ví dụ để nó bắt chước: "Viết lời chúc kiểu như: <b>'Chúc bạn ngày mới rực rỡ như nắng!'</b> — cho 3 câu tương tự."</p>
+      <div class="secTitle" data-icon="🔁">4. Sửa dần qua trò chuyện</div>
+      <p>Chưa ưng? Đừng bỏ cuộc. Nói tiếp: "ngắn hơn nữa", "vui hơn chút", "thêm một ví dụ". AI sẽ <b>chỉnh lại</b> theo em.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>4 bí kíp: <b>giao vai, nói rõ khuôn dạng, cho ví dụ mẫu, sửa dần</b>.</li>
+        <li>Càng mô tả rõ, AI càng cho kết quả đúng ý.</li>
+        <li>Trò chuyện nhiều lượt để <b>chỉnh kết quả</b> tốt hơn.</li>
+      </ul>
+      <div class="tipBox"><b>Mẹo:</b> Prompt hay = <b>Vai + Việc + Bối cảnh + Khuôn dạng</b>. Càng rõ, AI càng "hiểu ý" em.</div>`},
+
+  {icon:"🚀", color:"#06B6D4", title:"Bài 9: AI và tương lai của em",
+    desc:"AI sẽ thay đổi việc học và làm ra sao — và em nên chuẩn bị gì.",
+    body:`
+      <p>AI đang thay đổi thế giới rất nhanh. Điều đó nghe hơi choáng, nhưng cũng là <b>cơ hội tuyệt vời</b> cho những bạn biết dùng nó.</p>
+      <div class="secTitle" data-icon="🔧">AI là công cụ, không phải phép màu</div>
+      <p>AI làm giúp em nhiều việc lặp đi lặp lại, để em có thời gian cho phần <b>thú vị và sáng tạo</b> hơn. Nhưng nó vẫn cần <b>người dẫn dắt</b> — chính là em.</p>
+      <div class="secTitle" data-icon="🌱">Kỹ năng đáng luyện</div>
+      <ul>
+        <li>🤔 <b>Tư duy phản biện:</b> biết đặt câu hỏi, không tin ngay mọi thứ.</li>
+        <li>🎨 <b>Sáng tạo:</b> nghĩ ra ý tưởng mới mà máy khó nghĩ ra.</li>
+        <li>💛 <b>Thấu cảm:</b> hiểu và quan tâm con người — điều AI không làm thay được.</li>
+        <li>🛠️ <b>Biết dùng công cụ:</b> trong đó có cả AI, một cách khéo léo.</li>
+      </ul>
+      <div class="secTitle" data-icon="🌟">Tin vui</div>
+      <p>Em không cần trở thành chuyên gia máy tính mới dùng được AI. Chỉ cần <b>tò mò, chịu thử</b> và dùng nó <b>tử tế</b>, em đã đi trước rất nhiều người rồi.</p>
+      <div class="secTitle" data-icon="📣">Hôm nay mình đã học được</div>
+      <ul>
+        <li>AI là <b>công cụ</b> giúp việc, vẫn cần con người dẫn dắt.</li>
+        <li>Kỹ năng đáng luyện: <b>phản biện, sáng tạo, thấu cảm, biết dùng công cụ</b>.</li>
+        <li>Chỉ cần <b>tò mò, chịu thử và tử tế</b> là em đã đi trước rồi.</li>
+      </ul>
+      <div class="tipBox"><b>Ghi nhớ:</b> Tương lai không thuộc về AI, mà thuộc về <b>những người biết hợp tác với AI</b>. Em hoàn toàn có thể là một trong số đó!</div>`},
 ];
 
 /* ------- NGÂN HÀNG CÂU HỎI (Kiểm tra) -------
@@ -94,18 +251,28 @@ const BANK = {
     {topic:"ungdung", q:"Việc nào dưới đây có dùng AI?", opts:["Mở khoá điện thoại bằng khuôn mặt","Bật công tắc đèn","Đóng cửa sổ","Rót nước"], a:0},
     {topic:"khainiem", q:"AI chạy trên thiết bị gì?", opts:["Máy tính / điện thoại","Cây bút chì","Quyển vở","Cục tẩy"], a:0},
     {topic:"hoatdong", q:"AI học chủ yếu từ đâu?", opts:["Dữ liệu (ví dụ)","Ánh trăng","Nước mưa","Gió"], a:0},
+    {topic:"ungdung", q:"Loa thông minh trong nhà dùng AI để làm gì?", opts:["Nghe và trả lời câu hỏi","Nấu cơm","Quét nhà","Tưới cây"], a:0},
+    {topic:"khainiem", q:"AI tạo sinh có thể làm gì?", opts:["Viết văn, vẽ tranh theo yêu cầu","Giặt quần áo","Rửa bát","Đá bóng"], a:0},
+    {topic:"antoan", q:"Với AI, em KHÔNG nên chia sẻ điều gì?", opts:["Mật khẩu, địa chỉ nhà","Một câu hỏi Toán","Tên loài hoa","Màu em thích"], a:0},
   ],
   2: [
     {topic:"hoatdong", q:"Muốn AI nhận ra con mèo, ta cần cho nó xem gì?", opts:["Nhiều ảnh mèo có gán nhãn","Một câu thơ","Một bản nhạc buồn","Một hộp bút màu"], a:0},
     {topic:"prompt", q:"\"Prompt\" nghĩa là gì?", opts:["Câu lệnh/yêu cầu ta gõ cho AI","Tên một loại máy in","Một môn thể thao","Một loại pin"], a:0},
     {topic:"antoan", q:"Khi AI trả lời, ta nên làm gì?", opts:["Kiểm tra lại thông tin quan trọng","Tin tuyệt đối 100%","Chép ngay không đọc","Tắt máy đi ngủ"], a:0},
     {topic:"ungdung", q:"Ứng dụng nào KHÔNG phải nhờ AI?", opts:["Dùng thước kẻ để đo","Gợi ý video","Dịch ngôn ngữ tự động","Lọc thư rác"], a:0},
+    {topic:"antoan", q:"Vì sao không nên tin AI 100%?", opts:["AI đôi khi bịa hoặc trả lời sai","AI luôn buồn ngủ","AI sợ ánh sáng","AI chỉ nói tiếng Anh"], a:0},
+    {topic:"prompt", q:"Cách nào giúp prompt cho kết quả tốt hơn?", opts:["Giao vai và nói rõ khuôn dạng","Viết thật ngắn kiểu 'làm đi'","Gõ toàn chữ in hoa","Không nói gì cả"], a:0},
+    {topic:"ungdung", q:"AI tạo sinh 'sáng tạo' bằng cách nào?", opts:["Đoán phần tiếp theo hợp lý nhất","Hỏi ý ông Bụt","Tra từ điển giấy","Bấm số ngẫu nhiên"], a:0},
   ],
   3: [
     {topic:"prompt", q:"Prompt nào rõ ràng và dễ cho kết quả tốt nhất?", opts:["Giải thích cho học sinh lớp 5 vì sao trời mưa, trong 3 câu","Nói gì đó","Kể chuyện","Viết đi"], a:0},
     {topic:"hoatdong", q:"Vì sao AI đôi khi trả lời sai?", opts:["Do dữ liệu học bị thiếu hoặc lệch","Do trời nóng","Do màn hình nhỏ","Do bàn phím cũ"], a:0},
     {topic:"antoan", q:"Đâu là cách dùng AI có trách nhiệm?", opts:["Không chia sẻ thông tin cá nhân nhạy cảm","Đưa hết mật khẩu cho AI","Tin mọi câu trả lời","Dùng AI để bắt nạt bạn"], a:0},
     {topic:"khainiem", q:"Câu nào ĐÚNG về AI hiện nay?", opts:["AI giỏi từng việc cụ thể, không 'biết tuốt' như người","AI có cảm xúc thật như con người","AI luôn đúng tuyệt đối","AI không cần dữ liệu"], a:0},
+    {topic:"antoan", q:"Khi AI đưa một con số quan trọng, em nên làm gì?", opts:["Kiểm chứng ở nguồn đáng tin","Tin ngay và dùng luôn","Xoá đi cho chắc","Kể cho cả lớp là đúng"], a:0},
+    {topic:"prompt", q:"'Giao vai cho AI' nghĩa là gì?", opts:["Nói AI đóng vai ai đó, ví dụ thầy giáo vui tính","Tặng quà cho AI","Đặt tên cho máy tính","Tắt máy rồi bật lại"], a:0},
+    {topic:"ungdung", q:"Kỹ năng nào con người giữ vững mà AI khó thay?", opts:["Sáng tạo và thấu cảm","Sạc pin nhanh","Lưu nhiều dữ liệu","Tính toán số lớn"], a:0},
+    {topic:"antoan", q:"Đâu là cách dùng AI trung thực khi làm bài?", opts:["Nói thật là mình có dùng AI hỗ trợ","Chép y nguyên rồi nhận là của mình","Giấu không cho ai biết","Xoá lịch sử trò chuyện"], a:0},
   ],
 };
 

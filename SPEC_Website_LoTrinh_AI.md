@@ -1,0 +1,8040 @@
+# SPEC: Website Lộ trình học AI cho trẻ em (AI-ready — dùng để generate source code)
+
+> **Cách dùng file này:** đưa toàn bộ file vào một AI coding tool (Claude Code, Cursor, Copilot, v0...) kèm câu lệnh kiểu:
+> *"Đọc spec dưới đây và generate toàn bộ source code cho website theo đúng yêu cầu."*
+> Toàn bộ dữ liệu giáo trình nằm ở khối JSON cuối file — AI chỉ cần render, **không được bịa thêm nội dung bài học**.
+
+---
+
+## 1. Mục tiêu sản phẩm
+
+Xây một **website tĩnh một trang (SPA) giới thiệu & tra cứu lộ trình học** "AI & Tư duy lập trình cho trẻ 6–15 tuổi":
+- Phụ huynh xem nhanh: chương trình gồm gì, bao lâu, con đạt được gì sau mỗi level.
+- Coach dùng làm **giáo án điện tử**: mỗi bài có kế hoạch 90 phút chi tiết (`plan90`) — mở lên là dạy được ngay.
+- Coach dùng phần **"Tổng kết cho bé"** cuối mỗi module để ôn lại kiến thức cho học viên.
+
+## 2. Yêu cầu kỹ thuật
+
+- **Stack mặc định:** 1 file `index.html` duy nhất (HTML + CSS + JS thuần, không build step), hoặc React + Tailwind nếu người dùng yêu cầu. Ưu tiên bản 1 file để mở là chạy.
+- Dữ liệu giáo trình **nhúng thẳng** từ khối JSON ở mục 6 vào code (const CURRICULUM = ...). Không fetch ngoài.
+- Responsive: đẹp trên cả điện thoại (phụ huynh chủ yếu xem bằng điện thoại).
+- Tiếng Việt toàn bộ, font dễ đọc (ví dụ: Be Vietnam Pro / Inter, fallback system-ui).
+- Không cần backend, không cần đăng nhập.
+
+## 3. Cấu trúc trang (theo thứ tự từ trên xuống)
+
+1. **Hero:** tên chương trình, tagline, 3 con số nổi bật (4 level • 192 buổi • ~25 tháng), nút CTA "Xem lộ trình".
+2. **Nhịp 1 buổi học 90 phút:** render `program.session_structure` thành dải timeline ngang 6 khối màu (Khởi động → Khám phá → Thực hành → Trò chơi → Thử thách → Tổng kết) kèm số phút — phụ huynh nhìn 1 lần hiểu ngay con học kiểu gì.
+3. **Nguyên tắc chương trình:** render danh sách `program.principles` thành các card ngắn.
+4. **Timeline 4 level:** thanh lộ trình ngang (dọc trên mobile), mỗi level 1 màu riêng, click cuộn tới level đó. Level 4 gắn nhãn "Tùy chọn".
+5. **Chi tiết từng level:** mỗi level là 1 section gồm:
+   - Header: tên, title, thời lượng, số buổi.
+   - Khối "🎯 Chuẩn qua level" (`graduation_criteria`) — nổi bật, nền nhạt.
+   - Danh sách module dạng **accordion** (mặc định đóng): tiêu đề = `MODULE {code} – {name} ({sessions} buổi)`.
+   - Mở accordion: danh sách bài học, mỗi bài là 1 dòng gọn (mã `1.1.1` + tên bài + nội dung 1 dòng + 🏆 thử thách). **Click vào bài mở modal/drawer "Giáo án 90 phút"** render bảng `plan90`: cột thời gian, giai đoạn, hoạt động — mỗi giai đoạn 1 màu theo dải timeline ở mục 2.
+   - Nếu module có `module_project`: card vàng nổi bật "★ PROJECT MODULE".
+   - **Cuối mỗi accordion: card "📣 Tổng kết cho bé"** render `teacher_recap` — nền xanh mint, mở đầu in đậm *"Hôm nay con đã học được..."*.
+6. **Chế độ "Dành cho Coach" (toggle):** bật lên hiện card Tổng kết + nút mở giáo án 90'; tắt đi (chế độ phụ huynh) chỉ hiện tên bài + thử thách cho gọn.
+7. **Bộ lọc/tìm kiếm:** ô search lọc realtime theo tên bài, nội dung hoặc trò chơi, highlight kết quả.
+8. **Footer:** ghi chú "Lên level bằng chuẩn đầu ra, không bằng số buổi".
+
+## 4. Phong cách thiết kế
+
+- Tươi sáng, thân thiện trẻ em nhưng không lòe loẹt — phụ huynh vẫn thấy chuyên nghiệp.
+- Bảng màu gợi ý: nền trắng/kem, Level 1 xanh dương, Level 2 xanh lá, Level 3 cam, Level 4 tím. Accent vàng cho PROJECT MODULE, xanh mint cho Tổng kết cho bé.
+- 6 giai đoạn của giáo án 90' dùng 6 màu pastel cố định xuyên suốt trang.
+- Bo góc lớn, đổ bóng nhẹ, khoảng trắng rộng. Emoji/icon vừa phải (🎯 🏆 ★ 📣 🎮 ⏱️).
+- Accordion và modal có animation mượt.
+
+## 5. Tiêu chí nghiệm thu
+
+- [ ] Mở `index.html` là chạy ngay, không lỗi console.
+- [ ] Đủ 192 bài học đúng như JSON, không thiếu, không bịa thêm.
+- [ ] Mỗi bài mở được giáo án 90 phút đầy đủ 6 khối từ `plan90`.
+- [ ] Dải timeline "nhịp buổi học 90 phút" hiển thị đúng 6 khối + số phút.
+- [ ] Mỗi PROJECT MODULE hiển thị dạng card nổi bật.
+- [ ] Mỗi module có card "📣 Tổng kết cho bé" đúng `teacher_recap`, ẩn/hiện theo toggle Coach.
+- [ ] Search hoạt động, responsive tốt ở 380px.
+
+## 6. DỮ LIỆU GIÁO TRÌNH (nguồn sự thật duy nhất — embed nguyên văn)
+
+```json
+{
+  "program": {
+    "name": "Lộ trình AI & Tư duy lập trình cho trẻ 6–15 tuổi",
+    "tagline": "Từ nền tảng số đến Capstone có người dùng thật",
+    "duration": "~25 tháng • 192 buổi • 2 buổi/tuần • mỗi buổi 90 phút",
+    "session_structure": "Mỗi buổi 90 phút theo nhịp học-xen-chơi: Khởi động (10') → Khám phá kiến thức (15') → Thực hành (25') → Trò chơi vận dụng (15') → Thử thách/Mini project (20') → Tổng kết & sao thưởng (5'). Trò chơi xoay vòng trong module để không lặp lại 2 buổi liền.",
+    "principles": [
+      "Lên level bằng chuẩn đầu ra, không bằng số buổi",
+      "Mỗi buổi 90 phút, học xen chơi: không khối nào quá 25 phút để bé không nhàm",
+      "Mỗi bài học kết thúc bằng 1 thử thách hoặc mini project",
+      "Mỗi module lớn kết thúc bằng 1 PROJECT MODULE",
+      "Cuối mỗi module, giáo viên đọc phần 'Tổng kết cho bé' để ôn lại kiến thức",
+      "Kỹ năng nền (gõ phím, kiểm chứng AI, standup dự án) luyện 10 phút đầu mỗi buổi",
+      "Phần công cụ AI cụ thể cập nhật 6 tháng/lần, không khóa cứng vào giáo trình"
+    ],
+    "levels": [
+      {
+        "id": "level_1",
+        "name": "Level 1",
+        "title": "NỀN TẢNG SỐ & TƯ DUY MÁY TÍNH",
+        "duration": "6 tháng",
+        "sessions": 48,
+        "optional": false,
+        "graduation_criteria": "Chuẩn qua level: gõ 15–25 WPM đúng kỹ thuật; viết prompt đủ 3 phần; vẽ flowchart + dry run đúng; giải thích được AI là gì; hoàn thành 1 dự án Scratch/quy trình có AI.",
+        "modules": [
+          {
+            "code": "1.1",
+            "name": "Làm quen máy tính & thế giới số",
+            "sessions": 4,
+            "warmup_ritual": "Trò 'Chỉ nhanh gọi đúng': coach hô tên bộ phận máy tính, bé chỉ nhanh vào vật thật; ai chỉ sai làm 3 động tác vui. Sau đó 3 phút 'khởi động ngón tay' trên bàn phím.",
+            "games_pool": [
+              "'Robot nghe lệnh': 1 bé làm robot, 1 bé ra lệnh thao tác máy (mở cửa sổ, thu nhỏ...) – robot chỉ làm đúng theo lời, lệnh mơ hồ robot đứng im",
+              "'Ai xếp nhanh hơn': thi kéo thả sắp xếp file vào đúng thư mục trong 2 phút, tính điểm theo số file đúng chỗ"
+            ],
+            "lessons": [
+              {
+                "code": "1.1.1",
+                "name": "Chào máy tính",
+                "duration_minutes": 90,
+                "content": "Nhận diện các bộ phận máy tính, bật/tắt đúng cách, chuột và bàn phím làm gì",
+                "challenge": "Thử thách: chỉ đúng và gọi tên 6 bộ phận trong 2 phút",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Trò 'Chỉ nhanh gọi đúng': coach hô tên bộ phận máy tính, bé chỉ nhanh vào vật thật; ai chỉ sai làm 3 động tác vui. Sau đó 3 phút 'khởi động ngón tay' trên bàn phím."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chào máy tính\": Nhận diện các bộ phận máy tính, bật/tắt đúng cách, chuột và bàn phím làm gì. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Robot nghe lệnh': 1 bé làm robot, 1 bé ra lệnh thao tác máy (mở cửa sổ, thu nhỏ...) – robot chỉ làm đúng theo lời, lệnh mơ hồ robot đứng im"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: chỉ đúng và gọi tên 6 bộ phận trong 2 phút"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.1.2",
+                "name": "Màn hình & cửa sổ",
+                "duration_minutes": 90,
+                "content": "Mở/đóng ứng dụng, phóng to thu nhỏ cửa sổ, kéo thả bằng chuột",
+                "challenge": "Thử thách: mở 3 ứng dụng, xếp 3 cửa sổ cạnh nhau",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Trò 'Chỉ nhanh gọi đúng': coach hô tên bộ phận máy tính, bé chỉ nhanh vào vật thật; ai chỉ sai làm 3 động tác vui. Sau đó 3 phút 'khởi động ngón tay' trên bàn phím."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Màn hình & cửa sổ\": Mở/đóng ứng dụng, phóng to thu nhỏ cửa sổ, kéo thả bằng chuột. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ai xếp nhanh hơn': thi kéo thả sắp xếp file vào đúng thư mục trong 2 phút, tính điểm theo số file đúng chỗ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: mở 3 ứng dụng, xếp 3 cửa sổ cạnh nhau"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.1.3",
+                "name": "Tệp & thư mục của em",
+                "duration_minutes": 90,
+                "content": "Tạo thư mục cá nhân, lưu file, đặt tên file có ý nghĩa",
+                "challenge": "Mini project: tạo cây thư mục 'Góc học tập' có 3 ngăn",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Trò 'Chỉ nhanh gọi đúng': coach hô tên bộ phận máy tính, bé chỉ nhanh vào vật thật; ai chỉ sai làm 3 động tác vui. Sau đó 3 phút 'khởi động ngón tay' trên bàn phím."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tệp & thư mục của em\": Tạo thư mục cá nhân, lưu file, đặt tên file có ý nghĩa. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Robot nghe lệnh': 1 bé làm robot, 1 bé ra lệnh thao tác máy (mở cửa sổ, thu nhỏ...) – robot chỉ làm đúng theo lời, lệnh mơ hồ robot đứng im"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: tạo cây thư mục 'Góc học tập' có 3 ngăn"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.1.4",
+                "name": "An toàn khi dùng máy",
+                "duration_minutes": 90,
+                "content": "Tư thế ngồi, thời gian nghỉ mắt, không bấm link lạ",
+                "challenge": "Thử thách: đóng vai phát hiện 3 tình huống nguy hiểm trên màn hình",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Trò 'Chỉ nhanh gọi đúng': coach hô tên bộ phận máy tính, bé chỉ nhanh vào vật thật; ai chỉ sai làm 3 động tác vui. Sau đó 3 phút 'khởi động ngón tay' trên bàn phím."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"An toàn khi dùng máy\": Tư thế ngồi, thời gian nghỉ mắt, không bấm link lạ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ai xếp nhanh hơn': thi kéo thả sắp xếp file vào đúng thư mục trong 2 phút, tính điểm theo số file đúng chỗ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: đóng vai phát hiện 3 tình huống nguy hiểm trên màn hình"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: máy tính có những bộ phận nào và tên gọi của chúng; cách mở – đóng – sắp xếp cửa sổ bằng chuột; cách tạo thư mục và lưu bài của mình vào đúng chỗ; và 3 điều giữ an toàn khi dùng máy: ngồi đúng tư thế, nghỉ mắt đều đặn, không bấm vào đường link lạ."
+          },
+          {
+            "code": "1.2",
+            "name": "Gõ phím 10 ngón",
+            "sessions": 8,
+            "warmup_ritual": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân.",
+            "games_pool": [
+              "'Đua thuyền gõ phím' (typing race online): cả lớp cùng đường đua, gõ đúng thuyền chạy nhanh",
+              "'Ninja bàn phím': coach che một phím bí mật, đọc từ có chứa phím đó, bé gõ không nhìn – đoán xem phím bí mật là gì",
+              "'Tiếp sức gõ chữ': đội 3 bé thay nhau gõ từng câu của một đoạn văn, đội xong trước và ít lỗi hơn thắng"
+            ],
+            "lessons": [
+              {
+                "code": "1.2.1",
+                "name": "Tư thế & hàng phím cơ sở",
+                "duration_minutes": 90,
+                "content": "Vị trí tay chuẩn ASDF–JKL;, tư thế lưng và cổ tay",
+                "challenge": "Thử thách: gõ hàng cơ sở 5 phút không nhìn phím",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tư thế & hàng phím cơ sở\": Vị trí tay chuẩn ASDF–JKL;, tư thế lưng và cổ tay. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đua thuyền gõ phím' (typing race online): cả lớp cùng đường đua, gõ đúng thuyền chạy nhanh"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: gõ hàng cơ sở 5 phút không nhìn phím"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.2.2",
+                "name": "Hàng phím trên",
+                "duration_minutes": 90,
+                "content": "Thêm QWERTY–UIOP, phối hợp hai hàng",
+                "challenge": "Thử thách: gõ 10 từ chỉ dùng 2 hàng, đúng ≥80%",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Hàng phím trên\": Thêm QWERTY–UIOP, phối hợp hai hàng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ninja bàn phím': coach che một phím bí mật, đọc từ có chứa phím đó, bé gõ không nhìn – đoán xem phím bí mật là gì"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: gõ 10 từ chỉ dùng 2 hàng, đúng ≥80%"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.2.3",
+                "name": "Hàng phím dưới & phím cách",
+                "duration_minutes": 90,
+                "content": "Hoàn thiện cả 3 hàng chữ cái",
+                "challenge": "Thử thách: bài gõ 3 hàng đạt tốc độ cá nhân mới",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Hàng phím dưới & phím cách\": Hoàn thiện cả 3 hàng chữ cái. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tiếp sức gõ chữ': đội 3 bé thay nhau gõ từng câu của một đoạn văn, đội xong trước và ít lỗi hơn thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: bài gõ 3 hàng đạt tốc độ cá nhân mới"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.2.4",
+                "name": "Chữ hoa & dấu câu",
+                "duration_minutes": 90,
+                "content": "Shift, chấm, phẩy, chấm hỏi; viết câu hoàn chỉnh",
+                "challenge": "Mini project: gõ 5 câu tự giới thiệu bản thân",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chữ hoa & dấu câu\": Shift, chấm, phẩy, chấm hỏi; viết câu hoàn chỉnh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đua thuyền gõ phím' (typing race online): cả lớp cùng đường đua, gõ đúng thuyền chạy nhanh"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: gõ 5 câu tự giới thiệu bản thân"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.2.5",
+                "name": "Gõ tiếng Việt",
+                "duration_minutes": 90,
+                "content": "Bộ gõ Telex/VNI, dấu thanh, sửa lỗi dấu",
+                "challenge": "Thử thách: gõ 1 đoạn 30 từ tiếng Việt có đủ dấu",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Gõ tiếng Việt\": Bộ gõ Telex/VNI, dấu thanh, sửa lỗi dấu. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ninja bàn phím': coach che một phím bí mật, đọc từ có chứa phím đó, bé gõ không nhìn – đoán xem phím bí mật là gì"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: gõ 1 đoạn 30 từ tiếng Việt có đủ dấu"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.2.6",
+                "name": "Số & ký tự đặc biệt",
+                "duration_minutes": 90,
+                "content": "Hàng phím số, @ # ? !, dùng trong mật khẩu và email",
+                "challenge": "Thử thách: gõ 5 'mật khẩu mạnh' mẫu không nhìn phím",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Số & ký tự đặc biệt\": Hàng phím số, @ # ? !, dùng trong mật khẩu và email. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tiếp sức gõ chữ': đội 3 bé thay nhau gõ từng câu của một đoạn văn, đội xong trước và ít lỗi hơn thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: gõ 5 'mật khẩu mạnh' mẫu không nhìn phím"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.2.7",
+                "name": "Luyện tốc độ",
+                "duration_minutes": 90,
+                "content": "Trò chơi gõ phím, đo WPM, theo dõi tiến bộ",
+                "challenge": "Thử thách: vượt kỷ lục WPM của chính mình",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Luyện tốc độ\": Trò chơi gõ phím, đo WPM, theo dõi tiến bộ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đua thuyền gõ phím' (typing race online): cả lớp cùng đường đua, gõ đúng thuyền chạy nhanh"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: vượt kỷ lục WPM của chính mình"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.2.8",
+                "name": "Kiểm tra gõ phím",
+                "duration_minutes": 90,
+                "content": "Bài test tổng hợp: tốc độ + độ chính xác",
+                "challenge": "Mini project: Typing Portfolio – bảng tiến bộ 8 buổi của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức gõ phím 10 phút: 3' làm nóng ngón tay theo nhạc, 5' bài gõ theo trình độ trên typing site, 2' ghi WPM vào bảng theo dõi cá nhân."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kiểm tra gõ phím\": Bài test tổng hợp: tốc độ + độ chính xác. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ninja bàn phím': coach che một phím bí mật, đọc từ có chứa phím đó, bé gõ không nhìn – đoán xem phím bí mật là gì"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: Typing Portfolio – bảng tiến bộ 8 buổi của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 1.2: Cuộc thi gõ phím lớp – mỗi bé nộp Typing Portfolio và thi gõ đoạn văn 3 phút (6–9 tuổi: 15 WPM, 9–15 tuổi: 25 WPM)",
+            "teacher_recap": "Qua module này, con đã học được: đặt tay đúng vị trí ASDF–JKL; và gõ bằng cả 10 ngón không nhìn phím; gõ được chữ hoa, dấu câu và tiếng Việt có dấu; biết gõ số và ký tự đặc biệt để tạo mật khẩu mạnh; và quan trọng nhất – con thấy mình gõ nhanh hơn chính mình tuần trước qua bảng Typing Portfolio."
+          },
+          {
+            "code": "1.3",
+            "name": "Gặp gỡ AI",
+            "sessions": 6,
+            "warmup_ritual": "5' luyện gõ duy trì (bài ngắn). Sau đó trò 'AI hay không phải AI?': coach chiếu 6 tình huống (máy giặt hẹn giờ, gợi ý video, máy tính bỏ túi...), bé giơ thẻ Đúng/Sai.",
+            "games_pool": [
+              "'Người máy trả lời': 1 bé đóng vai AI chỉ được trả lời dựa trên 'dữ liệu' là 5 tấm thẻ được phát – lớp hỏi và phát hiện khi nào 'AI' phải bịa vì thiếu dữ liệu",
+              "'20 câu hỏi với AI': lớp cùng nghĩ 1 đồ vật, thi xem AI thật đoán ra sau bao nhiêu câu hỏi có/không so với coach"
+            ],
+            "lessons": [
+              {
+                "code": "1.3.1",
+                "name": "AI là gì?",
+                "duration_minutes": 90,
+                "content": "AI quanh em: trợ lý ảo, gợi ý video, máy dịch; AI khác người thế nào",
+                "challenge": "Thử thách: kể 5 chỗ em từng 'gặp' AI trong đời thật",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì (bài ngắn). Sau đó trò 'AI hay không phải AI?': coach chiếu 6 tình huống (máy giặt hẹn giờ, gợi ý video, máy tính bỏ túi...), bé giơ thẻ Đúng/Sai."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"AI là gì?\": AI quanh em: trợ lý ảo, gợi ý video, máy dịch; AI khác người thế nào. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Người máy trả lời': 1 bé đóng vai AI chỉ được trả lời dựa trên 'dữ liệu' là 5 tấm thẻ được phát – lớp hỏi và phát hiện khi nào 'AI' phải bịa vì thiếu dữ liệu"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: kể 5 chỗ em từng 'gặp' AI trong đời thật"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.3.2",
+                "name": "Trò chuyện đầu tiên với AI",
+                "duration_minutes": 90,
+                "content": "Đặt câu hỏi cho chatbot, quan sát cách AI trả lời",
+                "challenge": "Mini project: phỏng vấn AI 5 câu về chủ đề em thích, lưu lại",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì (bài ngắn). Sau đó trò 'AI hay không phải AI?': coach chiếu 6 tình huống (máy giặt hẹn giờ, gợi ý video, máy tính bỏ túi...), bé giơ thẻ Đúng/Sai."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Trò chuyện đầu tiên với AI\": Đặt câu hỏi cho chatbot, quan sát cách AI trả lời. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'20 câu hỏi với AI': lớp cùng nghĩ 1 đồ vật, thi xem AI thật đoán ra sau bao nhiêu câu hỏi có/không so với coach"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: phỏng vấn AI 5 câu về chủ đề em thích, lưu lại"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.3.3",
+                "name": "AI khác Google chỗ nào",
+                "duration_minutes": 90,
+                "content": "Tìm kiếm trả về trang web, AI tạo ra câu trả lời mới",
+                "challenge": "Thử thách: cùng 1 câu hỏi, so sánh kết quả Google và AI",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì (bài ngắn). Sau đó trò 'AI hay không phải AI?': coach chiếu 6 tình huống (máy giặt hẹn giờ, gợi ý video, máy tính bỏ túi...), bé giơ thẻ Đúng/Sai."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"AI khác Google chỗ nào\": Tìm kiếm trả về trang web, AI tạo ra câu trả lời mới. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Người máy trả lời': 1 bé đóng vai AI chỉ được trả lời dựa trên 'dữ liệu' là 5 tấm thẻ được phát – lớp hỏi và phát hiện khi nào 'AI' phải bịa vì thiếu dữ liệu"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cùng 1 câu hỏi, so sánh kết quả Google và AI"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.3.4",
+                "name": "AI cũng sai",
+                "duration_minutes": 90,
+                "content": "Thấy tận mắt AI trả lời sai một câu đơn giản",
+                "challenge": "Thử thách: 'bắt lỗi' AI – tìm 1 câu AI trả lời chưa đúng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì (bài ngắn). Sau đó trò 'AI hay không phải AI?': coach chiếu 6 tình huống (máy giặt hẹn giờ, gợi ý video, máy tính bỏ túi...), bé giơ thẻ Đúng/Sai."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"AI cũng sai\": Thấy tận mắt AI trả lời sai một câu đơn giản. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'20 câu hỏi với AI': lớp cùng nghĩ 1 đồ vật, thi xem AI thật đoán ra sau bao nhiêu câu hỏi có/không so với coach"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: 'bắt lỗi' AI – tìm 1 câu AI trả lời chưa đúng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.3.5",
+                "name": "Hỏi AI cho khéo",
+                "duration_minutes": 90,
+                "content": "Câu hỏi rõ ràng cho kết quả tốt hơn câu hỏi mơ hồ",
+                "challenge": "Thử thách: viết lại 3 câu hỏi mơ hồ thành câu rõ ràng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì (bài ngắn). Sau đó trò 'AI hay không phải AI?': coach chiếu 6 tình huống (máy giặt hẹn giờ, gợi ý video, máy tính bỏ túi...), bé giơ thẻ Đúng/Sai."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Hỏi AI cho khéo\": Câu hỏi rõ ràng cho kết quả tốt hơn câu hỏi mơ hồ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Người máy trả lời': 1 bé đóng vai AI chỉ được trả lời dựa trên 'dữ liệu' là 5 tấm thẻ được phát – lớp hỏi và phát hiện khi nào 'AI' phải bịa vì thiếu dữ liệu"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: viết lại 3 câu hỏi mơ hồ thành câu rõ ràng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.3.6",
+                "name": "Giao tiếp lịch sự & an toàn",
+                "duration_minutes": 90,
+                "content": "Không chia sẻ thông tin cá nhân, yêu cầu lịch sự",
+                "challenge": "Mini project: bộ '5 luật vàng khi nói chuyện với AI' của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì (bài ngắn). Sau đó trò 'AI hay không phải AI?': coach chiếu 6 tình huống (máy giặt hẹn giờ, gợi ý video, máy tính bỏ túi...), bé giơ thẻ Đúng/Sai."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Giao tiếp lịch sự & an toàn\": Không chia sẻ thông tin cá nhân, yêu cầu lịch sự. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'20 câu hỏi với AI': lớp cùng nghĩ 1 đồ vật, thi xem AI thật đoán ra sau bao nhiêu câu hỏi có/không so với coach"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: bộ '5 luật vàng khi nói chuyện với AI' của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 1.3: 'Cuốn sổ AI đầu tiên' – mỗi bé nộp 5 cuộc hội thoại hay nhất với AI kèm nhận xét đúng/sai",
+            "teacher_recap": "Qua module này, con đã học được: AI ở quanh con mỗi ngày (trợ lý ảo, gợi ý video, máy dịch); AI khác Google – Google tìm trang có sẵn còn AI tự tạo câu trả lời; AI cũng có lúc sai nên không tin ngay 100%; hỏi rõ ràng thì AI trả lời tốt hơn; và 5 luật vàng: lịch sự, rõ ràng, không kể thông tin cá nhân."
+          },
+          {
+            "code": "1.4",
+            "name": "Prompt cơ bản",
+            "sessions": 6,
+            "warmup_ritual": "5' luyện gõ duy trì. Trò 'Tam sao thất bản prompt': coach thì thầm 1 yêu cầu cho bé đầu hàng, truyền tai đến bé cuối – so yêu cầu ban đầu và cuối cùng để thấy 'mô tả rõ ràng' quan trọng thế nào.",
+            "games_pool": [
+              "'Prompt vàng': cả lớp cùng 1 đề (ví dụ: nhờ AI tả con mèo buồn cười), mỗi bé 1 prompt, chiếu kết quả lên – lớp vote kết quả hay nhất và mổ xẻ prompt thắng cuộc",
+              "'Sửa prompt cứu thế giới': coach đưa prompt tệ, các đội có 3 phút sửa, đội nào khiến AI trả lời tốt nhất thắng"
+            ],
+            "lessons": [
+              {
+                "code": "1.4.1",
+                "name": "Công thức prompt 3 phần",
+                "duration_minutes": 90,
+                "content": "Bối cảnh – Yêu cầu – Định dạng mong muốn",
+                "challenge": "Thử thách: viết 3 prompt đủ 3 phần cho 3 việc khác nhau",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Tam sao thất bản prompt': coach thì thầm 1 yêu cầu cho bé đầu hàng, truyền tai đến bé cuối – so yêu cầu ban đầu và cuối cùng để thấy 'mô tả rõ ràng' quan trọng thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Công thức prompt 3 phần\": Bối cảnh – Yêu cầu – Định dạng mong muốn. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Prompt vàng': cả lớp cùng 1 đề (ví dụ: nhờ AI tả con mèo buồn cười), mỗi bé 1 prompt, chiếu kết quả lên – lớp vote kết quả hay nhất và mổ xẻ prompt thắng cuộc"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: viết 3 prompt đủ 3 phần cho 3 việc khác nhau"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.4.2",
+                "name": "Cho AI đóng vai",
+                "duration_minutes": 90,
+                "content": "'Hãy đóng vai thầy giáo/đầu bếp...' thay đổi câu trả lời ra sao",
+                "challenge": "Thử thách: cùng 1 câu hỏi, thử 3 vai khác nhau, so sánh",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Tam sao thất bản prompt': coach thì thầm 1 yêu cầu cho bé đầu hàng, truyền tai đến bé cuối – so yêu cầu ban đầu và cuối cùng để thấy 'mô tả rõ ràng' quan trọng thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Cho AI đóng vai\": 'Hãy đóng vai thầy giáo/đầu bếp...' thay đổi câu trả lời ra sao. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Sửa prompt cứu thế giới': coach đưa prompt tệ, các đội có 3 phút sửa, đội nào khiến AI trả lời tốt nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cùng 1 câu hỏi, thử 3 vai khác nhau, so sánh"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.4.3",
+                "name": "Yêu cầu định dạng",
+                "duration_minutes": 90,
+                "content": "Xin bảng, danh sách, đoạn văn ngắn; giới hạn độ dài",
+                "challenge": "Mini project: bảng thời khóa biểu do AI tạo theo prompt của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Tam sao thất bản prompt': coach thì thầm 1 yêu cầu cho bé đầu hàng, truyền tai đến bé cuối – so yêu cầu ban đầu và cuối cùng để thấy 'mô tả rõ ràng' quan trọng thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Yêu cầu định dạng\": Xin bảng, danh sách, đoạn văn ngắn; giới hạn độ dài. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Prompt vàng': cả lớp cùng 1 đề (ví dụ: nhờ AI tả con mèo buồn cười), mỗi bé 1 prompt, chiếu kết quả lên – lớp vote kết quả hay nhất và mổ xẻ prompt thắng cuộc"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: bảng thời khóa biểu do AI tạo theo prompt của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.4.4",
+                "name": "Hỏi tiếp & sửa yêu cầu",
+                "duration_minutes": 90,
+                "content": "Follow-up: 'ngắn hơn', 'dễ hiểu hơn', 'thêm ví dụ'",
+                "challenge": "Thử thách: cải thiện 1 câu trả lời của AI qua 3 lần hỏi tiếp",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Tam sao thất bản prompt': coach thì thầm 1 yêu cầu cho bé đầu hàng, truyền tai đến bé cuối – so yêu cầu ban đầu và cuối cùng để thấy 'mô tả rõ ràng' quan trọng thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Hỏi tiếp & sửa yêu cầu\": Follow-up: 'ngắn hơn', 'dễ hiểu hơn', 'thêm ví dụ'. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Sửa prompt cứu thế giới': coach đưa prompt tệ, các đội có 3 phút sửa, đội nào khiến AI trả lời tốt nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cải thiện 1 câu trả lời của AI qua 3 lần hỏi tiếp"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.4.5",
+                "name": "Prompt cho việc học",
+                "duration_minutes": 90,
+                "content": "Dùng AI giải thích bài khó, tạo câu đố ôn tập",
+                "challenge": "Mini project: nhờ AI tạo bộ 10 câu đố ôn môn em yếu nhất",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Tam sao thất bản prompt': coach thì thầm 1 yêu cầu cho bé đầu hàng, truyền tai đến bé cuối – so yêu cầu ban đầu và cuối cùng để thấy 'mô tả rõ ràng' quan trọng thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Prompt cho việc học\": Dùng AI giải thích bài khó, tạo câu đố ôn tập. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Prompt vàng': cả lớp cùng 1 đề (ví dụ: nhờ AI tả con mèo buồn cười), mỗi bé 1 prompt, chiếu kết quả lên – lớp vote kết quả hay nhất và mổ xẻ prompt thắng cuộc"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: nhờ AI tạo bộ 10 câu đố ôn môn em yếu nhất"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.4.6",
+                "name": "Prompt sáng tạo",
+                "duration_minutes": 90,
+                "content": "Viết truyện, đặt tên, lên ý tưởng cùng AI",
+                "challenge": "Mini project: truyện ngắn 200 từ em + AI đồng sáng tác",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Tam sao thất bản prompt': coach thì thầm 1 yêu cầu cho bé đầu hàng, truyền tai đến bé cuối – so yêu cầu ban đầu và cuối cùng để thấy 'mô tả rõ ràng' quan trọng thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Prompt sáng tạo\": Viết truyện, đặt tên, lên ý tưởng cùng AI. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Sửa prompt cứu thế giới': coach đưa prompt tệ, các đội có 3 phút sửa, đội nào khiến AI trả lời tốt nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: truyện ngắn 200 từ em + AI đồng sáng tác"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 1.4: 'Prompt Book' – sổ tay 10 prompt tốt nhất của em, mỗi prompt kèm kết quả và giải thích vì sao hiệu quả",
+            "teacher_recap": "Qua module này, con đã học được: công thức prompt 3 phần – bối cảnh, yêu cầu, định dạng; cho AI đóng vai để có câu trả lời hợp ý hơn; biết hỏi tiếp 'ngắn hơn, dễ hiểu hơn' để cải thiện kết quả; dùng AI giúp việc học và sáng tạo; và con đã có cuốn Prompt Book đầu tiên của riêng mình."
+          },
+          {
+            "code": "1.5",
+            "name": "Tư duy phân rã vấn đề",
+            "sessions": 6,
+            "warmup_ritual": "5' luyện gõ duy trì. Trò 'Nói ngắn lại': coach kể 1 chuyện dài 1 phút, bé thi tóm tắt còn đúng 1 câu mà không mất ý chính.",
+            "games_pool": [
+              "'Xếp hàng người thật': mỗi bé cầm 1 thẻ ghi 1 bước của quy trình (đánh răng, pha sữa...), cả đội tự xếp thành hàng đúng thứ tự trong 60 giây",
+              "'Thám tử quy luật': coach vẽ dãy hình/số lên bảng, đội nào hô đúng quy luật và phần tử tiếp theo trước thì ghi điểm"
+            ],
+            "lessons": [
+              {
+                "code": "1.5.1",
+                "name": "Chia nhỏ việc lớn",
+                "duration_minutes": 90,
+                "content": "Việc lớn = nhiều việc nhỏ; ví dụ dọn phòng, làm bánh",
+                "challenge": "Thử thách: chia 'tổ chức sinh nhật' thành ≥8 bước nhỏ",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nói ngắn lại': coach kể 1 chuyện dài 1 phút, bé thi tóm tắt còn đúng 1 câu mà không mất ý chính."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chia nhỏ việc lớn\": Việc lớn = nhiều việc nhỏ; ví dụ dọn phòng, làm bánh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xếp hàng người thật': mỗi bé cầm 1 thẻ ghi 1 bước của quy trình (đánh răng, pha sữa...), cả đội tự xếp thành hàng đúng thứ tự trong 60 giây"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: chia 'tổ chức sinh nhật' thành ≥8 bước nhỏ"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.5.2",
+                "name": "Thứ tự các bước",
+                "duration_minutes": 90,
+                "content": "Bước nào trước bước nào sau; phát hiện thứ tự sai",
+                "challenge": "Thử thách: sắp xếp lại 10 bước bị xáo trộn của 1 công thức",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nói ngắn lại': coach kể 1 chuyện dài 1 phút, bé thi tóm tắt còn đúng 1 câu mà không mất ý chính."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thứ tự các bước\": Bước nào trước bước nào sau; phát hiện thứ tự sai. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thám tử quy luật': coach vẽ dãy hình/số lên bảng, đội nào hô đúng quy luật và phần tử tiếp theo trước thì ghi điểm"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: sắp xếp lại 10 bước bị xáo trộn của 1 công thức"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.5.3",
+                "name": "Tìm quy luật (pattern)",
+                "duration_minutes": 90,
+                "content": "Nhận ra điểm lặp lại trong dãy hình, dãy số, việc hằng ngày",
+                "challenge": "Thử thách: giải 5 câu đố tìm quy luật tăng dần độ khó",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nói ngắn lại': coach kể 1 chuyện dài 1 phút, bé thi tóm tắt còn đúng 1 câu mà không mất ý chính."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tìm quy luật (pattern)\": Nhận ra điểm lặp lại trong dãy hình, dãy số, việc hằng ngày. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xếp hàng người thật': mỗi bé cầm 1 thẻ ghi 1 bước của quy trình (đánh răng, pha sữa...), cả đội tự xếp thành hàng đúng thứ tự trong 60 giây"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: giải 5 câu đố tìm quy luật tăng dần độ khó"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.5.4",
+                "name": "Bỏ chi tiết thừa",
+                "duration_minutes": 90,
+                "content": "Trừu tượng hóa: giữ thông tin quan trọng, bỏ phần nhiễu",
+                "challenge": "Thử thách: tóm tắt 1 câu chuyện thành đúng 3 câu",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nói ngắn lại': coach kể 1 chuyện dài 1 phút, bé thi tóm tắt còn đúng 1 câu mà không mất ý chính."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Bỏ chi tiết thừa\": Trừu tượng hóa: giữ thông tin quan trọng, bỏ phần nhiễu. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thám tử quy luật': coach vẽ dãy hình/số lên bảng, đội nào hô đúng quy luật và phần tử tiếp theo trước thì ghi điểm"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: tóm tắt 1 câu chuyện thành đúng 3 câu"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.5.5",
+                "name": "Giải quyết vấn đề thật",
+                "duration_minutes": 90,
+                "content": "Áp dụng 4 kỹ năng vào 1 vấn đề đời thường của lớp",
+                "challenge": "Mini project: kế hoạch giải quyết 1 vấn đề em chọn",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nói ngắn lại': coach kể 1 chuyện dài 1 phút, bé thi tóm tắt còn đúng 1 câu mà không mất ý chính."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Giải quyết vấn đề thật\": Áp dụng 4 kỹ năng vào 1 vấn đề đời thường của lớp. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xếp hàng người thật': mỗi bé cầm 1 thẻ ghi 1 bước của quy trình (đánh răng, pha sữa...), cả đội tự xếp thành hàng đúng thứ tự trong 60 giây"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: kế hoạch giải quyết 1 vấn đề em chọn"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.5.6",
+                "name": "Trình bày cách giải",
+                "duration_minutes": 90,
+                "content": "Nói lại cách mình giải cho bạn khác hiểu và làm theo được",
+                "challenge": "Thử thách: bạn cùng lớp làm theo hướng dẫn của em thành công",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nói ngắn lại': coach kể 1 chuyện dài 1 phút, bé thi tóm tắt còn đúng 1 câu mà không mất ý chính."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Trình bày cách giải\": Nói lại cách mình giải cho bạn khác hiểu và làm theo được. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thám tử quy luật': coach vẽ dãy hình/số lên bảng, đội nào hô đúng quy luật và phần tử tiếp theo trước thì ghi điểm"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: bạn cùng lớp làm theo hướng dẫn của em thành công"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 1.5: 'Bản thiết kế người giải quyết vấn đề' – mỗi bé phân rã hoàn chỉnh 1 vấn đề thật ở nhà/lớp thành sơ đồ các bước",
+            "teacher_recap": "Qua module này, con đã học được: việc lớn nào cũng chia được thành nhiều việc nhỏ; các bước phải đúng thứ tự; biết tìm quy luật lặp lại và bỏ chi tiết thừa; và con đã tự giải một vấn đề thật rồi hướng dẫn lại cho bạn làm theo được – đó chính là tư duy của một người giải quyết vấn đề."
+          },
+          {
+            "code": "1.6",
+            "name": "Thuật toán & flowchart",
+            "sessions": 8,
+            "warmup_ritual": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác.",
+            "games_pool": [
+              "'Mê cung flowchart': vẽ mê cung trên sàn bằng băng dính, bé viết 'thuật toán' (tiến 2, rẽ trái...) rồi bạn khác nhắm mắt đi theo – va tường là quay về sửa thuật toán",
+              "'Dry run tốc độ': chia đội, coach chiếu flowchart + input, đội nào tính đúng output nhanh nhất ghi điểm, sai bị trừ để tránh đoán bừa"
+            ],
+            "lessons": [
+              {
+                "code": "1.6.1",
+                "name": "Thuật toán là gì",
+                "duration_minutes": 90,
+                "content": "Chuỗi bước rõ ràng máy làm theo được; ví dụ đời thường",
+                "challenge": "Thử thách: viết 'thuật toán đánh răng' mà robot hiểu được",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thuật toán là gì\": Chuỗi bước rõ ràng máy làm theo được; ví dụ đời thường. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Mê cung flowchart': vẽ mê cung trên sàn bằng băng dính, bé viết 'thuật toán' (tiến 2, rẽ trái...) rồi bạn khác nhắm mắt đi theo – va tường là quay về sửa thuật toán"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: viết 'thuật toán đánh răng' mà robot hiểu được"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.6.2",
+                "name": "Ký hiệu flowchart",
+                "duration_minutes": 90,
+                "content": "Hình oval, chữ nhật, thoi; vẽ flowchart đầu tiên",
+                "challenge": "Thử thách: vẽ flowchart 'chuẩn bị đi học' đúng ký hiệu",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Ký hiệu flowchart\": Hình oval, chữ nhật, thoi; vẽ flowchart đầu tiên. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Dry run tốc độ': chia đội, coach chiếu flowchart + input, đội nào tính đúng output nhanh nhất ghi điểm, sai bị trừ để tránh đoán bừa"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: vẽ flowchart 'chuẩn bị đi học' đúng ký hiệu"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.6.3",
+                "name": "Input & Output",
+                "duration_minutes": 90,
+                "content": "Cái gì đưa vào, cái gì nhận ra; xác định I/O của bài toán",
+                "challenge": "Thử thách: xác định input/output của 5 tình huống",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Input & Output\": Cái gì đưa vào, cái gì nhận ra; xác định I/O của bài toán. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Mê cung flowchart': vẽ mê cung trên sàn bằng băng dính, bé viết 'thuật toán' (tiến 2, rẽ trái...) rồi bạn khác nhắm mắt đi theo – va tường là quay về sửa thuật toán"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: xác định input/output của 5 tình huống"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.6.4",
+                "name": "Dry run – chạy tay",
+                "duration_minutes": 90,
+                "content": "Lần theo flowchart từng bước với dữ liệu cụ thể",
+                "challenge": "Thử thách: dự đoán đúng kết quả 3 flowchart trước khi chạy",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dry run – chạy tay\": Lần theo flowchart từng bước với dữ liệu cụ thể. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Dry run tốc độ': chia đội, coach chiếu flowchart + input, đội nào tính đúng output nhanh nhất ghi điểm, sai bị trừ để tránh đoán bừa"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: dự đoán đúng kết quả 3 flowchart trước khi chạy"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.6.5",
+                "name": "Pseudo-code em bé",
+                "duration_minutes": 90,
+                "content": "Viết các bước bằng tiếng Việt có cấu trúc",
+                "challenge": "Thử thách: chuyển 1 flowchart thành pseudo-code và ngược lại",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Pseudo-code em bé\": Viết các bước bằng tiếng Việt có cấu trúc. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Mê cung flowchart': vẽ mê cung trên sàn bằng băng dính, bé viết 'thuật toán' (tiến 2, rẽ trái...) rồi bạn khác nhắm mắt đi theo – va tường là quay về sửa thuật toán"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: chuyển 1 flowchart thành pseudo-code và ngược lại"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.6.6",
+                "name": "Tìm lỗi trong thuật toán",
+                "duration_minutes": 90,
+                "content": "Flowchart có bước sai/thiếu – phát hiện và sửa",
+                "challenge": "Thử thách: sửa đúng 3 flowchart bị 'gài' lỗi",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tìm lỗi trong thuật toán\": Flowchart có bước sai/thiếu – phát hiện và sửa. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Dry run tốc độ': chia đội, coach chiếu flowchart + input, đội nào tính đúng output nhanh nhất ghi điểm, sai bị trừ để tránh đoán bừa"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: sửa đúng 3 flowchart bị 'gài' lỗi"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.6.7",
+                "name": "Thuật toán + AI",
+                "duration_minutes": 90,
+                "content": "Nhờ AI góp ý flowchart của mình, đánh giá góp ý đúng/sai",
+                "challenge": "Thử thách: cải thiện flowchart sau khi lọc góp ý của AI",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thuật toán + AI\": Nhờ AI góp ý flowchart của mình, đánh giá góp ý đúng/sai. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Mê cung flowchart': vẽ mê cung trên sàn bằng băng dính, bé viết 'thuật toán' (tiến 2, rẽ trái...) rồi bạn khác nhắm mắt đi theo – va tường là quay về sửa thuật toán"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cải thiện flowchart sau khi lọc góp ý của AI"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.6.8",
+                "name": "Ôn tập thuật toán",
+                "duration_minutes": 90,
+                "content": "Tổng hợp: từ đề bài → phân rã → flowchart → dry run",
+                "challenge": "Mini project: bộ 3 flowchart hoàn chỉnh cho 3 bài toán",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Người máy ăn sáng': coach làm robot thực hiện đúng nguyên văn hướng dẫn của bé (quên nói 'bóc vỏ' là robot cắn cả vỏ chuối) – cười xong rút bài học: máy cần lệnh chính xác."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Ôn tập thuật toán\": Tổng hợp: từ đề bài → phân rã → flowchart → dry run. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Dry run tốc độ': chia đội, coach chiếu flowchart + input, đội nào tính đúng output nhanh nhất ghi điểm, sai bị trừ để tránh đoán bừa"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: bộ 3 flowchart hoàn chỉnh cho 3 bài toán"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 1.6: 'Nhà máy thuật toán' – thiết kế flowchart hoàn chỉnh cho 1 trò chơi đoán số, dry run với 2 bạn, sửa đến khi chạy đúng",
+            "teacher_recap": "Qua module này, con đã học được: thuật toán là chuỗi bước rõ ràng đến mức robot cũng làm theo được; vẽ flowchart bằng đúng ký hiệu oval – chữ nhật – hình thoi; xác định cái gì đi vào (input) và cái gì đi ra (output); chạy tay (dry run) để đoán kết quả trước; và tìm – sửa lỗi trong thuật toán như một kỹ sư nhí."
+          },
+          {
+            "code": "1.7",
+            "name": "Rẽ nhánh & vòng lặp với Scratch",
+            "sessions": 6,
+            "warmup_ritual": "5' luyện gõ duy trì. Trò 'Nếu... thì...' toàn thân: coach hô điều kiện ('NẾU đang mặc áo trắng THÌ nhảy 1 cái'), bé nào xử lý sai điều kiện thì ngồi xuống – chính là if/else bằng cơ thể.",
+            "games_pool": [
+              "'Vòng lặp vũ điệu': cả lớp lặp 1 chuỗi động tác theo 'lặp 5 lần', thêm biến 'tốc độ' tăng dần mỗi vòng – ai rối nhịp trước thua",
+              "'Săn bug Scratch': coach chiếu project Scratch bị gài 3 lỗi, đội nào tìm và nói đúng cách sửa cả 3 lỗi trước thì thắng"
+            ],
+            "lessons": [
+              {
+                "code": "1.7.1",
+                "name": "Chào Scratch",
+                "duration_minutes": 90,
+                "content": "Giao diện, khối lệnh, làm nhân vật di chuyển",
+                "challenge": "Thử thách: cho mèo Scratch đi hình vuông",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nếu... thì...' toàn thân: coach hô điều kiện ('NẾU đang mặc áo trắng THÌ nhảy 1 cái'), bé nào xử lý sai điều kiện thì ngồi xuống – chính là if/else bằng cơ thể."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chào Scratch\": Giao diện, khối lệnh, làm nhân vật di chuyển. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Vòng lặp vũ điệu': cả lớp lặp 1 chuỗi động tác theo 'lặp 5 lần', thêm biến 'tốc độ' tăng dần mỗi vòng – ai rối nhịp trước thua"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cho mèo Scratch đi hình vuông"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.7.2",
+                "name": "Nếu... thì... (if/else)",
+                "duration_minutes": 90,
+                "content": "Khối điều kiện: nhân vật phản ứng khác nhau theo tình huống",
+                "challenge": "Thử thách: nhân vật nói câu khác nhau tùy phím bấm",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nếu... thì...' toàn thân: coach hô điều kiện ('NẾU đang mặc áo trắng THÌ nhảy 1 cái'), bé nào xử lý sai điều kiện thì ngồi xuống – chính là if/else bằng cơ thể."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Nếu... thì... (if/else)\": Khối điều kiện: nhân vật phản ứng khác nhau theo tình huống. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn bug Scratch': coach chiếu project Scratch bị gài 3 lỗi, đội nào tìm và nói đúng cách sửa cả 3 lỗi trước thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: nhân vật nói câu khác nhau tùy phím bấm"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.7.3",
+                "name": "So sánh & logic",
+                "duration_minutes": 90,
+                "content": "Lớn hơn/nhỏ hơn, VÀ/HOẶC trong trò chơi",
+                "challenge": "Thử thách: trò 'đoán số bí mật' có gợi ý cao/thấp",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nếu... thì...' toàn thân: coach hô điều kiện ('NẾU đang mặc áo trắng THÌ nhảy 1 cái'), bé nào xử lý sai điều kiện thì ngồi xuống – chính là if/else bằng cơ thể."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"So sánh & logic\": Lớn hơn/nhỏ hơn, VÀ/HOẶC trong trò chơi. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Vòng lặp vũ điệu': cả lớp lặp 1 chuỗi động tác theo 'lặp 5 lần', thêm biến 'tốc độ' tăng dần mỗi vòng – ai rối nhịp trước thua"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: trò 'đoán số bí mật' có gợi ý cao/thấp"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.7.4",
+                "name": "Vòng lặp",
+                "duration_minutes": 90,
+                "content": "Lặp lại 10 lần, lặp mãi mãi; vẽ hình bằng vòng lặp",
+                "challenge": "Thử thách: vẽ bông hoa chỉ bằng 1 vòng lặp",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nếu... thì...' toàn thân: coach hô điều kiện ('NẾU đang mặc áo trắng THÌ nhảy 1 cái'), bé nào xử lý sai điều kiện thì ngồi xuống – chính là if/else bằng cơ thể."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Vòng lặp\": Lặp lại 10 lần, lặp mãi mãi; vẽ hình bằng vòng lặp. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn bug Scratch': coach chiếu project Scratch bị gài 3 lỗi, đội nào tìm và nói đúng cách sửa cả 3 lỗi trước thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: vẽ bông hoa chỉ bằng 1 vòng lặp"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.7.5",
+                "name": "Biến số",
+                "duration_minutes": 90,
+                "content": "Điểm số, đếm mạng sống; biến thay đổi khi chơi",
+                "challenge": "Mini project: game bắt táo có tính điểm",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nếu... thì...' toàn thân: coach hô điều kiện ('NẾU đang mặc áo trắng THÌ nhảy 1 cái'), bé nào xử lý sai điều kiện thì ngồi xuống – chính là if/else bằng cơ thể."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Biến số\": Điểm số, đếm mạng sống; biến thay đổi khi chơi. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Vòng lặp vũ điệu': cả lớp lặp 1 chuỗi động tác theo 'lặp 5 lần', thêm biến 'tốc độ' tăng dần mỗi vòng – ai rối nhịp trước thua"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: game bắt táo có tính điểm"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.7.6",
+                "name": "Ghép tất cả lại",
+                "duration_minutes": 90,
+                "content": "If/else + vòng lặp + biến trong 1 trò chơi nhỏ",
+                "challenge": "Mini project: nâng cấp game bắt táo: thêm mạng và màn chơi",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ duy trì. Trò 'Nếu... thì...' toàn thân: coach hô điều kiện ('NẾU đang mặc áo trắng THÌ nhảy 1 cái'), bé nào xử lý sai điều kiện thì ngồi xuống – chính là if/else bằng cơ thể."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Ghép tất cả lại\": If/else + vòng lặp + biến trong 1 trò chơi nhỏ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn bug Scratch': coach chiếu project Scratch bị gài 3 lỗi, đội nào tìm và nói đúng cách sửa cả 3 lỗi trước thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: nâng cấp game bắt táo: thêm mạng và màn chơi"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 1.7: game Scratch hoàn chỉnh do bé tự thiết kế (có điều kiện, vòng lặp, biến) – trình diễn cho cả lớp chơi thử",
+            "teacher_recap": "Qua module này, con đã học được: lập trình Scratch bằng các khối lệnh; dùng 'nếu... thì...' để nhân vật biết phản ứng; dùng vòng lặp để không phải làm đi làm lại; dùng biến để đếm điểm và mạng sống; và con đã tự làm một trò chơi hoàn chỉnh cho cả lớp chơi thử!"
+          },
+          {
+            "code": "1.8",
+            "name": "Dự án cuối Level 1",
+            "sessions": 4,
+            "warmup_ritual": "5' luyện gõ (bài test nhỏ ghi vào Portfolio). Sau đó 'standup 1 phút': mỗi bé nói dự án mình đến đâu, hôm nay định làm gì – tập thói quen báo cáo như người làm sản phẩm.",
+            "games_pool": [
+              "'Ghế nóng demo': mỗi bé lên 'ghế nóng' 2 phút demo phần đã làm, lớp đặt 1 câu hỏi và tặng 1 lời khen – luyện phản xạ trước Demo Day"
+            ],
+            "lessons": [
+              {
+                "code": "1.8.1",
+                "name": "Chọn đề tài & lập kế hoạch",
+                "duration_minutes": 90,
+                "content": "Chọn 1 vấn đề, phân rã, vẽ flowchart giải pháp",
+                "challenge": "Nộp kế hoạch dự án 1 trang",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ (bài test nhỏ ghi vào Portfolio). Sau đó 'standup 1 phút': mỗi bé nói dự án mình đến đâu, hôm nay định làm gì – tập thói quen báo cáo như người làm sản phẩm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chọn đề tài & lập kế hoạch\": Chọn 1 vấn đề, phân rã, vẽ flowchart giải pháp. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ghế nóng demo': mỗi bé lên 'ghế nóng' 2 phút demo phần đã làm, lớp đặt 1 câu hỏi và tặng 1 lời khen – luyện phản xạ trước Demo Day"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Nộp kế hoạch dự án 1 trang"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.8.2",
+                "name": "Xây dựng sản phẩm",
+                "duration_minutes": 90,
+                "content": "Làm game Scratch hoặc quy trình có AI hỗ trợ theo flowchart",
+                "challenge": "Bản nháp sản phẩm chạy được",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ (bài test nhỏ ghi vào Portfolio). Sau đó 'standup 1 phút': mỗi bé nói dự án mình đến đâu, hôm nay định làm gì – tập thói quen báo cáo như người làm sản phẩm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Xây dựng sản phẩm\": Làm game Scratch hoặc quy trình có AI hỗ trợ theo flowchart. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ghế nóng demo': mỗi bé lên 'ghế nóng' 2 phút demo phần đã làm, lớp đặt 1 câu hỏi và tặng 1 lời khen – luyện phản xạ trước Demo Day"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản nháp sản phẩm chạy được"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.8.3",
+                "name": "Kiểm thử & hoàn thiện",
+                "duration_minutes": 90,
+                "content": "Nhờ 2 bạn dùng thử, ghi lỗi, sửa",
+                "challenge": "Danh sách lỗi đã sửa + bản hoàn chỉnh",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ (bài test nhỏ ghi vào Portfolio). Sau đó 'standup 1 phút': mỗi bé nói dự án mình đến đâu, hôm nay định làm gì – tập thói quen báo cáo như người làm sản phẩm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kiểm thử & hoàn thiện\": Nhờ 2 bạn dùng thử, ghi lỗi, sửa. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ghế nóng demo': mỗi bé lên 'ghế nóng' 2 phút demo phần đã làm, lớp đặt 1 câu hỏi và tặng 1 lời khen – luyện phản xạ trước Demo Day"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Danh sách lỗi đã sửa + bản hoàn chỉnh"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "1.8.4",
+                "name": "Demo Day Level 1",
+                "duration_minutes": 90,
+                "content": "Trình bày 3 phút: vấn đề → cách giải → demo",
+                "challenge": "Thuyết trình + bài test tổng hợp qua level",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "5' luyện gõ (bài test nhỏ ghi vào Portfolio). Sau đó 'standup 1 phút': mỗi bé nói dự án mình đến đâu, hôm nay định làm gì – tập thói quen báo cáo như người làm sản phẩm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Demo Day Level 1\": Trình bày 3 phút: vấn đề → cách giải → demo. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ghế nóng demo': mỗi bé lên 'ghế nóng' 2 phút demo phần đã làm, lớp đặt 1 câu hỏi và tặng 1 lời khen – luyện phản xạ trước Demo Day"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thuyết trình + bài test tổng hợp qua level"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua dự án cuối level, con đã học được: cách tự chọn đề tài và lập kế hoạch; làm sản phẩm theo đúng flowchart mình vẽ; nhờ bạn dùng thử để tìm lỗi rồi sửa; và đứng trước lớp trình bày sản phẩm trong 3 phút. Con đã hoàn thành Level 1 – Nền tảng số!"
+          }
+        ]
+      },
+      {
+        "id": "level_2",
+        "name": "Level 2",
+        "title": "HIỂU AI & KIỂM CHỨNG",
+        "duration": "6 tháng",
+        "sessions": 48,
+        "optional": false,
+        "graduation_criteria": "Chuẩn qua level: tự huấn luyện mô hình phân loại và giải thích vai trò dữ liệu; chỉ ra ≥2 lần AI sai kèm bằng chứng; thuộc quy trình kiểm chứng 3 bước; biết giới hạn chia sẻ thông tin; đạt bài test AI literacy.",
+        "modules": [
+          {
+            "code": "2.1",
+            "name": "Khởi động & đánh giá đầu level",
+            "sessions": 4,
+            "warmup_ritual": "Nghi thức mở buổi Level 2 (10'): 3' gõ phím duy trì + 'Tin AI tuần này' – 1 bé kể 1 tin AI mới nghe được, lớp bình chọn tin thật hay tin giả trước khi coach công bố.",
+            "games_pool": [
+              "'Săn công cụ lạ': các đội bốc thăm 1 công cụ AI chưa từng dùng, có 10 phút khám phá rồi thuyết trình 1 phút 'nó làm được gì hay nhất'",
+              "'Bingo AI': bảng bingo 9 ô kỹ năng Level 1 (viết prompt 3 phần, vẽ flowchart...), bé làm được ô nào tick ô đó – 3 ô thẳng hàng hô Bingo"
+            ],
+            "lessons": [
+              {
+                "code": "2.1.1",
+                "name": "AI đã đi xa đến đâu",
+                "duration_minutes": 90,
+                "content": "Cập nhật AI mới nhất, ôn kỹ năng Level 1",
+                "challenge": "Thử thách: dùng 1 công cụ AI em chưa từng thử và kể lại",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức mở buổi Level 2 (10'): 3' gõ phím duy trì + 'Tin AI tuần này' – 1 bé kể 1 tin AI mới nghe được, lớp bình chọn tin thật hay tin giả trước khi coach công bố."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"AI đã đi xa đến đâu\": Cập nhật AI mới nhất, ôn kỹ năng Level 1. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn công cụ lạ': các đội bốc thăm 1 công cụ AI chưa từng dùng, có 10 phút khám phá rồi thuyết trình 1 phút 'nó làm được gì hay nhất'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: dùng 1 công cụ AI em chưa từng thử và kể lại"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.1.2",
+                "name": "Bài test AI literacy đầu vào",
+                "duration_minutes": 90,
+                "content": "Đo năng lực hiện tại bằng bộ đề chuẩn",
+                "challenge": "Hoàn thành bài test, tự chấm cùng coach",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức mở buổi Level 2 (10'): 3' gõ phím duy trì + 'Tin AI tuần này' – 1 bé kể 1 tin AI mới nghe được, lớp bình chọn tin thật hay tin giả trước khi coach công bố."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Bài test AI literacy đầu vào\": Đo năng lực hiện tại bằng bộ đề chuẩn. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bingo AI': bảng bingo 9 ô kỹ năng Level 1 (viết prompt 3 phần, vẽ flowchart...), bé làm được ô nào tick ô đó – 3 ô thẳng hàng hô Bingo"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Hoàn thành bài test, tự chấm cùng coach"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.1.3",
+                "name": "Đặt mục tiêu cá nhân",
+                "duration_minutes": 90,
+                "content": "Từ kết quả test, chọn 3 mục tiêu cho 6 tháng",
+                "challenge": "Mini project: bản 'Hợp đồng mục tiêu' có chữ ký của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức mở buổi Level 2 (10'): 3' gõ phím duy trì + 'Tin AI tuần này' – 1 bé kể 1 tin AI mới nghe được, lớp bình chọn tin thật hay tin giả trước khi coach công bố."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Đặt mục tiêu cá nhân\": Từ kết quả test, chọn 3 mục tiêu cho 6 tháng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn công cụ lạ': các đội bốc thăm 1 công cụ AI chưa từng dùng, có 10 phút khám phá rồi thuyết trình 1 phút 'nó làm được gì hay nhất'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: bản 'Hợp đồng mục tiêu' có chữ ký của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.1.4",
+                "name": "Bộ công cụ Level 2",
+                "duration_minutes": 90,
+                "content": "Làm quen Teachable Machine và các công cụ sẽ dùng",
+                "challenge": "Thử thách: huấn luyện thử 1 mô hình đoán 2 vật trong 15 phút",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "Nghi thức mở buổi Level 2 (10'): 3' gõ phím duy trì + 'Tin AI tuần này' – 1 bé kể 1 tin AI mới nghe được, lớp bình chọn tin thật hay tin giả trước khi coach công bố."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Bộ công cụ Level 2\": Làm quen Teachable Machine và các công cụ sẽ dùng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bingo AI': bảng bingo 9 ô kỹ năng Level 1 (viết prompt 3 phần, vẽ flowchart...), bé làm được ô nào tick ô đó – 3 ô thẳng hàng hô Bingo"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: huấn luyện thử 1 mô hình đoán 2 vật trong 15 phút"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: AI đã tiến xa đến đâu so với lúc con học Level 1; con biết trình độ AI của mình đang ở đâu qua bài test đầu vào; con tự đặt 3 mục tiêu cho 6 tháng tới; và con đã huấn luyện thử mô hình AI đầu tiên chỉ trong 15 phút."
+          },
+          {
+            "code": "2.2",
+            "name": "AI học từ dữ liệu",
+            "sessions": 8,
+            "warmup_ritual": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao.",
+            "games_pool": [
+              "'Đấu trường mô hình': 2 đội huấn luyện mô hình cùng đề trong 15 phút, rồi dùng bộ ảnh thử của coach – mô hình đoán đúng nhiều hơn thắng",
+              "'Gián điệp dữ liệu': 1 đội bí mật trộn 5 ảnh 'phá hoại' vào dữ liệu của đội bạn, đội bạn phải tìm ra ảnh phá hoại nhờ xem mô hình đoán sai chỗ nào"
+            ],
+            "lessons": [
+              {
+                "code": "2.2.1",
+                "name": "Dữ liệu là thức ăn của AI",
+                "duration_minutes": 90,
+                "content": "AI không được lập trình sẵn – nó học từ ví dụ",
+                "challenge": "Thử thách: đoán AI cần dữ liệu gì để nhận ra mèo vs chó",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dữ liệu là thức ăn của AI\": AI không được lập trình sẵn – nó học từ ví dụ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đấu trường mô hình': 2 đội huấn luyện mô hình cùng đề trong 15 phút, rồi dùng bộ ảnh thử của coach – mô hình đoán đúng nhiều hơn thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: đoán AI cần dữ liệu gì để nhận ra mèo vs chó"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.2.2",
+                "name": "Huấn luyện mô hình đầu tiên",
+                "duration_minutes": 90,
+                "content": "Teachable Machine: dạy máy phân biệt 2 vật bằng ảnh",
+                "challenge": "Mini project: mô hình phân loại 2 đồ vật của em, độ đúng ≥80%",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Huấn luyện mô hình đầu tiên\": Teachable Machine: dạy máy phân biệt 2 vật bằng ảnh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Gián điệp dữ liệu': 1 đội bí mật trộn 5 ảnh 'phá hoại' vào dữ liệu của đội bạn, đội bạn phải tìm ra ảnh phá hoại nhờ xem mô hình đoán sai chỗ nào"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: mô hình phân loại 2 đồ vật của em, độ đúng ≥80%"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.2.3",
+                "name": "Dữ liệu tốt vs dữ liệu xấu",
+                "duration_minutes": 90,
+                "content": "Ảnh mờ, thiếu đa dạng làm mô hình đoán sai",
+                "challenge": "Thử thách: cố tình dạy 'xấu' rồi so độ chính xác với bản 'tốt'",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dữ liệu tốt vs dữ liệu xấu\": Ảnh mờ, thiếu đa dạng làm mô hình đoán sai. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đấu trường mô hình': 2 đội huấn luyện mô hình cùng đề trong 15 phút, rồi dùng bộ ảnh thử của coach – mô hình đoán đúng nhiều hơn thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cố tình dạy 'xấu' rồi so độ chính xác với bản 'tốt'"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.2.4",
+                "name": "Thiên vị trong dữ liệu",
+                "duration_minutes": 90,
+                "content": "Chỉ dạy táo đỏ → AI không nhận ra táo xanh",
+                "challenge": "Thử thách: tìm 'điểm mù' của mô hình bạn cùng lớp",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thiên vị trong dữ liệu\": Chỉ dạy táo đỏ → AI không nhận ra táo xanh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Gián điệp dữ liệu': 1 đội bí mật trộn 5 ảnh 'phá hoại' vào dữ liệu của đội bạn, đội bạn phải tìm ra ảnh phá hoại nhờ xem mô hình đoán sai chỗ nào"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: tìm 'điểm mù' của mô hình bạn cùng lớp"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.2.5",
+                "name": "Mô hình âm thanh",
+                "duration_minutes": 90,
+                "content": "Dạy máy phân biệt tiếng vỗ tay vs búng tay",
+                "challenge": "Mini project: công tắc điều khiển bằng âm thanh",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Mô hình âm thanh\": Dạy máy phân biệt tiếng vỗ tay vs búng tay. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đấu trường mô hình': 2 đội huấn luyện mô hình cùng đề trong 15 phút, rồi dùng bộ ảnh thử của coach – mô hình đoán đúng nhiều hơn thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: công tắc điều khiển bằng âm thanh"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.2.6",
+                "name": "Mô hình tư thế",
+                "duration_minutes": 90,
+                "content": "Dạy máy nhận biết động tác cơ thể",
+                "challenge": "Mini project: trò chơi điều khiển bằng cử động",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Mô hình tư thế\": Dạy máy nhận biết động tác cơ thể. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Gián điệp dữ liệu': 1 đội bí mật trộn 5 ảnh 'phá hoại' vào dữ liệu của đội bạn, đội bạn phải tìm ra ảnh phá hoại nhờ xem mô hình đoán sai chỗ nào"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: trò chơi điều khiển bằng cử động"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.2.7",
+                "name": "Nhiều dữ liệu hơn = tốt hơn?",
+                "duration_minutes": 90,
+                "content": "Thí nghiệm: 10 ảnh vs 50 ảnh vs 100 ảnh",
+                "challenge": "Thử thách: vẽ biểu đồ độ chính xác theo lượng dữ liệu",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Nhiều dữ liệu hơn = tốt hơn?\": Thí nghiệm: 10 ảnh vs 50 ảnh vs 100 ảnh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đấu trường mô hình': 2 đội huấn luyện mô hình cùng đề trong 15 phút, rồi dùng bộ ảnh thử của coach – mô hình đoán đúng nhiều hơn thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: vẽ biểu đồ độ chính xác theo lượng dữ liệu"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.2.8",
+                "name": "Giải thích cho người khác",
+                "duration_minutes": 90,
+                "content": "Trình bày 'AI học thế nào' bằng lời của em",
+                "challenge": "Thử thách: giải thích cho 1 bạn chưa học và bạn ấy nói lại đúng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Con là máy học': coach giơ 5 tấm ảnh mèo, bé rút ra 'đặc điểm mèo'; giơ ảnh cáo – lớp tranh luận máy sẽ đoán gì và vì sao."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Giải thích cho người khác\": Trình bày 'AI học thế nào' bằng lời của em. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Gián điệp dữ liệu': 1 đội bí mật trộn 5 ảnh 'phá hoại' vào dữ liệu của đội bạn, đội bạn phải tìm ra ảnh phá hoại nhờ xem mô hình đoán sai chỗ nào"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: giải thích cho 1 bạn chưa học và bạn ấy nói lại đúng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 2.2: 'Phòng thí nghiệm AI của em' – tự chọn đề tài, thu thập dữ liệu, huấn luyện mô hình phân loại 3 nhóm, báo cáo độ chính xác và điểm mù",
+            "teacher_recap": "Qua module này, con đã học được điều quan trọng nhất Level 2: AI không được lập trình sẵn mà HỌC TỪ DỮ LIỆU; dữ liệu tốt thì AI đoán giỏi, dữ liệu xấu hay thiên lệch thì AI đoán sai; nhiều dữ liệu đa dạng hơn thường tốt hơn; và con đã tự tay huấn luyện mô hình nhận ảnh, âm thanh, cử động – con là 'người dạy AI' rồi đấy!"
+          },
+          {
+            "code": "2.3",
+            "name": "AI nhìn & nghe – và nhìn, nghe sai",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Tin AI tuần này'. Trò 'Mắt người vs mắt máy': chiếu ảnh bị che dần từng ô vuông, người đoán trước hay mô hình đoán trước?",
+            "games_pool": [
+              "'Điệp viên đánh lừa AI': đội nào làm mô hình đoán sai bằng cách sáng tạo nhất (đổi góc, che, ánh sáng) mà vật vẫn nhận ra được bằng mắt người thì thắng",
+              "'Tai máy tai người': coach bật 5 đoạn âm thanh khó (tiếng ồn, giọng nhanh), người và máy chuyển thành chữ – so ai nghe đúng hơn, ở đâu máy thua"
+            ],
+            "lessons": [
+              {
+                "code": "2.3.1",
+                "name": "Máy 'nhìn' bằng gì",
+                "duration_minutes": 90,
+                "content": "Ảnh = lưới số; máy so pattern chứ không 'hiểu'",
+                "challenge": "Thử thách: vẽ 1 vật bằng lưới ô vuông tô số như máy 'thấy'",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Mắt người vs mắt máy': chiếu ảnh bị che dần từng ô vuông, người đoán trước hay mô hình đoán trước?"
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Máy 'nhìn' bằng gì\": Ảnh = lưới số; máy so pattern chứ không 'hiểu'. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Điệp viên đánh lừa AI': đội nào làm mô hình đoán sai bằng cách sáng tạo nhất (đổi góc, che, ánh sáng) mà vật vẫn nhận ra được bằng mắt người thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: vẽ 1 vật bằng lưới ô vuông tô số như máy 'thấy'"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.3.2",
+                "name": "Đánh lừa thị giác máy",
+                "duration_minutes": 90,
+                "content": "Góc chụp, ánh sáng, che một phần làm AI đoán sai",
+                "challenge": "Thử thách: làm mô hình của em đoán sai bằng 3 cách",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Mắt người vs mắt máy': chiếu ảnh bị che dần từng ô vuông, người đoán trước hay mô hình đoán trước?"
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Đánh lừa thị giác máy\": Góc chụp, ánh sáng, che một phần làm AI đoán sai. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tai máy tai người': coach bật 5 đoạn âm thanh khó (tiếng ồn, giọng nhanh), người và máy chuyển thành chữ – so ai nghe đúng hơn, ở đâu máy thua"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: làm mô hình của em đoán sai bằng 3 cách"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.3.3",
+                "name": "Máy 'nghe' bằng gì",
+                "duration_minutes": 90,
+                "content": "Âm thanh = sóng; giọng nói thành văn bản thế nào",
+                "challenge": "Thử thách: tìm 3 từ tiếng Việt máy hay nghe nhầm",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Mắt người vs mắt máy': chiếu ảnh bị che dần từng ô vuông, người đoán trước hay mô hình đoán trước?"
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Máy 'nghe' bằng gì\": Âm thanh = sóng; giọng nói thành văn bản thế nào. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Điệp viên đánh lừa AI': đội nào làm mô hình đoán sai bằng cách sáng tạo nhất (đổi góc, che, ánh sáng) mà vật vẫn nhận ra được bằng mắt người thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: tìm 3 từ tiếng Việt máy hay nghe nhầm"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.3.4",
+                "name": "Khi nhận diện sai gây hại",
+                "duration_minutes": 90,
+                "content": "Chuyện thật: nhận diện khuôn mặt nhầm người",
+                "challenge": "Thử thách: kể 1 tình huống nhận diện sai gây rắc rối và cách phòng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Mắt người vs mắt máy': chiếu ảnh bị che dần từng ô vuông, người đoán trước hay mô hình đoán trước?"
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Khi nhận diện sai gây hại\": Chuyện thật: nhận diện khuôn mặt nhầm người. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tai máy tai người': coach bật 5 đoạn âm thanh khó (tiếng ồn, giọng nhanh), người và máy chuyển thành chữ – so ai nghe đúng hơn, ở đâu máy thua"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: kể 1 tình huống nhận diện sai gây rắc rối và cách phòng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.3.5",
+                "name": "Con người vs máy",
+                "duration_minutes": 90,
+                "content": "Việc gì mắt người giỏi hơn, việc gì máy giỏi hơn",
+                "challenge": "Thử thách: cuộc thi người-vs-mô hình trên 10 tấm ảnh khó",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Mắt người vs mắt máy': chiếu ảnh bị che dần từng ô vuông, người đoán trước hay mô hình đoán trước?"
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Con người vs máy\": Việc gì mắt người giỏi hơn, việc gì máy giỏi hơn. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Điệp viên đánh lừa AI': đội nào làm mô hình đoán sai bằng cách sáng tạo nhất (đổi góc, che, ánh sáng) mà vật vẫn nhận ra được bằng mắt người thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cuộc thi người-vs-mô hình trên 10 tấm ảnh khó"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.3.6",
+                "name": "Tổng kết thị giác máy",
+                "duration_minutes": 90,
+                "content": "Ôn tập + thí nghiệm tự chọn",
+                "challenge": "Mini project: báo cáo 1 trang '3 điều máy nhìn khác người'",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Mắt người vs mắt máy': chiếu ảnh bị che dần từng ô vuông, người đoán trước hay mô hình đoán trước?"
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng kết thị giác máy\": Ôn tập + thí nghiệm tự chọn. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tai máy tai người': coach bật 5 đoạn âm thanh khó (tiếng ồn, giọng nhanh), người và máy chuyển thành chữ – so ai nghe đúng hơn, ở đâu máy thua"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: báo cáo 1 trang '3 điều máy nhìn khác người'"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 2.3: 'Bảo tàng ảo giác của AI' – nhóm 2 bé sưu tầm/tự tạo 5 ví dụ AI nhìn hoặc nghe sai, giải thích vì sao, trưng bày cho lớp",
+            "teacher_recap": "Qua module này, con đã học được: máy 'nhìn' bằng cách đọc lưới số chứ không hiểu như mắt người; chỉ cần đổi góc chụp, ánh sáng là đánh lừa được AI; máy nghe cũng có thể nhầm từ; nhận diện sai ngoài đời có thể gây rắc rối thật; và có việc người giỏi hơn máy, có việc máy giỏi hơn người."
+          },
+          {
+            "code": "2.4",
+            "name": "Mô hình ngôn ngữ – vì sao AI bịa",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Tin AI tuần này'. Trò 'Đoán từ tiếp theo': coach đọc nửa câu, cả lớp hô từ kế tiếp – trải nghiệm đúng cách LLM 'suy nghĩ'.",
+            "games_pool": [
+              "'Bẫy AI – ai bịa giỏi hơn': các đội thi viết câu hỏi khiến AI bịa lộ liễu nhất (nhân vật không tồn tại, sách tưởng tượng), trình chứng cứ trước lớp",
+              "'Thật hay AI chém?': coach đọc 6 câu trả lời (nửa đúng nửa AI bịa nghe rất xuôi), các đội giơ bảng THẬT/BỊA – đội đúng nhiều nhất thắng"
+            ],
+            "lessons": [
+              {
+                "code": "2.4.1",
+                "name": "Trò chơi đoán từ tiếp theo",
+                "duration_minutes": 90,
+                "content": "Người chơi đoán từ kế tiếp – đúng cách LLM hoạt động",
+                "challenge": "Thử thách: thắng trò 'đoán từ tiếp theo' 10 câu",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Đoán từ tiếp theo': coach đọc nửa câu, cả lớp hô từ kế tiếp – trải nghiệm đúng cách LLM 'suy nghĩ'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Trò chơi đoán từ tiếp theo\": Người chơi đoán từ kế tiếp – đúng cách LLM hoạt động. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bẫy AI – ai bịa giỏi hơn': các đội thi viết câu hỏi khiến AI bịa lộ liễu nhất (nhân vật không tồn tại, sách tưởng tượng), trình chứng cứ trước lớp"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: thắng trò 'đoán từ tiếp theo' 10 câu"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.4.2",
+                "name": "AI đoán theo xác suất",
+                "duration_minutes": 90,
+                "content": "Không tra cứu sự thật, chỉ chọn từ 'có vẻ hợp'",
+                "challenge": "Thử thách: giải thích vì sao AI viết trôi chảy mà vẫn sai",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Đoán từ tiếp theo': coach đọc nửa câu, cả lớp hô từ kế tiếp – trải nghiệm đúng cách LLM 'suy nghĩ'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"AI đoán theo xác suất\": Không tra cứu sự thật, chỉ chọn từ 'có vẻ hợp'. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thật hay AI chém?': coach đọc 6 câu trả lời (nửa đúng nửa AI bịa nghe rất xuôi), các đội giơ bảng THẬT/BỊA – đội đúng nhiều nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: giải thích vì sao AI viết trôi chảy mà vẫn sai"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.4.3",
+                "name": "Bắt quả tang AI bịa",
+                "duration_minutes": 90,
+                "content": "Hỏi về nhân vật/sách không tồn tại, xem AI 'chém'",
+                "challenge": "Mini project: bộ sưu tập 3 màn bịa của AI kèm bằng chứng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Đoán từ tiếp theo': coach đọc nửa câu, cả lớp hô từ kế tiếp – trải nghiệm đúng cách LLM 'suy nghĩ'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Bắt quả tang AI bịa\": Hỏi về nhân vật/sách không tồn tại, xem AI 'chém'. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bẫy AI – ai bịa giỏi hơn': các đội thi viết câu hỏi khiến AI bịa lộ liễu nhất (nhân vật không tồn tại, sách tưởng tượng), trình chứng cứ trước lớp"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: bộ sưu tập 3 màn bịa của AI kèm bằng chứng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.4.4",
+                "name": "Vì sao AI tự tin khi sai",
+                "duration_minutes": 90,
+                "content": "AI không biết mình không biết; giọng chắc chắn ≠ đúng",
+                "challenge": "Thử thách: viết 3 câu hỏi 'bẫy' khiến AI dễ bịa nhất",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Đoán từ tiếp theo': coach đọc nửa câu, cả lớp hô từ kế tiếp – trải nghiệm đúng cách LLM 'suy nghĩ'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Vì sao AI tự tin khi sai\": AI không biết mình không biết; giọng chắc chắn ≠ đúng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thật hay AI chém?': coach đọc 6 câu trả lời (nửa đúng nửa AI bịa nghe rất xuôi), các đội giơ bảng THẬT/BỊA – đội đúng nhiều nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: viết 3 câu hỏi 'bẫy' khiến AI dễ bịa nhất"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.4.5",
+                "name": "Khi nào nên/không nên tin AI",
+                "duration_minutes": 90,
+                "content": "Việc hợp với AI (gợi ý, nháp) vs việc phải kiểm chứng",
+                "challenge": "Thử thách: phân loại 10 tình huống nên/không nên tin ngay",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Đoán từ tiếp theo': coach đọc nửa câu, cả lớp hô từ kế tiếp – trải nghiệm đúng cách LLM 'suy nghĩ'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Khi nào nên/không nên tin AI\": Việc hợp với AI (gợi ý, nháp) vs việc phải kiểm chứng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bẫy AI – ai bịa giỏi hơn': các đội thi viết câu hỏi khiến AI bịa lộ liễu nhất (nhân vật không tồn tại, sách tưởng tượng), trình chứng cứ trước lớp"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: phân loại 10 tình huống nên/không nên tin ngay"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.4.6",
+                "name": "Tổng kết LLM",
+                "duration_minutes": 90,
+                "content": "Ôn cơ chế + trò chơi hỏi nhanh",
+                "challenge": "Mini project: poster 'Vì sao AI bịa' bằng hình vẽ của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Tin AI tuần này'. Trò 'Đoán từ tiếp theo': coach đọc nửa câu, cả lớp hô từ kế tiếp – trải nghiệm đúng cách LLM 'suy nghĩ'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng kết LLM\": Ôn cơ chế + trò chơi hỏi nhanh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thật hay AI chém?': coach đọc 6 câu trả lời (nửa đúng nửa AI bịa nghe rất xuôi), các đội giơ bảng THẬT/BỊA – đội đúng nhiều nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: poster 'Vì sao AI bịa' bằng hình vẽ của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 2.4: 'Phiên tòa xử AI' – lớp chia vai công tố/luật sư, đưa ra bằng chứng AI bịa và bằng chứng AI hữu ích, bé làm 'thẩm phán' viết phán quyết khi nào tin AI",
+            "teacher_recap": "Qua module này, con đã học được bí mật lớn nhất của chatbot: AI chỉ ĐOÁN TỪ TIẾP THEO theo xác suất chứ không tra cứu sự thật; vì thế AI viết rất trôi chảy nhưng vẫn có thể bịa; AI không biết là mình không biết nên nghe rất tự tin; và con biết khi nào dùng AI thoải mái (gợi ý, nháp) – khi nào bắt buộc phải kiểm chứng."
+          },
+          {
+            "code": "2.5",
+            "name": "Prompt có phương pháp",
+            "sessions": 8,
+            "warmup_ritual": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi.",
+            "games_pool": [
+              "'Đấu prompt loại trực tiếp': bốc cặp thi đấu, cùng đề trong 4 phút, lớp làm giám khảo chấm kết quả AI – thắng đi tiếp vào 'chung kết prompt'",
+              "'Prompt mù': bé A chỉ được nghe mô tả kết quả mong muốn từ bé B rồi viết prompt hộ – luyện chuyển 'ý người khác' thành prompt chuẩn"
+            ],
+            "lessons": [
+              {
+                "code": "2.5.1",
+                "name": "Ôn & nâng công thức prompt",
+                "duration_minutes": 90,
+                "content": "Từ 3 phần lên 5 phần: vai + bối cảnh + yêu cầu + định dạng + ví dụ",
+                "challenge": "Thử thách: nâng cấp 3 prompt cũ của em lên công thức mới",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Ôn & nâng công thức prompt\": Từ 3 phần lên 5 phần: vai + bối cảnh + yêu cầu + định dạng + ví dụ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đấu prompt loại trực tiếp': bốc cặp thi đấu, cùng đề trong 4 phút, lớp làm giám khảo chấm kết quả AI – thắng đi tiếp vào 'chung kết prompt'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: nâng cấp 3 prompt cũ của em lên công thức mới"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.5.2",
+                "name": "Few-shot: dạy AI bằng ví dụ",
+                "duration_minutes": 90,
+                "content": "Đưa 2-3 ví dụ mẫu để AI làm theo đúng ý",
+                "challenge": "Thử thách: khiến AI viết đúng 'giọng văn' em muốn nhờ ví dụ",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Few-shot: dạy AI bằng ví dụ\": Đưa 2-3 ví dụ mẫu để AI làm theo đúng ý. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Prompt mù': bé A chỉ được nghe mô tả kết quả mong muốn từ bé B rồi viết prompt hộ – luyện chuyển 'ý người khác' thành prompt chuẩn"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: khiến AI viết đúng 'giọng văn' em muốn nhờ ví dụ"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.5.3",
+                "name": "Suy nghĩ từng bước",
+                "duration_minutes": 90,
+                "content": "Yêu cầu AI giải thích từng bước trước khi kết luận",
+                "challenge": "Thử thách: so sánh đáp án toán có/không có 'từng bước'",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Suy nghĩ từng bước\": Yêu cầu AI giải thích từng bước trước khi kết luận. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đấu prompt loại trực tiếp': bốc cặp thi đấu, cùng đề trong 4 phút, lớp làm giám khảo chấm kết quả AI – thắng đi tiếp vào 'chung kết prompt'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: so sánh đáp án toán có/không có 'từng bước'"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.5.4",
+                "name": "Chia nhỏ nhiệm vụ lớn",
+                "duration_minutes": 90,
+                "content": "Chuỗi prompt: mỗi prompt 1 việc thay vì 1 prompt ôm hết",
+                "challenge": "Mini project: hoàn thành bài tập lớn bằng chuỗi 4 prompt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chia nhỏ nhiệm vụ lớn\": Chuỗi prompt: mỗi prompt 1 việc thay vì 1 prompt ôm hết. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Prompt mù': bé A chỉ được nghe mô tả kết quả mong muốn từ bé B rồi viết prompt hộ – luyện chuyển 'ý người khác' thành prompt chuẩn"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: hoàn thành bài tập lớn bằng chuỗi 4 prompt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.5.5",
+                "name": "Prompt cho hình ảnh",
+                "duration_minutes": 90,
+                "content": "Mô tả chi tiết để AI vẽ đúng ý: chủ thể, phong cách, bố cục",
+                "challenge": "Mini project: 3 bức tranh AI theo trí tưởng tượng của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Prompt cho hình ảnh\": Mô tả chi tiết để AI vẽ đúng ý: chủ thể, phong cách, bố cục. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đấu prompt loại trực tiếp': bốc cặp thi đấu, cùng đề trong 4 phút, lớp làm giám khảo chấm kết quả AI – thắng đi tiếp vào 'chung kết prompt'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: 3 bức tranh AI theo trí tưởng tượng của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.5.6",
+                "name": "Sửa prompt như thợ",
+                "duration_minutes": 90,
+                "content": "Kết quả chưa ổn → chẩn đoán prompt thiếu gì → sửa",
+                "challenge": "Thử thách: 'cứu' 3 prompt hỏng của coach đưa",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Sửa prompt như thợ\": Kết quả chưa ổn → chẩn đoán prompt thiếu gì → sửa. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Prompt mù': bé A chỉ được nghe mô tả kết quả mong muốn từ bé B rồi viết prompt hộ – luyện chuyển 'ý người khác' thành prompt chuẩn"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: 'cứu' 3 prompt hỏng của coach đưa"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.5.7",
+                "name": "Thư viện prompt cá nhân",
+                "duration_minutes": 90,
+                "content": "Hệ thống hóa prompt tốt theo mục đích sử dụng",
+                "challenge": "Mini project: thư viện 15 prompt chia 5 nhóm việc",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thư viện prompt cá nhân\": Hệ thống hóa prompt tốt theo mục đích sử dụng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đấu prompt loại trực tiếp': bốc cặp thi đấu, cùng đề trong 4 phút, lớp làm giám khảo chấm kết quả AI – thắng đi tiếp vào 'chung kết prompt'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: thư viện 15 prompt chia 5 nhóm việc"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.5.8",
+                "name": "Thi đấu prompt",
+                "duration_minutes": 90,
+                "content": "Cùng đề bài, ai viết prompt cho kết quả tốt nhất",
+                "challenge": "Thử thách: vòng thi prompt – lớp chấm chéo có tiêu chí",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn': coach đưa 1 thông tin, lớp có 3 phút xác minh thật/giả bằng quy trình đã học – duy trì thói quen kiểm chứng mỗi buổi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thi đấu prompt\": Cùng đề bài, ai viết prompt cho kết quả tốt nhất. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Prompt mù': bé A chỉ được nghe mô tả kết quả mong muốn từ bé B rồi viết prompt hộ – luyện chuyển 'ý người khác' thành prompt chuẩn"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: vòng thi prompt – lớp chấm chéo có tiêu chí"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 2.5: 'Prompt Book 2.0' – sổ tay prompt có phương pháp: 20 prompt, mỗi prompt ghi công thức áp dụng, kết quả trước/sau khi cải tiến",
+            "teacher_recap": "Qua module này, con đã học được: công thức prompt 5 phần – vai, bối cảnh, yêu cầu, định dạng, ví dụ; dạy AI bằng 2-3 ví dụ mẫu (few-shot); bắt AI suy nghĩ từng bước để làm toán chính xác hơn; chia việc lớn thành chuỗi prompt nhỏ; và con đã có thư viện prompt xịn của riêng mình – Prompt Book 2.0."
+          },
+          {
+            "code": "2.6",
+            "name": "Kiểm chứng & nhận diện giả mạo",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Kiểm chứng mở màn' (1 tin nóng, 3 phút xác minh theo quy trình 3 bước).",
+            "games_pool": [
+              "'Thật – Giả – AI': chiếu 9 ảnh trộn ảnh thật, ảnh chỉnh sửa, ảnh AI tạo; các đội phân loại và chỉ ra dấu hiệu – mỗi dấu hiệu đúng được điểm thưởng",
+              "'Phòng tin khẩn': mô phỏng 'tòa soạn' nhận 4 tin trong 15 phút, đội phóng viên nhí phải quyết đăng/không đăng kèm lý do kiểm chứng"
+            ],
+            "lessons": [
+              {
+                "code": "2.6.1",
+                "name": "Quy trình kiểm chứng 3 bước",
+                "duration_minutes": 90,
+                "content": "Nghi ngờ → tìm nguồn gốc → đối chiếu 2 nguồn độc lập",
+                "challenge": "Thử thách: kiểm chứng 3 'tin' coach đưa, chỉ ra thật/giả",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn' (1 tin nóng, 3 phút xác minh theo quy trình 3 bước)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Quy trình kiểm chứng 3 bước\": Nghi ngờ → tìm nguồn gốc → đối chiếu 2 nguồn độc lập. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thật – Giả – AI': chiếu 9 ảnh trộn ảnh thật, ảnh chỉnh sửa, ảnh AI tạo; các đội phân loại và chỉ ra dấu hiệu – mỗi dấu hiệu đúng được điểm thưởng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: kiểm chứng 3 'tin' coach đưa, chỉ ra thật/giả"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.6.2",
+                "name": "Nguồn đáng tin là nguồn nào",
+                "duration_minutes": 90,
+                "content": "Báo chính thống, trang khoa học vs blog, mạng xã hội",
+                "challenge": "Thử thách: xếp hạng độ tin cậy của 8 nguồn cho 1 chủ đề",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn' (1 tin nóng, 3 phút xác minh theo quy trình 3 bước)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Nguồn đáng tin là nguồn nào\": Báo chính thống, trang khoa học vs blog, mạng xã hội. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Phòng tin khẩn': mô phỏng 'tòa soạn' nhận 4 tin trong 15 phút, đội phóng viên nhí phải quyết đăng/không đăng kèm lý do kiểm chứng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: xếp hạng độ tin cậy của 8 nguồn cho 1 chủ đề"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.6.3",
+                "name": "Ảnh giả & deepfake",
+                "duration_minutes": 90,
+                "content": "Dấu hiệu nhận biết ảnh/video do AI tạo",
+                "challenge": "Thử thách: phân biệt 10 ảnh thật/giả, đạt ≥7 điểm",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn' (1 tin nóng, 3 phút xác minh theo quy trình 3 bước)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Ảnh giả & deepfake\": Dấu hiệu nhận biết ảnh/video do AI tạo. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thật – Giả – AI': chiếu 9 ảnh trộn ảnh thật, ảnh chỉnh sửa, ảnh AI tạo; các đội phân loại và chỉ ra dấu hiệu – mỗi dấu hiệu đúng được điểm thưởng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: phân biệt 10 ảnh thật/giả, đạt ≥7 điểm"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.6.4",
+                "name": "Giọng nói giả & lừa đảo",
+                "duration_minutes": 90,
+                "content": "Chiêu giả giọng người thân; quy tắc gọi lại xác minh",
+                "challenge": "Mini project: kịch bản gia đình ứng phó cuộc gọi giả giọng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn' (1 tin nóng, 3 phút xác minh theo quy trình 3 bước)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Giọng nói giả & lừa đảo\": Chiêu giả giọng người thân; quy tắc gọi lại xác minh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Phòng tin khẩn': mô phỏng 'tòa soạn' nhận 4 tin trong 15 phút, đội phóng viên nhí phải quyết đăng/không đăng kèm lý do kiểm chứng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: kịch bản gia đình ứng phó cuộc gọi giả giọng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.6.5",
+                "name": "Kiểm chứng chính AI",
+                "duration_minutes": 90,
+                "content": "Bắt AI tự dẫn nguồn, dò lại nguồn AI đưa có thật không",
+                "challenge": "Thử thách: phát hiện 1 nguồn AI 'bịa' ra",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn' (1 tin nóng, 3 phút xác minh theo quy trình 3 bước)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kiểm chứng chính AI\": Bắt AI tự dẫn nguồn, dò lại nguồn AI đưa có thật không. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thật – Giả – AI': chiếu 9 ảnh trộn ảnh thật, ảnh chỉnh sửa, ảnh AI tạo; các đội phân loại và chỉ ra dấu hiệu – mỗi dấu hiệu đúng được điểm thưởng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: phát hiện 1 nguồn AI 'bịa' ra"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.6.6",
+                "name": "Tổng kết người kiểm chứng",
+                "duration_minutes": 90,
+                "content": "Ôn tập + tình huống tổng hợp",
+                "challenge": "Mini project: cẩm nang kiểm chứng bỏ túi của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn' (1 tin nóng, 3 phút xác minh theo quy trình 3 bước)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng kết người kiểm chứng\": Ôn tập + tình huống tổng hợp. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Phòng tin khẩn': mô phỏng 'tòa soạn' nhận 4 tin trong 15 phút, đội phóng viên nhí phải quyết đăng/không đăng kèm lý do kiểm chứng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: cẩm nang kiểm chứng bỏ túi của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 2.6: 'Đội săn tin giả' – nhóm 2-3 bé nhận 5 mẩu tin (trộn thật/giả/AI tạo), điều tra và nộp báo cáo kiểm chứng có bằng chứng từng mẩu",
+            "teacher_recap": "Qua module này, con đã học được: quy trình kiểm chứng 3 bước – nghi ngờ, tìm nguồn gốc, đối chiếu 2 nguồn độc lập; phân biệt nguồn đáng tin và nguồn không đáng tin; nhận ra dấu hiệu ảnh giả và deepfake; biết chiêu giả giọng người thân và quy tắc gọi lại xác minh; và bắt cả AI phải đưa nguồn rồi dò lại nguồn đó có thật không."
+          },
+          {
+            "code": "2.7",
+            "name": "Quyền riêng tư & đạo đức AI",
+            "sessions": 4,
+            "warmup_ritual": "3' gõ phím + 'Kiểm chứng mở màn'. Trò 'Kho báu thông tin': mỗi bé viết 3 thông tin về mình lên giấy, lớp thảo luận cái nào chia sẻ được, cái nào là 'kho báu' phải giữ.",
+            "games_pool": [
+              "'Tòa án tình huống': bốc thăm tình huống dùng AI gây tranh cãi (nhờ AI làm hết bài văn, dùng ảnh AI dự thi vẽ...), 2 đội tranh biện bênh/phản đối, 'bồi thẩm đoàn' lớp phán quyết"
+            ],
+            "lessons": [
+              {
+                "code": "2.7.1",
+                "name": "Dữ liệu cá nhân là gì",
+                "duration_minutes": 90,
+                "content": "Tên, ảnh, địa chỉ, thói quen – vì sao quý giá",
+                "challenge": "Thử thách: liệt kê 10 loại thông tin không đưa cho AI/mạng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn'. Trò 'Kho báu thông tin': mỗi bé viết 3 thông tin về mình lên giấy, lớp thảo luận cái nào chia sẻ được, cái nào là 'kho báu' phải giữ."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dữ liệu cá nhân là gì\": Tên, ảnh, địa chỉ, thói quen – vì sao quý giá. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tòa án tình huống': bốc thăm tình huống dùng AI gây tranh cãi (nhờ AI làm hết bài văn, dùng ảnh AI dự thi vẽ...), 2 đội tranh biện bênh/phản đối, 'bồi thẩm đoàn' lớp phán quyết"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: liệt kê 10 loại thông tin không đưa cho AI/mạng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.7.2",
+                "name": "AI nhớ gì về em",
+                "duration_minutes": 90,
+                "content": "Hội thoại có thể được lưu; cài đặt quyền riêng tư",
+                "challenge": "Thử thách: kiểm tra và chỉnh cài đặt riêng tư 1 công cụ AI",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn'. Trò 'Kho báu thông tin': mỗi bé viết 3 thông tin về mình lên giấy, lớp thảo luận cái nào chia sẻ được, cái nào là 'kho báu' phải giữ."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"AI nhớ gì về em\": Hội thoại có thể được lưu; cài đặt quyền riêng tư. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tòa án tình huống': bốc thăm tình huống dùng AI gây tranh cãi (nhờ AI làm hết bài văn, dùng ảnh AI dự thi vẽ...), 2 đội tranh biện bênh/phản đối, 'bồi thẩm đoàn' lớp phán quyết"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: kiểm tra và chỉnh cài đặt riêng tư 1 công cụ AI"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.7.3",
+                "name": "Dùng AI có trách nhiệm",
+                "duration_minutes": 90,
+                "content": "Bài AI làm hộ có phải bài của em? Ghi công AI thế nào",
+                "challenge": "Thử thách: tranh luận 2 phe về 1 tình huống dùng AI ở trường",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn'. Trò 'Kho báu thông tin': mỗi bé viết 3 thông tin về mình lên giấy, lớp thảo luận cái nào chia sẻ được, cái nào là 'kho báu' phải giữ."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dùng AI có trách nhiệm\": Bài AI làm hộ có phải bài của em? Ghi công AI thế nào. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tòa án tình huống': bốc thăm tình huống dùng AI gây tranh cãi (nhờ AI làm hết bài văn, dùng ảnh AI dự thi vẽ...), 2 đội tranh biện bênh/phản đối, 'bồi thẩm đoàn' lớp phán quyết"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: tranh luận 2 phe về 1 tình huống dùng AI ở trường"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.7.4",
+                "name": "Bộ quy tắc của em",
+                "duration_minutes": 90,
+                "content": "Tự viết quy tắc dùng AI công bằng và an toàn",
+                "challenge": "Mini project: 'Hiến chương AI' cá nhân, chia sẻ với phụ huynh",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Kiểm chứng mở màn'. Trò 'Kho báu thông tin': mỗi bé viết 3 thông tin về mình lên giấy, lớp thảo luận cái nào chia sẻ được, cái nào là 'kho báu' phải giữ."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Bộ quy tắc của em\": Tự viết quy tắc dùng AI công bằng và an toàn. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tòa án tình huống': bốc thăm tình huống dùng AI gây tranh cãi (nhờ AI làm hết bài văn, dùng ảnh AI dự thi vẽ...), 2 đội tranh biện bênh/phản đối, 'bồi thẩm đoàn' lớp phán quyết"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: 'Hiến chương AI' cá nhân, chia sẻ với phụ huynh"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: thông tin cá nhân (tên, ảnh, địa chỉ) quý như kho báu – không đưa bừa cho AI hay mạng; hội thoại với AI có thể được lưu lại nên con biết chỉnh cài đặt riêng tư; bài AI làm hộ không phải là bài của con – dùng AI phải trung thực và ghi công; và con đã có bản Hiến chương AI của riêng mình."
+          },
+          {
+            "code": "2.8",
+            "name": "Dự án cuối Level 2",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + standup dự án 1 phút/bé: hôm nay làm gì, đang vướng gì – cả lớp gợi ý nhanh cho bạn vướng nhất.",
+            "games_pool": [
+              "'Tấn công – phòng thủ': đội bạn có 5 phút tìm cách làm mô hình của em đoán sai, em ghi lại từng đòn để về vá – trò chơi chính là bài kiểm thử thật"
+            ],
+            "lessons": [
+              {
+                "code": "2.8.1",
+                "name": "Chọn đề tài",
+                "duration_minutes": 90,
+                "content": "Chọn vấn đề thật có thể giải bằng mô hình phân loại + AI",
+                "challenge": "Đề cương dự án được duyệt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé: hôm nay làm gì, đang vướng gì – cả lớp gợi ý nhanh cho bạn vướng nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chọn đề tài\": Chọn vấn đề thật có thể giải bằng mô hình phân loại + AI. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tấn công – phòng thủ': đội bạn có 5 phút tìm cách làm mô hình của em đoán sai, em ghi lại từng đòn để về vá – trò chơi chính là bài kiểm thử thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Đề cương dự án được duyệt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.8.2",
+                "name": "Thu thập dữ liệu",
+                "duration_minutes": 90,
+                "content": "Tự thu thập dữ liệu đúng cách, đa dạng, có kế hoạch",
+                "challenge": "Bộ dữ liệu ≥60 mẫu chia nhóm rõ ràng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé: hôm nay làm gì, đang vướng gì – cả lớp gợi ý nhanh cho bạn vướng nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thu thập dữ liệu\": Tự thu thập dữ liệu đúng cách, đa dạng, có kế hoạch. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tấn công – phòng thủ': đội bạn có 5 phút tìm cách làm mô hình của em đoán sai, em ghi lại từng đòn để về vá – trò chơi chính là bài kiểm thử thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bộ dữ liệu ≥60 mẫu chia nhóm rõ ràng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.8.3",
+                "name": "Huấn luyện & đánh giá",
+                "duration_minutes": 90,
+                "content": "Huấn luyện mô hình, đo độ chính xác, tìm điểm mù",
+                "challenge": "Mô hình đạt mục tiêu + bảng đánh giá",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé: hôm nay làm gì, đang vướng gì – cả lớp gợi ý nhanh cho bạn vướng nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Huấn luyện & đánh giá\": Huấn luyện mô hình, đo độ chính xác, tìm điểm mù. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tấn công – phòng thủ': đội bạn có 5 phút tìm cách làm mô hình của em đoán sai, em ghi lại từng đòn để về vá – trò chơi chính là bài kiểm thử thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mô hình đạt mục tiêu + bảng đánh giá"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.8.4",
+                "name": "Kiểm chứng chéo",
+                "duration_minutes": 90,
+                "content": "Bạn khác thử phá mô hình của em; em vá điểm yếu",
+                "challenge": "Biên bản 'tấn công-phòng thủ' + bản vá",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé: hôm nay làm gì, đang vướng gì – cả lớp gợi ý nhanh cho bạn vướng nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kiểm chứng chéo\": Bạn khác thử phá mô hình của em; em vá điểm yếu. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tấn công – phòng thủ': đội bạn có 5 phút tìm cách làm mô hình của em đoán sai, em ghi lại từng đòn để về vá – trò chơi chính là bài kiểm thử thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Biên bản 'tấn công-phòng thủ' + bản vá"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.8.5",
+                "name": "Hoàn thiện & thuyết minh",
+                "duration_minutes": 90,
+                "content": "Đóng gói dự án, viết thuyết minh 1 trang",
+                "challenge": "Sản phẩm + thuyết minh hoàn chỉnh",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé: hôm nay làm gì, đang vướng gì – cả lớp gợi ý nhanh cho bạn vướng nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Hoàn thiện & thuyết minh\": Đóng gói dự án, viết thuyết minh 1 trang. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tấn công – phòng thủ': đội bạn có 5 phút tìm cách làm mô hình của em đoán sai, em ghi lại từng đòn để về vá – trò chơi chính là bài kiểm thử thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Sản phẩm + thuyết minh hoàn chỉnh"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "2.8.6",
+                "name": "Demo Day Level 2",
+                "duration_minutes": 90,
+                "content": "Trình bày 5 phút + bài test AI literacy cuối level",
+                "challenge": "Demo + đạt điểm test qua level",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé: hôm nay làm gì, đang vướng gì – cả lớp gợi ý nhanh cho bạn vướng nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Demo Day Level 2\": Trình bày 5 phút + bài test AI literacy cuối level. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tấn công – phòng thủ': đội bạn có 5 phút tìm cách làm mô hình của em đoán sai, em ghi lại từng đòn để về vá – trò chơi chính là bài kiểm thử thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Demo + đạt điểm test qua level"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua dự án cuối level, con đã học được: tự chọn vấn đề và thu thập dữ liệu đúng cách; huấn luyện và đo độ chính xác của mô hình; để bạn 'tấn công' tìm điểm yếu rồi vá lại; và trình bày dự án 5 phút. Con đã hoàn thành Level 2 – con hiểu AI và biết kiểm chứng AI!"
+          }
+        ]
+      },
+      {
+        "id": "level_3",
+        "name": "Level 3",
+        "title": "TẠO RA SẢN PHẨM",
+        "duration": "7 tháng",
+        "sessions": 48,
+        "optional": false,
+        "graduation_criteria": "Chuẩn qua level: thực hiện ≥3 phỏng vấn người dùng và rút insight; có MVP chạy được với ≥5 người ngoài gia đình dùng thử; pitch 5 phút trọn vẹn; đọc-sửa được code đơn giản AI sinh ra.",
+        "modules": [
+          {
+            "code": "3.1",
+            "name": "Từ ý tưởng đến sản phẩm",
+            "sessions": 4,
+            "warmup_ritual": "3' gõ phím + 'Sản phẩm quanh ta': coach giơ 1 đồ vật bất kỳ, bé thi nói nhanh 'nó giải quyết vấn đề gì, cho ai' trong 20 giây.",
+            "games_pool": [
+              "'Chợ vấn đề': mỗi bé 'rao bán' 1 vấn đề mình quan sát được trong 30 giây, lớp dùng 3 sticker đầu tư vào vấn đề đáng giải nhất – vấn đề nhiều vốn nhất được cả lớp mổ xẻ",
+              "'Ý tưởng điên rồ': 2 phút mỗi vòng, các đội nghĩ giải pháp càng điên càng tốt cho 1 vấn đề, rồi vòng 2 'thuần hóa' ý điên thành ý làm được – học rằng ý hay thường bắt đầu từ ý lạ"
+            ],
+            "lessons": [
+              {
+                "code": "3.1.1",
+                "name": "Sản phẩm là gì",
+                "duration_minutes": 90,
+                "content": "Sản phẩm giải quyết vấn đề cho người khác, không chỉ cho mình",
+                "challenge": "Thử thách: kể 3 sản phẩm em dùng hằng ngày và vấn đề chúng giải",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Sản phẩm quanh ta': coach giơ 1 đồ vật bất kỳ, bé thi nói nhanh 'nó giải quyết vấn đề gì, cho ai' trong 20 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Sản phẩm là gì\": Sản phẩm giải quyết vấn đề cho người khác, không chỉ cho mình. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Chợ vấn đề': mỗi bé 'rao bán' 1 vấn đề mình quan sát được trong 30 giây, lớp dùng 3 sticker đầu tư vào vấn đề đáng giải nhất – vấn đề nhiều vốn nhất được cả lớp mổ xẻ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: kể 3 sản phẩm em dùng hằng ngày và vấn đề chúng giải"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.1.2",
+                "name": "Săn vấn đề quanh em",
+                "duration_minutes": 90,
+                "content": "Quan sát ở nhà, lớp, khu phố: ai đang gặp khó gì",
+                "challenge": "Mini project: 'Sổ săn vấn đề' ghi 10 vấn đề quan sát được",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Sản phẩm quanh ta': coach giơ 1 đồ vật bất kỳ, bé thi nói nhanh 'nó giải quyết vấn đề gì, cho ai' trong 20 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Săn vấn đề quanh em\": Quan sát ở nhà, lớp, khu phố: ai đang gặp khó gì. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ý tưởng điên rồ': 2 phút mỗi vòng, các đội nghĩ giải pháp càng điên càng tốt cho 1 vấn đề, rồi vòng 2 'thuần hóa' ý điên thành ý làm được – học rằng ý hay thường bắt đầu từ ý lạ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: 'Sổ săn vấn đề' ghi 10 vấn đề quan sát được"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.1.3",
+                "name": "Ý tưởng nhiều chưa chắc hay",
+                "duration_minutes": 90,
+                "content": "Brainstorm rộng rồi lọc theo: có thật? làm nổi? em thích?",
+                "challenge": "Thử thách: từ 10 ý tưởng lọc còn 3 có lý do rõ ràng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Sản phẩm quanh ta': coach giơ 1 đồ vật bất kỳ, bé thi nói nhanh 'nó giải quyết vấn đề gì, cho ai' trong 20 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Ý tưởng nhiều chưa chắc hay\": Brainstorm rộng rồi lọc theo: có thật? làm nổi? em thích?. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Chợ vấn đề': mỗi bé 'rao bán' 1 vấn đề mình quan sát được trong 30 giây, lớp dùng 3 sticker đầu tư vào vấn đề đáng giải nhất – vấn đề nhiều vốn nhất được cả lớp mổ xẻ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: từ 10 ý tưởng lọc còn 3 có lý do rõ ràng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.1.4",
+                "name": "Chọn 1 hướng đi",
+                "duration_minutes": 90,
+                "content": "Chốt vấn đề sẽ theo đuổi cả level",
+                "challenge": "Bản cam kết đề tài 1 trang: vấn đề – ai gặp – vì sao chọn",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Sản phẩm quanh ta': coach giơ 1 đồ vật bất kỳ, bé thi nói nhanh 'nó giải quyết vấn đề gì, cho ai' trong 20 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chọn 1 hướng đi\": Chốt vấn đề sẽ theo đuổi cả level. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Ý tưởng điên rồ': 2 phút mỗi vòng, các đội nghĩ giải pháp càng điên càng tốt cho 1 vấn đề, rồi vòng 2 'thuần hóa' ý điên thành ý làm được – học rằng ý hay thường bắt đầu từ ý lạ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản cam kết đề tài 1 trang: vấn đề – ai gặp – vì sao chọn"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: sản phẩm là thứ giải quyết vấn đề cho NGƯỜI KHÁC chứ không chỉ cho mình; cách quan sát và 'săn' vấn đề quanh mình; ý tưởng nhiều chưa chắc hay – phải lọc theo tiêu chí; và con đã chọn được 1 vấn đề để theo đuổi suốt level này."
+          },
+          {
+            "code": "3.2",
+            "name": "Lắng nghe người dùng",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Nghe 60 giây': bé A kể chuyện 1 phút, bé B nghe xong kể lại – lớp chấm xem B giữ được bao nhiêu % ý của A.",
+            "games_pool": [
+              "'Phỏng vấn ngược': bé phỏng vấn coach về tuổi thơ của coach, coach cố tình trả lời ngắn – bé phải dùng câu hỏi mở và follow-up để 'moi' chuyện",
+              "'Câu hỏi cấm': thi phỏng vấn 3 phút mà không được dùng câu hỏi có/không – lỡ dùng là chuông reo, đổi lượt"
+            ],
+            "lessons": [
+              {
+                "code": "3.2.1",
+                "name": "Vì sao phải hỏi người thật",
+                "duration_minutes": 90,
+                "content": "Điều mình nghĩ ≠ điều người dùng cần; ví dụ sản phẩm thất bại",
+                "challenge": "Thử thách: đoán nhu cầu của bạn cùng lớp rồi hỏi thật – so kết quả",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Nghe 60 giây': bé A kể chuyện 1 phút, bé B nghe xong kể lại – lớp chấm xem B giữ được bao nhiêu % ý của A."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Vì sao phải hỏi người thật\": Điều mình nghĩ ≠ điều người dùng cần; ví dụ sản phẩm thất bại. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Phỏng vấn ngược': bé phỏng vấn coach về tuổi thơ của coach, coach cố tình trả lời ngắn – bé phải dùng câu hỏi mở và follow-up để 'moi' chuyện"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: đoán nhu cầu của bạn cùng lớp rồi hỏi thật – so kết quả"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.2.2",
+                "name": "Nghệ thuật đặt câu hỏi",
+                "duration_minutes": 90,
+                "content": "Câu hỏi mở vs đóng; không hỏi mớm",
+                "challenge": "Thử thách: chuyển 5 câu hỏi mớm thành câu hỏi mở",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Nghe 60 giây': bé A kể chuyện 1 phút, bé B nghe xong kể lại – lớp chấm xem B giữ được bao nhiêu % ý của A."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Nghệ thuật đặt câu hỏi\": Câu hỏi mở vs đóng; không hỏi mớm. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Câu hỏi cấm': thi phỏng vấn 3 phút mà không được dùng câu hỏi có/không – lỡ dùng là chuông reo, đổi lượt"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: chuyển 5 câu hỏi mớm thành câu hỏi mở"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.2.3",
+                "name": "Luyện phỏng vấn",
+                "duration_minutes": 90,
+                "content": "Đóng vai phỏng vấn trong lớp, ghi chép nhanh",
+                "challenge": "Thử thách: phỏng vấn 1 bạn 10 phút, ghi được ≥5 ý chính",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Nghe 60 giây': bé A kể chuyện 1 phút, bé B nghe xong kể lại – lớp chấm xem B giữ được bao nhiêu % ý của A."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Luyện phỏng vấn\": Đóng vai phỏng vấn trong lớp, ghi chép nhanh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Phỏng vấn ngược': bé phỏng vấn coach về tuổi thơ của coach, coach cố tình trả lời ngắn – bé phải dùng câu hỏi mở và follow-up để 'moi' chuyện"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: phỏng vấn 1 bạn 10 phút, ghi được ≥5 ý chính"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.2.4",
+                "name": "Phỏng vấn người thật số 1",
+                "duration_minutes": 90,
+                "content": "Phỏng vấn 1 người ngoài lớp về vấn đề đã chọn",
+                "challenge": "Biên bản phỏng vấn thứ nhất",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Nghe 60 giây': bé A kể chuyện 1 phút, bé B nghe xong kể lại – lớp chấm xem B giữ được bao nhiêu % ý của A."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Phỏng vấn người thật số 1\": Phỏng vấn 1 người ngoài lớp về vấn đề đã chọn. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Câu hỏi cấm': thi phỏng vấn 3 phút mà không được dùng câu hỏi có/không – lỡ dùng là chuông reo, đổi lượt"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Biên bản phỏng vấn thứ nhất"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.2.5",
+                "name": "Phỏng vấn người thật số 2-3",
+                "duration_minutes": 90,
+                "content": "Thêm 2 cuộc phỏng vấn, để ý điểm lặp lại",
+                "challenge": "Biên bản 2 cuộc + ghi chú điểm giống nhau",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Nghe 60 giây': bé A kể chuyện 1 phút, bé B nghe xong kể lại – lớp chấm xem B giữ được bao nhiêu % ý của A."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Phỏng vấn người thật số 2-3\": Thêm 2 cuộc phỏng vấn, để ý điểm lặp lại. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Phỏng vấn ngược': bé phỏng vấn coach về tuổi thơ của coach, coach cố tình trả lời ngắn – bé phải dùng câu hỏi mở và follow-up để 'moi' chuyện"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Biên bản 2 cuộc + ghi chú điểm giống nhau"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.2.6",
+                "name": "Rút ra insight",
+                "duration_minutes": 90,
+                "content": "Từ 3 cuộc phỏng vấn tìm ra 1 điều bất ngờ đáng giải quyết",
+                "challenge": "Mini project: 1 trang insight – 'Điều em không ngờ tới'",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Nghe 60 giây': bé A kể chuyện 1 phút, bé B nghe xong kể lại – lớp chấm xem B giữ được bao nhiêu % ý của A."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Rút ra insight\": Từ 3 cuộc phỏng vấn tìm ra 1 điều bất ngờ đáng giải quyết. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Câu hỏi cấm': thi phỏng vấn 3 phút mà không được dùng câu hỏi có/không – lỡ dùng là chuông reo, đổi lượt"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: 1 trang insight – 'Điều em không ngờ tới'"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 3.2: 'Chân dung người dùng của em' – tổng hợp 3 phỏng vấn thành 1 persona hoàn chỉnh: họ là ai, cần gì, đau ở đâu",
+            "teacher_recap": "Qua module này, con đã học được: điều mình nghĩ khác điều người dùng thật sự cần; hỏi câu mở thay vì câu mớm; cách phỏng vấn và ghi chép như một nhà nghiên cứu nhí; con đã phỏng vấn 3 người thật; và rút ra được 1 insight – điều bất ngờ mà chỉ ai chịu lắng nghe mới thấy."
+          },
+          {
+            "code": "3.3",
+            "name": "Xác định giải pháp & thiết kế MVP",
+            "sessions": 4,
+            "warmup_ritual": "3' gõ phím + standup dự án 1 phút. Trò 'Cắt tính năng': coach nêu 1 app quen thuộc, bé thi liệt kê tính năng rồi cả lớp vote giữ lại đúng 3 cái cốt lõi.",
+            "games_pool": [
+              "'Xưởng giấy tốc độ': các đội có 10 phút và 5 tờ giấy để phác wireframe cùng 1 đề bài, dán lên tường, đi 'tham quan triển lãm' và dán sticker góp ý cho nhau"
+            ],
+            "lessons": [
+              {
+                "code": "3.3.1",
+                "name": "Từ insight ra giải pháp",
+                "duration_minutes": 90,
+                "content": "Nhiều cách giải 1 vấn đề; chọn cách nhỏ nhất mà hữu ích",
+                "challenge": "Thử thách: nghĩ 5 giải pháp, chọn 1 và bảo vệ lựa chọn",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút. Trò 'Cắt tính năng': coach nêu 1 app quen thuộc, bé thi liệt kê tính năng rồi cả lớp vote giữ lại đúng 3 cái cốt lõi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Từ insight ra giải pháp\": Nhiều cách giải 1 vấn đề; chọn cách nhỏ nhất mà hữu ích. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xưởng giấy tốc độ': các đội có 10 phút và 5 tờ giấy để phác wireframe cùng 1 đề bài, dán lên tường, đi 'tham quan triển lãm' và dán sticker góp ý cho nhau"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: nghĩ 5 giải pháp, chọn 1 và bảo vệ lựa chọn"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.3.2",
+                "name": "MVP – nhỏ mà chạy được",
+                "duration_minutes": 90,
+                "content": "Phiên bản tối thiểu: bỏ hết tính năng 'cho vui'",
+                "challenge": "Thử thách: cắt danh sách 10 tính năng xuống 3 cốt lõi",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút. Trò 'Cắt tính năng': coach nêu 1 app quen thuộc, bé thi liệt kê tính năng rồi cả lớp vote giữ lại đúng 3 cái cốt lõi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"MVP – nhỏ mà chạy được\": Phiên bản tối thiểu: bỏ hết tính năng 'cho vui'. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xưởng giấy tốc độ': các đội có 10 phút và 5 tờ giấy để phác wireframe cùng 1 đề bài, dán lên tường, đi 'tham quan triển lãm' và dán sticker góp ý cho nhau"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cắt danh sách 10 tính năng xuống 3 cốt lõi"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.3.3",
+                "name": "Vẽ phác sản phẩm",
+                "duration_minutes": 90,
+                "content": "Wireframe giấy: màn hình, nút bấm, luồng sử dụng",
+                "challenge": "Mini project: wireframe giấy 3-5 màn hình",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút. Trò 'Cắt tính năng': coach nêu 1 app quen thuộc, bé thi liệt kê tính năng rồi cả lớp vote giữ lại đúng 3 cái cốt lõi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Vẽ phác sản phẩm\": Wireframe giấy: màn hình, nút bấm, luồng sử dụng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xưởng giấy tốc độ': các đội có 10 phút và 5 tờ giấy để phác wireframe cùng 1 đề bài, dán lên tường, đi 'tham quan triển lãm' và dán sticker góp ý cho nhau"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: wireframe giấy 3-5 màn hình"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.3.4",
+                "name": "Người dùng duyệt bản vẽ",
+                "duration_minutes": 90,
+                "content": "Cho 2 người xem wireframe, sửa theo góp ý",
+                "challenge": "Wireframe bản 2 + danh sách thay đổi",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút. Trò 'Cắt tính năng': coach nêu 1 app quen thuộc, bé thi liệt kê tính năng rồi cả lớp vote giữ lại đúng 3 cái cốt lõi."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Người dùng duyệt bản vẽ\": Cho 2 người xem wireframe, sửa theo góp ý. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xưởng giấy tốc độ': các đội có 10 phút và 5 tờ giấy để phác wireframe cùng 1 đề bài, dán lên tường, đi 'tham quan triển lãm' và dán sticker góp ý cho nhau"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Wireframe bản 2 + danh sách thay đổi"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: một vấn đề có nhiều cách giải – chọn cách nhỏ nhất mà hữu ích; MVP là bản tối thiểu chạy được, cắt hết tính năng 'cho vui'; vẽ wireframe giấy trước khi làm thật; và cho người dùng duyệt bản vẽ để sửa sớm – sửa trên giấy rẻ hơn sửa trên sản phẩm."
+          },
+          {
+            "code": "3.4",
+            "name": "Code nền tảng (Python cơ bản)",
+            "sessions": 8,
+            "warmup_ritual": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'.",
+            "games_pool": [
+              "'Người máy Python': bé viết lệnh trên giấy (for, if) điều khiển 'robot bạn' đi lấy đồ trong lớp – lệnh sai cú pháp robot đứng im kêu 'SyntaxError!'",
+              "'Săn bug tính giờ': coach phát đoạn code có 3 lỗi, đội sửa xong chạy đúng trước thì thắng; luật vàng: phải nói được VÌ SAO lỗi, không chỉ sửa mò"
+            ],
+            "lessons": [
+              {
+                "code": "3.4.1",
+                "name": "Dòng code đầu tiên",
+                "duration_minutes": 90,
+                "content": "In ra màn hình, biến, phép tính; so với Scratch",
+                "challenge": "Thử thách: chương trình chào hỏi có tên và tuổi",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dòng code đầu tiên\": In ra màn hình, biến, phép tính; so với Scratch. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Người máy Python': bé viết lệnh trên giấy (for, if) điều khiển 'robot bạn' đi lấy đồ trong lớp – lệnh sai cú pháp robot đứng im kêu 'SyntaxError!'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: chương trình chào hỏi có tên và tuổi"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.4.2",
+                "name": "Điều kiện trong Python",
+                "duration_minutes": 90,
+                "content": "if/else từ Scratch sang chữ viết",
+                "challenge": "Thử thách: chương trình phân loại điểm ra lời khen",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Điều kiện trong Python\": if/else từ Scratch sang chữ viết. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn bug tính giờ': coach phát đoạn code có 3 lỗi, đội sửa xong chạy đúng trước thì thắng; luật vàng: phải nói được VÌ SAO lỗi, không chỉ sửa mò"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: chương trình phân loại điểm ra lời khen"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.4.3",
+                "name": "Vòng lặp trong Python",
+                "duration_minutes": 90,
+                "content": "for/while; lặp qua danh sách",
+                "challenge": "Thử thách: in bảng cửu chương em chọn",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Vòng lặp trong Python\": for/while; lặp qua danh sách. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Người máy Python': bé viết lệnh trên giấy (for, if) điều khiển 'robot bạn' đi lấy đồ trong lớp – lệnh sai cú pháp robot đứng im kêu 'SyntaxError!'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: in bảng cửu chương em chọn"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.4.4",
+                "name": "Danh sách & chuỗi",
+                "duration_minutes": 90,
+                "content": "Lưu nhiều thứ, đếm, tìm kiếm trong danh sách",
+                "challenge": "Mini project: sổ quản lý việc cần làm chạy trên console",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Danh sách & chuỗi\": Lưu nhiều thứ, đếm, tìm kiếm trong danh sách. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn bug tính giờ': coach phát đoạn code có 3 lỗi, đội sửa xong chạy đúng trước thì thắng; luật vàng: phải nói được VÌ SAO lỗi, không chỉ sửa mò"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: sổ quản lý việc cần làm chạy trên console"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.4.5",
+                "name": "Hàm – gói code lại dùng nhiều lần",
+                "duration_minutes": 90,
+                "content": "Viết hàm, truyền tham số",
+                "challenge": "Thử thách: gói 3 đoạn code lặp lại thành 3 hàm",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Hàm – gói code lại dùng nhiều lần\": Viết hàm, truyền tham số. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Người máy Python': bé viết lệnh trên giấy (for, if) điều khiển 'robot bạn' đi lấy đồ trong lớp – lệnh sai cú pháp robot đứng im kêu 'SyntaxError!'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: gói 3 đoạn code lặp lại thành 3 hàm"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.4.6",
+                "name": "Đọc code AI viết",
+                "duration_minutes": 90,
+                "content": "AI sinh code – em đọc hiểu, tìm chỗ sai",
+                "challenge": "Thử thách: bắt 3 lỗi trong đoạn code AI cố tình viết sai",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Đọc code AI viết\": AI sinh code – em đọc hiểu, tìm chỗ sai. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn bug tính giờ': coach phát đoạn code có 3 lỗi, đội sửa xong chạy đúng trước thì thắng; luật vàng: phải nói được VÌ SAO lỗi, không chỉ sửa mò"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: bắt 3 lỗi trong đoạn code AI cố tình viết sai"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.4.7",
+                "name": "Sửa & cải tiến code AI",
+                "duration_minutes": 90,
+                "content": "Yêu cầu AI sửa, tự sửa tay, so hai cách",
+                "challenge": "Thử thách: làm đoạn code AI chạy đúng theo 2 con đường",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Sửa & cải tiến code AI\": Yêu cầu AI sửa, tự sửa tay, so hai cách. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Người máy Python': bé viết lệnh trên giấy (for, if) điều khiển 'robot bạn' đi lấy đồ trong lớp – lệnh sai cú pháp robot đứng im kêu 'SyntaxError!'"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: làm đoạn code AI chạy đúng theo 2 con đường"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.4.8",
+                "name": "Mini game console",
+                "duration_minutes": 90,
+                "content": "Tổng hợp kiến thức vào 1 game chữ nhỏ",
+                "challenge": "Mini project: game đoán số/oẳn tù tì bằng Python",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Đọc code đoán kết quả': coach chiếu 4-6 dòng Python, cả lớp ghi dự đoán output vào bảng con rồi chạy thử – ai đoán trúng nhiều buổi liền được danh hiệu 'Thầy bói code'."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Mini game console\": Tổng hợp kiến thức vào 1 game chữ nhỏ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Săn bug tính giờ': coach phát đoạn code có 3 lỗi, đội sửa xong chạy đúng trước thì thắng; luật vàng: phải nói được VÌ SAO lỗi, không chỉ sửa mò"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: game đoán số/oẳn tù tì bằng Python"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 3.4: chương trình Python nhỏ hỗ trợ chính đề tài của em (ví dụ: tính toán, quản lý danh sách) – code có chú thích giải thích từng phần",
+            "teacher_recap": "Qua module này, con đã học được: viết những dòng Python đầu tiên – biến, điều kiện, vòng lặp, danh sách, hàm; những khối Scratch ngày xưa giờ thành chữ viết; đọc hiểu code do AI sinh ra và bắt được lỗi trong đó; và tự làm một game chữ nhỏ chạy trên máy tính."
+          },
+          {
+            "code": "3.5",
+            "name": "Xây MVP với AI & no-code",
+            "sessions": 8,
+            "warmup_ritual": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì).",
+            "games_pool": [
+              "'Đổi ghế 5 phút': hai bé đổi máy, dùng thử sản phẩm của nhau 5 phút không được hỏi – ghi lại chỗ nào bị kẹt, trả máy kèm 2 góp ý 1 lời khen",
+              "'Bug bounty': cuối giờ ai tìm được lỗi trong sản phẩm của bạn (kèm cách tái hiện lỗi) được thưởng điểm 'thợ săn tiền thưởng' – lỗi của mình được bạn tìm hộ cũng là quà"
+            ],
+            "lessons": [
+              {
+                "code": "3.5.1",
+                "name": "Chọn công cụ phù hợp",
+                "duration_minutes": 90,
+                "content": "Vibe coding vs no-code vs code tay: khi nào dùng gì",
+                "challenge": "Bản kế hoạch công cụ cho MVP của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chọn công cụ phù hợp\": Vibe coding vs no-code vs code tay: khi nào dùng gì. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đổi ghế 5 phút': hai bé đổi máy, dùng thử sản phẩm của nhau 5 phút không được hỏi – ghi lại chỗ nào bị kẹt, trả máy kèm 2 góp ý 1 lời khen"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản kế hoạch công cụ cho MVP của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.5.2",
+                "name": "Dựng khung sản phẩm",
+                "duration_minutes": 90,
+                "content": "Tạo dự án, dựng màn hình chính theo wireframe",
+                "challenge": "Khung MVP mở lên được",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dựng khung sản phẩm\": Tạo dự án, dựng màn hình chính theo wireframe. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bug bounty': cuối giờ ai tìm được lỗi trong sản phẩm của bạn (kèm cách tái hiện lỗi) được thưởng điểm 'thợ săn tiền thưởng' – lỗi của mình được bạn tìm hộ cũng là quà"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Khung MVP mở lên được"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.5.3",
+                "name": "Tính năng cốt lõi số 1",
+                "duration_minutes": 90,
+                "content": "Làm tính năng quan trọng nhất chạy được",
+                "challenge": "Tính năng 1 demo được",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tính năng cốt lõi số 1\": Làm tính năng quan trọng nhất chạy được. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đổi ghế 5 phút': hai bé đổi máy, dùng thử sản phẩm của nhau 5 phút không được hỏi – ghi lại chỗ nào bị kẹt, trả máy kèm 2 góp ý 1 lời khen"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Tính năng 1 demo được"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.5.4",
+                "name": "Tính năng cốt lõi số 2",
+                "duration_minutes": 90,
+                "content": "Tính năng thứ hai + kết nối hai phần",
+                "challenge": "Tính năng 2 demo được",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tính năng cốt lõi số 2\": Tính năng thứ hai + kết nối hai phần. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bug bounty': cuối giờ ai tìm được lỗi trong sản phẩm của bạn (kèm cách tái hiện lỗi) được thưởng điểm 'thợ săn tiền thưởng' – lỗi của mình được bạn tìm hộ cũng là quà"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Tính năng 2 demo được"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.5.5",
+                "name": "Dữ liệu thật vào sản phẩm",
+                "duration_minutes": 90,
+                "content": "Nhập nội dung thật thay dữ liệu giả",
+                "challenge": "MVP có nội dung thật",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dữ liệu thật vào sản phẩm\": Nhập nội dung thật thay dữ liệu giả. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đổi ghế 5 phút': hai bé đổi máy, dùng thử sản phẩm của nhau 5 phút không được hỏi – ghi lại chỗ nào bị kẹt, trả máy kèm 2 góp ý 1 lời khen"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "MVP có nội dung thật"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.5.6",
+                "name": "Sửa lỗi cùng AI",
+                "duration_minutes": 90,
+                "content": "Dùng AI debug: mô tả lỗi đúng cách, kiểm tra bản sửa",
+                "challenge": "Nhật ký 5 lỗi đã sửa: lỗi gì, AI gợi ý gì, em quyết gì",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Sửa lỗi cùng AI\": Dùng AI debug: mô tả lỗi đúng cách, kiểm tra bản sửa. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bug bounty': cuối giờ ai tìm được lỗi trong sản phẩm của bạn (kèm cách tái hiện lỗi) được thưởng điểm 'thợ săn tiền thưởng' – lỗi của mình được bạn tìm hộ cũng là quà"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Nhật ký 5 lỗi đã sửa: lỗi gì, AI gợi ý gì, em quyết gì"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.5.7",
+                "name": "Làm đẹp vừa đủ",
+                "duration_minutes": 90,
+                "content": "Màu, chữ, bố cục dễ dùng; tránh trang trí quá đà",
+                "challenge": "MVP bản dùng thử được",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Làm đẹp vừa đủ\": Màu, chữ, bố cục dễ dùng; tránh trang trí quá đà. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đổi ghế 5 phút': hai bé đổi máy, dùng thử sản phẩm của nhau 5 phút không được hỏi – ghi lại chỗ nào bị kẹt, trả máy kèm 2 góp ý 1 lời khen"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "MVP bản dùng thử được"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.5.8",
+                "name": "Tổng duyệt nội bộ",
+                "duration_minutes": 90,
+                "content": "Cả lớp dùng thử chéo, ghi nhận lỗi lần cuối",
+                "challenge": "Danh sách lỗi + bản sửa trước khi gặp người dùng thật",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé (đang xây tính năng nào, vướng gì)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng duyệt nội bộ\": Cả lớp dùng thử chéo, ghi nhận lỗi lần cuối. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Bug bounty': cuối giờ ai tìm được lỗi trong sản phẩm của bạn (kèm cách tái hiện lỗi) được thưởng điểm 'thợ săn tiền thưởng' – lỗi của mình được bạn tìm hộ cũng là quà"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Danh sách lỗi + bản sửa trước khi gặp người dùng thật"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 3.5: MVP hoàn chỉnh phiên bản 1 – chạy được từ đầu đến cuối luồng chính, sẵn sàng cho người dùng thật",
+            "teacher_recap": "Qua module này, con đã học được: chọn đúng công cụ cho đúng việc (AI code, no-code hay code tay); dựng sản phẩm từ khung đến tính năng theo wireframe; mô tả lỗi đúng cách để AI giúp sửa nhanh; làm đẹp vừa đủ – dễ dùng quan trọng hơn lấp lánh; và con đã có MVP phiên bản 1 chạy được từ đầu đến cuối!"
+          },
+          {
+            "code": "3.6",
+            "name": "Test với người dùng thật",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Quan sát thầm lặng': xem video 1 người dùng thử app bị kẹt, bé thi ghi nhanh 'họ kẹt ở đâu, biểu hiện gì' – luyện mắt quan sát trước buổi test thật.",
+            "games_pool": [
+              "'Nhập vai người dùng khó tính': coach/bé đóng vai người dùng bấm lung tung, hiểu sai hướng dẫn – chủ sản phẩm phải im lặng quan sát, không được nhắc, chỉ ghi chép",
+              "'Xếp hạng nỗi đau': viết mỗi lỗi lên 1 sticky note, cả đội xếp lên trục 'nặng–nhẹ / dễ sửa–khó sửa', chọn góc 'nặng mà dễ sửa' làm trước – học ưu tiên như PM thật"
+            ],
+            "lessons": [
+              {
+                "code": "3.6.1",
+                "name": "Thiết kế buổi test",
+                "duration_minutes": 90,
+                "content": "Kịch bản test: nhờ người dùng làm gì, quan sát gì",
+                "challenge": "Kịch bản test 1 trang",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Quan sát thầm lặng': xem video 1 người dùng thử app bị kẹt, bé thi ghi nhanh 'họ kẹt ở đâu, biểu hiện gì' – luyện mắt quan sát trước buổi test thật."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thiết kế buổi test\": Kịch bản test: nhờ người dùng làm gì, quan sát gì. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Nhập vai người dùng khó tính': coach/bé đóng vai người dùng bấm lung tung, hiểu sai hướng dẫn – chủ sản phẩm phải im lặng quan sát, không được nhắc, chỉ ghi chép"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Kịch bản test 1 trang"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.6.2",
+                "name": "Buổi test số 1",
+                "duration_minutes": 90,
+                "content": "2 người thật dùng sản phẩm, em quan sát không nhắc",
+                "challenge": "Biên bản test 1: họ kẹt ở đâu, nói gì",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Quan sát thầm lặng': xem video 1 người dùng thử app bị kẹt, bé thi ghi nhanh 'họ kẹt ở đâu, biểu hiện gì' – luyện mắt quan sát trước buổi test thật."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Buổi test số 1\": 2 người thật dùng sản phẩm, em quan sát không nhắc. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xếp hạng nỗi đau': viết mỗi lỗi lên 1 sticky note, cả đội xếp lên trục 'nặng–nhẹ / dễ sửa–khó sửa', chọn góc 'nặng mà dễ sửa' làm trước – học ưu tiên như PM thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Biên bản test 1: họ kẹt ở đâu, nói gì"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.6.3",
+                "name": "Phân tích & sửa đợt 1",
+                "duration_minutes": 90,
+                "content": "Gom lỗi theo mức nặng nhẹ, sửa cái quan trọng nhất",
+                "challenge": "Bản sửa đợt 1 + lý do ưu tiên",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Quan sát thầm lặng': xem video 1 người dùng thử app bị kẹt, bé thi ghi nhanh 'họ kẹt ở đâu, biểu hiện gì' – luyện mắt quan sát trước buổi test thật."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Phân tích & sửa đợt 1\": Gom lỗi theo mức nặng nhẹ, sửa cái quan trọng nhất. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Nhập vai người dùng khó tính': coach/bé đóng vai người dùng bấm lung tung, hiểu sai hướng dẫn – chủ sản phẩm phải im lặng quan sát, không được nhắc, chỉ ghi chép"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản sửa đợt 1 + lý do ưu tiên"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.6.4",
+                "name": "Buổi test số 2",
+                "duration_minutes": 90,
+                "content": "2-3 người khác test bản đã sửa",
+                "challenge": "Biên bản test 2 + so sánh với lần 1",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Quan sát thầm lặng': xem video 1 người dùng thử app bị kẹt, bé thi ghi nhanh 'họ kẹt ở đâu, biểu hiện gì' – luyện mắt quan sát trước buổi test thật."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Buổi test số 2\": 2-3 người khác test bản đã sửa. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xếp hạng nỗi đau': viết mỗi lỗi lên 1 sticky note, cả đội xếp lên trục 'nặng–nhẹ / dễ sửa–khó sửa', chọn góc 'nặng mà dễ sửa' làm trước – học ưu tiên như PM thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Biên bản test 2 + so sánh với lần 1"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.6.5",
+                "name": "Sửa đợt 2",
+                "duration_minutes": 90,
+                "content": "Tinh chỉnh lần cuối theo phản hồi",
+                "challenge": "MVP bản 1.1",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Quan sát thầm lặng': xem video 1 người dùng thử app bị kẹt, bé thi ghi nhanh 'họ kẹt ở đâu, biểu hiện gì' – luyện mắt quan sát trước buổi test thật."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Sửa đợt 2\": Tinh chỉnh lần cuối theo phản hồi. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Nhập vai người dùng khó tính': coach/bé đóng vai người dùng bấm lung tung, hiểu sai hướng dẫn – chủ sản phẩm phải im lặng quan sát, không được nhắc, chỉ ghi chép"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "MVP bản 1.1"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.6.6",
+                "name": "Người dùng chấm điểm",
+                "duration_minutes": 90,
+                "content": "Người dùng đánh giá theo thang đơn giản; em nhận phản hồi thẳng",
+                "challenge": "Bảng điểm từ ≥4 người dùng thật",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Quan sát thầm lặng': xem video 1 người dùng thử app bị kẹt, bé thi ghi nhanh 'họ kẹt ở đâu, biểu hiện gì' – luyện mắt quan sát trước buổi test thật."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Người dùng chấm điểm\": Người dùng đánh giá theo thang đơn giản; em nhận phản hồi thẳng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Xếp hạng nỗi đau': viết mỗi lỗi lên 1 sticky note, cả đội xếp lên trục 'nặng–nhẹ / dễ sửa–khó sửa', chọn góc 'nặng mà dễ sửa' làm trước – học ưu tiên như PM thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bảng điểm từ ≥4 người dùng thật"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 3.6: 'Nhật ký lột xác' – tài liệu trước/sau: sản phẩm thay đổi gì nhờ người dùng, kèm ảnh chụp hai phiên bản",
+            "teacher_recap": "Qua module này, con đã học được: cách tổ chức buổi test – quan sát người dùng mà KHÔNG nhắc bài; người dùng kẹt ở đâu là sản phẩm cần sửa ở đó, không phải người dùng kém; sắp xếp lỗi theo mức quan trọng để sửa cái đáng sửa trước; và nhận điểm đánh giá thẳng thắn từ người thật mà không buồn – vì phản hồi là quà."
+          },
+          {
+            "code": "3.7",
+            "name": "Ra mắt sản phẩm",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Pitch 30 giây ngẫu nhiên': bốc thăm 1 đồ vật trong lớp, bé phải 'quảng cáo' nó trong 30 giây – luyện nói về sản phẩm mọi lúc.",
+            "games_pool": [
+              "'Đặt tên triệu đô': lớp thi đặt tên + tagline cho sản phẩm của 1 bạn, chủ sản phẩm chấm giải; vui mà chủ nhân có thêm lựa chọn thật",
+              "'Thử thách 60 giây vàng': quay video demo đúng 1 phút không quá không thiếu – quá giờ là quay lại, luyện nói cô đọng"
+            ],
+            "lessons": [
+              {
+                "code": "3.7.1",
+                "name": "Đặt tên & câu chuyện",
+                "duration_minutes": 90,
+                "content": "Tên dễ nhớ + 1 câu giới thiệu 'sản phẩm này giúp ai làm gì'",
+                "challenge": "Tên + tagline được lớp bình chọn góp ý",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Pitch 30 giây ngẫu nhiên': bốc thăm 1 đồ vật trong lớp, bé phải 'quảng cáo' nó trong 30 giây – luyện nói về sản phẩm mọi lúc."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Đặt tên & câu chuyện\": Tên dễ nhớ + 1 câu giới thiệu 'sản phẩm này giúp ai làm gì'. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đặt tên triệu đô': lớp thi đặt tên + tagline cho sản phẩm của 1 bạn, chủ sản phẩm chấm giải; vui mà chủ nhân có thêm lựa chọn thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Tên + tagline được lớp bình chọn góp ý"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.7.2",
+                "name": "Trang giới thiệu",
+                "duration_minutes": 90,
+                "content": "Làm trang/poster giới thiệu: vấn đề, giải pháp, ảnh chụp",
+                "challenge": "Trang giới thiệu hoàn chỉnh",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Pitch 30 giây ngẫu nhiên': bốc thăm 1 đồ vật trong lớp, bé phải 'quảng cáo' nó trong 30 giây – luyện nói về sản phẩm mọi lúc."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Trang giới thiệu\": Làm trang/poster giới thiệu: vấn đề, giải pháp, ảnh chụp. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thử thách 60 giây vàng': quay video demo đúng 1 phút không quá không thiếu – quá giờ là quay lại, luyện nói cô đọng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Trang giới thiệu hoàn chỉnh"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.7.3",
+                "name": "Video demo 60 giây",
+                "duration_minutes": 90,
+                "content": "Quay màn hình + lời dẫn ngắn gọn",
+                "challenge": "Video demo 1 phút",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Pitch 30 giây ngẫu nhiên': bốc thăm 1 đồ vật trong lớp, bé phải 'quảng cáo' nó trong 30 giây – luyện nói về sản phẩm mọi lúc."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Video demo 60 giây\": Quay màn hình + lời dẫn ngắn gọn. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đặt tên triệu đô': lớp thi đặt tên + tagline cho sản phẩm của 1 bạn, chủ sản phẩm chấm giải; vui mà chủ nhân có thêm lựa chọn thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Video demo 1 phút"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.7.4",
+                "name": "Đưa đến người dùng",
+                "duration_minutes": 90,
+                "content": "Gửi cho 5-10 người phù hợp, mời dùng thử",
+                "challenge": "≥5 người ngoài lớp đã chạm vào sản phẩm",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Pitch 30 giây ngẫu nhiên': bốc thăm 1 đồ vật trong lớp, bé phải 'quảng cáo' nó trong 30 giây – luyện nói về sản phẩm mọi lúc."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Đưa đến người dùng\": Gửi cho 5-10 người phù hợp, mời dùng thử. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thử thách 60 giây vàng': quay video demo đúng 1 phút không quá không thiếu – quá giờ là quay lại, luyện nói cô đọng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "≥5 người ngoài lớp đã chạm vào sản phẩm"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.7.5",
+                "name": "Theo dõi tuần đầu",
+                "duration_minutes": 90,
+                "content": "Ai dùng, dùng phần nào, bỏ ở đâu",
+                "challenge": "Bảng theo dõi đơn giản tuần đầu",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Pitch 30 giây ngẫu nhiên': bốc thăm 1 đồ vật trong lớp, bé phải 'quảng cáo' nó trong 30 giây – luyện nói về sản phẩm mọi lúc."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Theo dõi tuần đầu\": Ai dùng, dùng phần nào, bỏ ở đâu. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Đặt tên triệu đô': lớp thi đặt tên + tagline cho sản phẩm của 1 bạn, chủ sản phẩm chấm giải; vui mà chủ nhân có thêm lựa chọn thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bảng theo dõi đơn giản tuần đầu"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.7.6",
+                "name": "Rút bài học ra mắt",
+                "duration_minutes": 90,
+                "content": "Điều gì hiệu quả, điều gì làm khác nếu được làm lại",
+                "challenge": "1 trang 'bài học ra mắt' của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Pitch 30 giây ngẫu nhiên': bốc thăm 1 đồ vật trong lớp, bé phải 'quảng cáo' nó trong 30 giây – luyện nói về sản phẩm mọi lúc."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Rút bài học ra mắt\": Điều gì hiệu quả, điều gì làm khác nếu được làm lại. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thử thách 60 giây vàng': quay video demo đúng 1 phút không quá không thiếu – quá giờ là quay lại, luyện nói cô đọng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "1 trang 'bài học ra mắt' của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: đặt tên sản phẩm và kể câu chuyện 1 câu 'giúp ai làm gì'; làm trang giới thiệu và video demo 60 giây; đưa sản phẩm đến đúng người cần nó; theo dõi tuần đầu xem ai dùng, bỏ ở đâu; và rút ra bài học ra mắt cho lần sau."
+          },
+          {
+            "code": "3.8",
+            "name": "Pitch & Demo Day",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Câu hỏi khó ngày hôm nay': coach hỏi 1 câu giám khảo hay hỏi ('nếu không ai dùng thì sao?'), 2 bé ngẫu nhiên tập trả lời trong 30 giây.",
+            "games_pool": [
+              "'Giám khảo bí mật': mỗi buổi 2 bé bốc vai giám khảo (khó tính / tò mò / vui tính), người pitch phải ứng biến theo kiểu giám khảo – luyện phản xạ cho Demo Day thật"
+            ],
+            "lessons": [
+              {
+                "code": "3.8.1",
+                "name": "Cấu trúc bài pitch",
+                "duration_minutes": 90,
+                "content": "Vấn đề → giải pháp → demo → phản hồi người dùng → bước tiếp",
+                "challenge": "Dàn ý pitch 5 phút",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Câu hỏi khó ngày hôm nay': coach hỏi 1 câu giám khảo hay hỏi ('nếu không ai dùng thì sao?'), 2 bé ngẫu nhiên tập trả lời trong 30 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Cấu trúc bài pitch\": Vấn đề → giải pháp → demo → phản hồi người dùng → bước tiếp. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giám khảo bí mật': mỗi buổi 2 bé bốc vai giám khảo (khó tính / tò mò / vui tính), người pitch phải ứng biến theo kiểu giám khảo – luyện phản xạ cho Demo Day thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Dàn ý pitch 5 phút"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.8.2",
+                "name": "Làm slide kể chuyện",
+                "duration_minutes": 90,
+                "content": "Slide ít chữ nhiều hình, có số liệu người dùng thật",
+                "challenge": "Bộ slide ≤8 trang",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Câu hỏi khó ngày hôm nay': coach hỏi 1 câu giám khảo hay hỏi ('nếu không ai dùng thì sao?'), 2 bé ngẫu nhiên tập trả lời trong 30 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Làm slide kể chuyện\": Slide ít chữ nhiều hình, có số liệu người dùng thật. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giám khảo bí mật': mỗi buổi 2 bé bốc vai giám khảo (khó tính / tò mò / vui tính), người pitch phải ứng biến theo kiểu giám khảo – luyện phản xạ cho Demo Day thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bộ slide ≤8 trang"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.8.3",
+                "name": "Tổng duyệt lần 1",
+                "duration_minutes": 90,
+                "content": "Pitch thử trước lớp, nhận góp ý theo tiêu chí",
+                "challenge": "Bảng góp ý + kế hoạch chỉnh",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Câu hỏi khó ngày hôm nay': coach hỏi 1 câu giám khảo hay hỏi ('nếu không ai dùng thì sao?'), 2 bé ngẫu nhiên tập trả lời trong 30 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng duyệt lần 1\": Pitch thử trước lớp, nhận góp ý theo tiêu chí. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giám khảo bí mật': mỗi buổi 2 bé bốc vai giám khảo (khó tính / tò mò / vui tính), người pitch phải ứng biến theo kiểu giám khảo – luyện phản xạ cho Demo Day thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bảng góp ý + kế hoạch chỉnh"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.8.4",
+                "name": "Tổng duyệt lần 2",
+                "duration_minutes": 90,
+                "content": "Pitch bản đã sửa, luyện trả lời câu hỏi khó",
+                "challenge": "Vượt vòng duyệt của coach",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Câu hỏi khó ngày hôm nay': coach hỏi 1 câu giám khảo hay hỏi ('nếu không ai dùng thì sao?'), 2 bé ngẫu nhiên tập trả lời trong 30 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng duyệt lần 2\": Pitch bản đã sửa, luyện trả lời câu hỏi khó. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giám khảo bí mật': mỗi buổi 2 bé bốc vai giám khảo (khó tính / tò mò / vui tính), người pitch phải ứng biến theo kiểu giám khảo – luyện phản xạ cho Demo Day thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Vượt vòng duyệt của coach"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.8.5",
+                "name": "Demo Day Level 3",
+                "duration_minutes": 90,
+                "content": "Trình bày trước phụ huynh & khách mời",
+                "challenge": "Pitch chính thức + phản hồi ban giám khảo",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Câu hỏi khó ngày hôm nay': coach hỏi 1 câu giám khảo hay hỏi ('nếu không ai dùng thì sao?'), 2 bé ngẫu nhiên tập trả lời trong 30 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Demo Day Level 3\": Trình bày trước phụ huynh & khách mời. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giám khảo bí mật': mỗi buổi 2 bé bốc vai giám khảo (khó tính / tò mò / vui tính), người pitch phải ứng biến theo kiểu giám khảo – luyện phản xạ cho Demo Day thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Pitch chính thức + phản hồi ban giám khảo"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "3.8.6",
+                "name": "Tổng kết & định hướng",
+                "duration_minutes": 90,
+                "content": "Nhìn lại 6-8 tháng, quyết định có học tiếp Level 4",
+                "challenge": "Hồ sơ sản phẩm hoàn chỉnh qua level",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Câu hỏi khó ngày hôm nay': coach hỏi 1 câu giám khảo hay hỏi ('nếu không ai dùng thì sao?'), 2 bé ngẫu nhiên tập trả lời trong 30 giây."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng kết & định hướng\": Nhìn lại 6-8 tháng, quyết định có học tiếp Level 4. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giám khảo bí mật': mỗi buổi 2 bé bốc vai giám khảo (khó tính / tò mò / vui tính), người pitch phải ứng biến theo kiểu giám khảo – luyện phản xạ cho Demo Day thật"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Hồ sơ sản phẩm hoàn chỉnh qua level"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: cấu trúc bài pitch 5 phút – vấn đề, giải pháp, demo, phản hồi người dùng, bước tiếp theo; làm slide ít chữ nhiều hình có số liệu thật; luyện trả lời câu hỏi khó; và con đã đứng trước phụ huynh, khách mời trình bày sản phẩm CỦA CHÍNH MÌNH. Con hoàn thành Level 3 – con là người tạo ra sản phẩm!"
+          }
+        ]
+      },
+      {
+        "id": "level_4",
+        "name": "Level 4",
+        "title": "NÂNG CAO & CAPSTONE",
+        "duration": "6 tháng",
+        "sessions": 48,
+        "optional": true,
+        "graduation_criteria": "Chuẩn tốt nghiệp: v2 có số liệu chứng minh cải thiện; vận hành pipeline ≥2 AI có điểm kiểm lỗi; hoàn thành Capstone có người dùng thật và demo trước cộng đồng.",
+        "modules": [
+          {
+            "code": "4.1",
+            "name": "Đọc số liệu sản phẩm",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Con số biết nói': coach chiếu 1 biểu đồ thật (ẩn tiêu đề), các đội đoán 'chuyện gì đang xảy ra' – rồi lật tiêu đề xem đội nào đọc số liệu tinh nhất.",
+            "games_pool": [
+              "'Chỉ số ảo – chỉ số thật': coach đọc các chỉ số (lượt xem, người quay lại, thời gian dùng...), bé chạy về góc ẢO hoặc THẬT của lớp, giải thích tại sao",
+              "'Thám tử số liệu': phát bảng số liệu của 1 sản phẩm tưởng tượng có 1 điểm bất thường được gài sẵn – đội nào tìm ra và giải thích hợp lý nhất thắng"
+            ],
+            "lessons": [
+              {
+                "code": "4.1.1",
+                "name": "Số liệu kể chuyện gì",
+                "duration_minutes": 90,
+                "content": "Lượt dùng, người quay lại, điểm rơi – từng con số nghĩa là gì",
+                "challenge": "Thử thách: đọc bảng số liệu mẫu, kể lại 'câu chuyện' của nó",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Con số biết nói': coach chiếu 1 biểu đồ thật (ẩn tiêu đề), các đội đoán 'chuyện gì đang xảy ra' – rồi lật tiêu đề xem đội nào đọc số liệu tinh nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Số liệu kể chuyện gì\": Lượt dùng, người quay lại, điểm rơi – từng con số nghĩa là gì. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Chỉ số ảo – chỉ số thật': coach đọc các chỉ số (lượt xem, người quay lại, thời gian dùng...), bé chạy về góc ẢO hoặc THẬT của lớp, giải thích tại sao"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: đọc bảng số liệu mẫu, kể lại 'câu chuyện' của nó"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.1.2",
+                "name": "Chọn đúng chỉ số",
+                "duration_minutes": 90,
+                "content": "Chỉ số ảo (lượt xem) vs chỉ số thật (người quay lại)",
+                "challenge": "Thử thách: chọn 3 chỉ số quan trọng nhất cho sản phẩm của em",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Con số biết nói': coach chiếu 1 biểu đồ thật (ẩn tiêu đề), các đội đoán 'chuyện gì đang xảy ra' – rồi lật tiêu đề xem đội nào đọc số liệu tinh nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chọn đúng chỉ số\": Chỉ số ảo (lượt xem) vs chỉ số thật (người quay lại). Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thám tử số liệu': phát bảng số liệu của 1 sản phẩm tưởng tượng có 1 điểm bất thường được gài sẵn – đội nào tìm ra và giải thích hợp lý nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: chọn 3 chỉ số quan trọng nhất cho sản phẩm của em"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.1.3",
+                "name": "Thu thập số liệu của em",
+                "duration_minutes": 90,
+                "content": "Gắn đo lường đơn giản vào sản phẩm Level 3",
+                "challenge": "Sản phẩm bắt đầu ghi nhận số liệu thật",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Con số biết nói': coach chiếu 1 biểu đồ thật (ẩn tiêu đề), các đội đoán 'chuyện gì đang xảy ra' – rồi lật tiêu đề xem đội nào đọc số liệu tinh nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thu thập số liệu của em\": Gắn đo lường đơn giản vào sản phẩm Level 3. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Chỉ số ảo – chỉ số thật': coach đọc các chỉ số (lượt xem, người quay lại, thời gian dùng...), bé chạy về góc ẢO hoặc THẬT của lớp, giải thích tại sao"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Sản phẩm bắt đầu ghi nhận số liệu thật"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.1.4",
+                "name": "Vẽ biểu đồ & nhận xét",
+                "duration_minutes": 90,
+                "content": "Biến số liệu thành biểu đồ, đọc xu hướng",
+                "challenge": "Mini project: 3 biểu đồ về sản phẩm của em kèm nhận xét",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Con số biết nói': coach chiếu 1 biểu đồ thật (ẩn tiêu đề), các đội đoán 'chuyện gì đang xảy ra' – rồi lật tiêu đề xem đội nào đọc số liệu tinh nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Vẽ biểu đồ & nhận xét\": Biến số liệu thành biểu đồ, đọc xu hướng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thám tử số liệu': phát bảng số liệu của 1 sản phẩm tưởng tượng có 1 điểm bất thường được gài sẵn – đội nào tìm ra và giải thích hợp lý nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: 3 biểu đồ về sản phẩm của em kèm nhận xét"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.1.5",
+                "name": "Phỏng vấn lại người dùng",
+                "duration_minutes": 90,
+                "content": "Số liệu nói 'cái gì', phỏng vấn nói 'vì sao'",
+                "challenge": "2 cuộc phỏng vấn người đã dùng + ghi chú",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Con số biết nói': coach chiếu 1 biểu đồ thật (ẩn tiêu đề), các đội đoán 'chuyện gì đang xảy ra' – rồi lật tiêu đề xem đội nào đọc số liệu tinh nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Phỏng vấn lại người dùng\": Số liệu nói 'cái gì', phỏng vấn nói 'vì sao'. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Chỉ số ảo – chỉ số thật': coach đọc các chỉ số (lượt xem, người quay lại, thời gian dùng...), bé chạy về góc ẢO hoặc THẬT của lớp, giải thích tại sao"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "2 cuộc phỏng vấn người đã dùng + ghi chú"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.1.6",
+                "name": "Chốt danh sách cải tiến",
+                "duration_minutes": 90,
+                "content": "Từ số liệu + phỏng vấn ra danh sách việc cho v2",
+                "challenge": "Danh sách cải tiến xếp hạng ưu tiên",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Con số biết nói': coach chiếu 1 biểu đồ thật (ẩn tiêu đề), các đội đoán 'chuyện gì đang xảy ra' – rồi lật tiêu đề xem đội nào đọc số liệu tinh nhất."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chốt danh sách cải tiến\": Từ số liệu + phỏng vấn ra danh sách việc cho v2. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Thám tử số liệu': phát bảng số liệu của 1 sản phẩm tưởng tượng có 1 điểm bất thường được gài sẵn – đội nào tìm ra và giải thích hợp lý nhất thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Danh sách cải tiến xếp hạng ưu tiên"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: mỗi con số của sản phẩm đều kể một câu chuyện; phân biệt chỉ số ảo (lượt xem) và chỉ số thật (người quay lại); số liệu nói 'cái gì' còn phỏng vấn nói 'vì sao'; và con đã tự lập danh sách cải tiến cho phiên bản 2 dựa trên bằng chứng chứ không phải cảm tính."
+          },
+          {
+            "code": "4.2",
+            "name": "Xây phiên bản 2",
+            "sessions": 8,
+            "warmup_ritual": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì.",
+            "games_pool": [
+              "'Kiểm thử hồi quy tiếp sức': mỗi bé trong đội kiểm 2 mục trong checklist tính năng cũ của sản phẩm bạn, chuyền bài – đội xong checklist chính xác trước thì thắng",
+              "'Trước–Sau': chiếu ảnh v1 và v2 của sản phẩm 1 bạn, lớp đoán 'đã sửa gì và vì sao' trước khi chủ nhân công bố – kiểm tra xem cải tiến có dễ nhận ra không"
+            ],
+            "lessons": [
+              {
+                "code": "4.2.1",
+                "name": "Thiết kế v2",
+                "duration_minutes": 90,
+                "content": "Wireframe phần thay đổi, giữ phần đang tốt",
+                "challenge": "Bản thiết kế v2 được duyệt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thiết kế v2\": Wireframe phần thay đổi, giữ phần đang tốt. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiểm thử hồi quy tiếp sức': mỗi bé trong đội kiểm 2 mục trong checklist tính năng cũ của sản phẩm bạn, chuyền bài – đội xong checklist chính xác trước thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản thiết kế v2 được duyệt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.2.2",
+                "name": "Kế hoạch 4 tuần",
+                "duration_minutes": 90,
+                "content": "Chia việc theo tuần, xác định mốc kiểm tra",
+                "challenge": "Bảng kế hoạch có mốc rõ ràng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kế hoạch 4 tuần\": Chia việc theo tuần, xác định mốc kiểm tra. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Trước–Sau': chiếu ảnh v1 và v2 của sản phẩm 1 bạn, lớp đoán 'đã sửa gì và vì sao' trước khi chủ nhân công bố – kiểm tra xem cải tiến có dễ nhận ra không"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bảng kế hoạch có mốc rõ ràng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.2.3",
+                "name": "Tuần xây dựng 1",
+                "duration_minutes": 90,
+                "content": "Làm cải tiến ưu tiên số 1",
+                "challenge": "Mốc tuần 1 đạt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây dựng 1\": Làm cải tiến ưu tiên số 1. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiểm thử hồi quy tiếp sức': mỗi bé trong đội kiểm 2 mục trong checklist tính năng cũ của sản phẩm bạn, chuyền bài – đội xong checklist chính xác trước thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mốc tuần 1 đạt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.2.4",
+                "name": "Tuần xây dựng 2",
+                "duration_minutes": 90,
+                "content": "Cải tiến số 2 + sửa lỗi phát sinh",
+                "challenge": "Mốc tuần 2 đạt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây dựng 2\": Cải tiến số 2 + sửa lỗi phát sinh. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Trước–Sau': chiếu ảnh v1 và v2 của sản phẩm 1 bạn, lớp đoán 'đã sửa gì và vì sao' trước khi chủ nhân công bố – kiểm tra xem cải tiến có dễ nhận ra không"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mốc tuần 2 đạt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.2.5",
+                "name": "Tuần xây dựng 3",
+                "duration_minutes": 90,
+                "content": "Cải tiến số 3 + gắn đo lường cho tính năng mới",
+                "challenge": "Mốc tuần 3 đạt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây dựng 3\": Cải tiến số 3 + gắn đo lường cho tính năng mới. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiểm thử hồi quy tiếp sức': mỗi bé trong đội kiểm 2 mục trong checklist tính năng cũ của sản phẩm bạn, chuyền bài – đội xong checklist chính xác trước thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mốc tuần 3 đạt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.2.6",
+                "name": "Kiểm thử hồi quy",
+                "duration_minutes": 90,
+                "content": "Bảo đảm tính năng cũ không hỏng vì tính năng mới",
+                "challenge": "Danh sách kiểm thử đã tick đủ",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kiểm thử hồi quy\": Bảo đảm tính năng cũ không hỏng vì tính năng mới. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Trước–Sau': chiếu ảnh v1 và v2 của sản phẩm 1 bạn, lớp đoán 'đã sửa gì và vì sao' trước khi chủ nhân công bố – kiểm tra xem cải tiến có dễ nhận ra không"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Danh sách kiểm thử đã tick đủ"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.2.7",
+                "name": "Ra mắt v2",
+                "duration_minutes": 90,
+                "content": "Thông báo cho người dùng cũ, mời dùng bản mới",
+                "challenge": "v2 đến tay ≥5 người dùng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Ra mắt v2\": Thông báo cho người dùng cũ, mời dùng bản mới. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiểm thử hồi quy tiếp sức': mỗi bé trong đội kiểm 2 mục trong checklist tính năng cũ của sản phẩm bạn, chuyền bài – đội xong checklist chính xác trước thì thắng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "v2 đến tay ≥5 người dùng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.2.8",
+                "name": "So sánh v1 vs v2",
+                "duration_minutes": 90,
+                "content": "Đo cùng chỉ số hai phiên bản, kết luận có căn cứ",
+                "challenge": "Mini project: báo cáo so sánh có số liệu + biểu đồ",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup dự án 1 phút/bé theo đúng nghi thức: xong gì – vướng gì – tuần này làm gì."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"So sánh v1 vs v2\": Đo cùng chỉ số hai phiên bản, kết luận có căn cứ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Trước–Sau': chiếu ảnh v1 và v2 của sản phẩm 1 bạn, lớp đoán 'đã sửa gì và vì sao' trước khi chủ nhân công bố – kiểm tra xem cải tiến có dễ nhận ra không"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mini project: báo cáo so sánh có số liệu + biểu đồ"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 4.2: 'Báo cáo tăng trưởng' – tài liệu 3-4 trang: v1 thế nào, sửa gì, vì sao, v2 tốt lên bao nhiêu, kèm số liệu thật",
+            "teacher_recap": "Qua module này, con đã học được: thiết kế v2 dựa trên dữ liệu – giữ cái đang tốt, sửa cái đang kém; làm việc theo kế hoạch tuần có mốc kiểm tra; kiểm thử hồi quy để tính năng mới không làm hỏng tính năng cũ; và so sánh v1 với v2 bằng cùng bộ chỉ số để kết luận có căn cứ."
+          },
+          {
+            "code": "4.3",
+            "name": "Phối hợp nhiều AI",
+            "sessions": 8,
+            "warmup_ritual": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào.",
+            "games_pool": [
+              "'Nhà máy AI bằng người': cả lớp thiết kế dây chuyền 4 trạm xử lý 1 nhiệm vụ, có 1 trạm 'kiểm tra chất lượng' – chạy thử với 3 đầu vào, đo xem trạm kiểm tra bắt được mấy lỗi",
+              "'Mắt xích hỏng': coach bí mật làm hỏng 1 bước trong pipeline demo, các đội chỉ được xem đầu ra cuối – phải suy luận ngược mắt xích nào hỏng"
+            ],
+            "lessons": [
+              {
+                "code": "4.3.1",
+                "name": "1 AI vs đội AI",
+                "duration_minutes": 90,
+                "content": "Có việc 1 AI không kham nổi – cần chuỗi AI nối nhau",
+                "challenge": "Thử thách: kể 1 việc cần ≥2 AI phối hợp và vẽ sơ đồ",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"1 AI vs đội AI\": Có việc 1 AI không kham nổi – cần chuỗi AI nối nhau. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Nhà máy AI bằng người': cả lớp thiết kế dây chuyền 4 trạm xử lý 1 nhiệm vụ, có 1 trạm 'kiểm tra chất lượng' – chạy thử với 3 đầu vào, đo xem trạm kiểm tra bắt được mấy lỗi"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: kể 1 việc cần ≥2 AI phối hợp và vẽ sơ đồ"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.3.2",
+                "name": "Thiết kế quy trình AI",
+                "duration_minutes": 90,
+                "content": "Đầu ra AI này là đầu vào AI kia; vẽ pipeline",
+                "challenge": "Sơ đồ pipeline 2-3 bước cho 1 việc thật",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Thiết kế quy trình AI\": Đầu ra AI này là đầu vào AI kia; vẽ pipeline. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Mắt xích hỏng': coach bí mật làm hỏng 1 bước trong pipeline demo, các đội chỉ được xem đầu ra cuối – phải suy luận ngược mắt xích nào hỏng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Sơ đồ pipeline 2-3 bước cho 1 việc thật"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.3.3",
+                "name": "Chạy pipeline đầu tiên",
+                "duration_minutes": 90,
+                "content": "Ví dụ: AI tóm tắt → AI dịch → AI đọc thành tiếng",
+                "challenge": "Pipeline 2 AI chạy được từ đầu đến cuối",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chạy pipeline đầu tiên\": Ví dụ: AI tóm tắt → AI dịch → AI đọc thành tiếng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Nhà máy AI bằng người': cả lớp thiết kế dây chuyền 4 trạm xử lý 1 nhiệm vụ, có 1 trạm 'kiểm tra chất lượng' – chạy thử với 3 đầu vào, đo xem trạm kiểm tra bắt được mấy lỗi"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Pipeline 2 AI chạy được từ đầu đến cuối"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.3.4",
+                "name": "Khi 1 mắt xích sai",
+                "duration_minutes": 90,
+                "content": "Lỗi lan truyền qua chuỗi; đặt điểm kiểm tra giữa chừng",
+                "challenge": "Thử thách: cài 1 bước kiểm tra bắt được lỗi cố tình gài",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Khi 1 mắt xích sai\": Lỗi lan truyền qua chuỗi; đặt điểm kiểm tra giữa chừng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Mắt xích hỏng': coach bí mật làm hỏng 1 bước trong pipeline demo, các đội chỉ được xem đầu ra cuối – phải suy luận ngược mắt xích nào hỏng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Thử thách: cài 1 bước kiểm tra bắt được lỗi cố tình gài"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.3.5",
+                "name": "Con người ở đâu trong chuỗi",
+                "duration_minutes": 90,
+                "content": "Bước nào máy tự làm, bước nào cần người duyệt",
+                "challenge": "Bản pipeline có đánh dấu điểm người-duyệt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Con người ở đâu trong chuỗi\": Bước nào máy tự làm, bước nào cần người duyệt. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Nhà máy AI bằng người': cả lớp thiết kế dây chuyền 4 trạm xử lý 1 nhiệm vụ, có 1 trạm 'kiểm tra chất lượng' – chạy thử với 3 đầu vào, đo xem trạm kiểm tra bắt được mấy lỗi"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản pipeline có đánh dấu điểm người-duyệt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.3.6",
+                "name": "Pipeline cho sản phẩm của em",
+                "duration_minutes": 90,
+                "content": "Áp dụng chuỗi AI vào chính sản phẩm v2",
+                "challenge": "Tính năng dùng ≥2 AI trong sản phẩm",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Pipeline cho sản phẩm của em\": Áp dụng chuỗi AI vào chính sản phẩm v2. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Mắt xích hỏng': coach bí mật làm hỏng 1 bước trong pipeline demo, các đội chỉ được xem đầu ra cuối – phải suy luận ngược mắt xích nào hỏng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Tính năng dùng ≥2 AI trong sản phẩm"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.3.7",
+                "name": "Đánh giá chi phí & giới hạn",
+                "duration_minutes": 90,
+                "content": "Chuỗi AI tốn kém gì, chậm ở đâu, khi nào không đáng",
+                "challenge": "Bảng đánh giá được/mất của pipeline",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Đánh giá chi phí & giới hạn\": Chuỗi AI tốn kém gì, chậm ở đâu, khi nào không đáng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Nhà máy AI bằng người': cả lớp thiết kế dây chuyền 4 trạm xử lý 1 nhiệm vụ, có 1 trạm 'kiểm tra chất lượng' – chạy thử với 3 đầu vào, đo xem trạm kiểm tra bắt được mấy lỗi"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bảng đánh giá được/mất của pipeline"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.3.8",
+                "name": "Trình diễn pipeline",
+                "duration_minutes": 90,
+                "content": "Demo chuỗi AI cho lớp, giải thích từng mắt xích",
+                "challenge": "Demo + trả lời chất vấn của lớp",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Dây chuyền người': 3 bé làm 3 'AI' nối nhau (tóm tắt → dịch → đọc to), coach đưa đầu vào lỗi – lớp quan sát lỗi lan qua dây chuyền thế nào."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Trình diễn pipeline\": Demo chuỗi AI cho lớp, giải thích từng mắt xích. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Mắt xích hỏng': coach bí mật làm hỏng 1 bước trong pipeline demo, các đội chỉ được xem đầu ra cuối – phải suy luận ngược mắt xích nào hỏng"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Demo + trả lời chất vấn của lớp"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 4.3: 'Dàn nhạc AI' – thiết kế và chạy 1 quy trình ≥3 bước có ≥2 AI + 1 điểm kiểm tra lỗi + 1 điểm người duyệt, kèm tài liệu mô tả",
+            "teacher_recap": "Qua module này, con đã học được: có việc một AI không kham nổi – cần cả 'đội AI' nối nhau thành pipeline; đầu ra của AI này là đầu vào của AI kia; một mắt xích sai thì lỗi lan cả chuỗi nên phải đặt điểm kiểm tra; luôn có chỗ cần con người duyệt; và con đã chỉ huy được dàn nhạc AI của riêng mình."
+          },
+          {
+            "code": "4.4",
+            "name": "Quản lý dự án",
+            "sessions": 4,
+            "warmup_ritual": "3' gõ phím + standup 1 phút + cập nhật bảng công việc: mỗi bé tự tay kéo thẻ việc của mình sang cột đúng trạng thái trước khi vào bài.",
+            "games_pool": [
+              "'Tháp giấy dự án': đội xây tháp giấy cao nhất trong 10 phút NHƯNG phải nộp kế hoạch + phân công trước khi đụng vào giấy – nghiệm ra kế hoạch tốt thắng tay nhanh"
+            ],
+            "lessons": [
+              {
+                "code": "4.4.1",
+                "name": "Nghĩ lớn, chia nhỏ",
+                "duration_minutes": 90,
+                "content": "Từ ý tưởng Capstone ra danh sách việc và mốc thời gian",
+                "challenge": "Bản phân rã Capstone thành ≥15 đầu việc",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc: mỗi bé tự tay kéo thẻ việc của mình sang cột đúng trạng thái trước khi vào bài."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Nghĩ lớn, chia nhỏ\": Từ ý tưởng Capstone ra danh sách việc và mốc thời gian. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tháp giấy dự án': đội xây tháp giấy cao nhất trong 10 phút NHƯNG phải nộp kế hoạch + phân công trước khi đụng vào giấy – nghiệm ra kế hoạch tốt thắng tay nhanh"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản phân rã Capstone thành ≥15 đầu việc"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.4.2",
+                "name": "Bảng theo dõi công việc",
+                "duration_minutes": 90,
+                "content": "Cần làm – đang làm – xong; cập nhật hằng tuần",
+                "challenge": "Bảng quản lý dự án được lập và dùng thật",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc: mỗi bé tự tay kéo thẻ việc của mình sang cột đúng trạng thái trước khi vào bài."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Bảng theo dõi công việc\": Cần làm – đang làm – xong; cập nhật hằng tuần. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tháp giấy dự án': đội xây tháp giấy cao nhất trong 10 phút NHƯNG phải nộp kế hoạch + phân công trước khi đụng vào giấy – nghiệm ra kế hoạch tốt thắng tay nhanh"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bảng quản lý dự án được lập và dùng thật"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.4.3",
+                "name": "Ước lượng & rủi ro",
+                "duration_minutes": 90,
+                "content": "Việc nào dễ trễ, kế hoạch B là gì",
+                "challenge": "Bảng rủi ro 5 dòng: rủi ro – dấu hiệu – phương án B",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc: mỗi bé tự tay kéo thẻ việc của mình sang cột đúng trạng thái trước khi vào bài."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Ước lượng & rủi ro\": Việc nào dễ trễ, kế hoạch B là gì. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tháp giấy dự án': đội xây tháp giấy cao nhất trong 10 phút NHƯNG phải nộp kế hoạch + phân công trước khi đụng vào giấy – nghiệm ra kế hoạch tốt thắng tay nhanh"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bảng rủi ro 5 dòng: rủi ro – dấu hiệu – phương án B"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.4.4",
+                "name": "Báo cáo tiến độ",
+                "duration_minutes": 90,
+                "content": "Nói ngắn gọn: tuần này xong gì, vướng gì, tuần sau làm gì",
+                "challenge": "Buổi báo cáo tiến độ 3 phút đầu tiên",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc: mỗi bé tự tay kéo thẻ việc của mình sang cột đúng trạng thái trước khi vào bài."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Báo cáo tiến độ\": Nói ngắn gọn: tuần này xong gì, vướng gì, tuần sau làm gì. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tháp giấy dự án': đội xây tháp giấy cao nhất trong 10 phút NHƯNG phải nộp kế hoạch + phân công trước khi đụng vào giấy – nghiệm ra kế hoạch tốt thắng tay nhanh"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Buổi báo cáo tiến độ 3 phút đầu tiên"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: nghĩ lớn nhưng chia nhỏ – dự án tham vọng thành hơn 15 đầu việc; quản lý bằng bảng 'cần làm – đang làm – xong'; lường trước rủi ro và chuẩn bị kế hoạch B; và báo cáo tiến độ ngắn gọn như người làm dự án chuyên nghiệp."
+          },
+          {
+            "code": "4.5",
+            "name": "Capstone: thiết kế",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Hỏi xoáy đặc tả': lớp thi hỏi 'thế còn trường hợp này thì sao?' vào đặc tả của 1 bạn – ai tìm ra lỗ hổng đặc tả là giúp bạn vá sớm.",
+            "games_pool": [
+              "'Kiến trúc sư 5 phút': bốc thăm 1 ý tưởng app, đội có 5 phút vẽ sơ đồ các khối ghép với nhau rồi bảo vệ trước lớp – luyện tư duy kiến trúc tốc độ"
+            ],
+            "lessons": [
+              {
+                "code": "4.5.1",
+                "name": "Chọn đề tài Capstone",
+                "duration_minutes": 90,
+                "content": "Đề tài tham vọng hơn Level 3: tự chọn, tự bảo vệ",
+                "challenge": "Đề xuất Capstone được hội đồng coach duyệt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Hỏi xoáy đặc tả': lớp thi hỏi 'thế còn trường hợp này thì sao?' vào đặc tả của 1 bạn – ai tìm ra lỗ hổng đặc tả là giúp bạn vá sớm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Chọn đề tài Capstone\": Đề tài tham vọng hơn Level 3: tự chọn, tự bảo vệ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiến trúc sư 5 phút': bốc thăm 1 ý tưởng app, đội có 5 phút vẽ sơ đồ các khối ghép với nhau rồi bảo vệ trước lớp – luyện tư duy kiến trúc tốc độ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Đề xuất Capstone được hội đồng coach duyệt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.5.2",
+                "name": "Đặc tả sản phẩm",
+                "duration_minutes": 90,
+                "content": "Viết rõ: làm gì, cho ai, tính năng nào bắt buộc",
+                "challenge": "Bản đặc tả 2 trang",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Hỏi xoáy đặc tả': lớp thi hỏi 'thế còn trường hợp này thì sao?' vào đặc tả của 1 bạn – ai tìm ra lỗ hổng đặc tả là giúp bạn vá sớm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Đặc tả sản phẩm\": Viết rõ: làm gì, cho ai, tính năng nào bắt buộc. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiến trúc sư 5 phút': bốc thăm 1 ý tưởng app, đội có 5 phút vẽ sơ đồ các khối ghép với nhau rồi bảo vệ trước lớp – luyện tư duy kiến trúc tốc độ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản đặc tả 2 trang"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.5.3",
+                "name": "Kiến trúc & công cụ",
+                "duration_minutes": 90,
+                "content": "Chọn công cụ, vẽ sơ đồ các phần ghép với nhau",
+                "challenge": "Sơ đồ kiến trúc + lý do chọn công cụ",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Hỏi xoáy đặc tả': lớp thi hỏi 'thế còn trường hợp này thì sao?' vào đặc tả của 1 bạn – ai tìm ra lỗ hổng đặc tả là giúp bạn vá sớm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kiến trúc & công cụ\": Chọn công cụ, vẽ sơ đồ các phần ghép với nhau. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiến trúc sư 5 phút': bốc thăm 1 ý tưởng app, đội có 5 phút vẽ sơ đồ các khối ghép với nhau rồi bảo vệ trước lớp – luyện tư duy kiến trúc tốc độ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Sơ đồ kiến trúc + lý do chọn công cụ"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.5.4",
+                "name": "Wireframe Capstone",
+                "duration_minutes": 90,
+                "content": "Phác toàn bộ màn hình/luồng chính",
+                "challenge": "Bộ wireframe hoàn chỉnh",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Hỏi xoáy đặc tả': lớp thi hỏi 'thế còn trường hợp này thì sao?' vào đặc tả của 1 bạn – ai tìm ra lỗ hổng đặc tả là giúp bạn vá sớm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Wireframe Capstone\": Phác toàn bộ màn hình/luồng chính. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiến trúc sư 5 phút': bốc thăm 1 ý tưởng app, đội có 5 phút vẽ sơ đồ các khối ghép với nhau rồi bảo vệ trước lớp – luyện tư duy kiến trúc tốc độ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bộ wireframe hoàn chỉnh"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.5.5",
+                "name": "Kế hoạch 10 tuần",
+                "duration_minutes": 90,
+                "content": "Lịch xây dựng chi tiết theo tuần có mốc kiểm",
+                "challenge": "Kế hoạch được duyệt – 'lệnh khởi công'",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Hỏi xoáy đặc tả': lớp thi hỏi 'thế còn trường hợp này thì sao?' vào đặc tả của 1 bạn – ai tìm ra lỗ hổng đặc tả là giúp bạn vá sớm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kế hoạch 10 tuần\": Lịch xây dựng chi tiết theo tuần có mốc kiểm. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiến trúc sư 5 phút': bốc thăm 1 ý tưởng app, đội có 5 phút vẽ sơ đồ các khối ghép với nhau rồi bảo vệ trước lớp – luyện tư duy kiến trúc tốc độ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Kế hoạch được duyệt – 'lệnh khởi công'"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.5.6",
+                "name": "Dựng móng",
+                "duration_minutes": 90,
+                "content": "Tạo dự án, khung chính chạy được",
+                "challenge": "Khung Capstone mở lên được",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Hỏi xoáy đặc tả': lớp thi hỏi 'thế còn trường hợp này thì sao?' vào đặc tả của 1 bạn – ai tìm ra lỗ hổng đặc tả là giúp bạn vá sớm."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Dựng móng\": Tạo dự án, khung chính chạy được. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Kiến trúc sư 5 phút': bốc thăm 1 ý tưởng app, đội có 5 phút vẽ sơ đồ các khối ghép với nhau rồi bảo vệ trước lớp – luyện tư duy kiến trúc tốc độ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Khung Capstone mở lên được"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã học được: viết đặc tả rõ ràng trước khi xây – làm gì, cho ai, tính năng nào bắt buộc; chọn công cụ và vẽ sơ đồ kiến trúc có lý do; lập kế hoạch 10 tuần với mốc kiểm tra từng tuần; và con đã nhận 'lệnh khởi công' cho dự án lớn nhất đời học sinh của mình."
+          },
+          {
+            "code": "4.6",
+            "name": "Capstone: xây dựng",
+            "sessions": 10,
+            "warmup_ritual": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần).",
+            "games_pool": [
+              "'Giờ vàng tập trung': 25 phút 'deep work' cả lớp im lặng xây sản phẩm theo nhạc nhẹ, hết giờ mỗi bé khoe 1 thứ vừa làm xong – biến sự tập trung thành trò chơi có nhịp",
+              "'Cứu hộ 10 phút': bé nào đang kẹt nhất được cả lớp 'đổ bộ' gợi ý trong 10 phút – luật: chỉ gợi ý hướng, không cầm chuột hộ"
+            ],
+            "lessons": [
+              {
+                "code": "4.6.1",
+                "name": "Tuần xây 1: lõi sản phẩm",
+                "duration_minutes": 90,
+                "content": "Tính năng trung tâm hoạt động",
+                "challenge": "Mốc 1 đạt + báo cáo tiến độ",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây 1: lõi sản phẩm\": Tính năng trung tâm hoạt động. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giờ vàng tập trung': 25 phút 'deep work' cả lớp im lặng xây sản phẩm theo nhạc nhẹ, hết giờ mỗi bé khoe 1 thứ vừa làm xong – biến sự tập trung thành trò chơi có nhịp"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mốc 1 đạt + báo cáo tiến độ"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.2",
+                "name": "Tuần xây 2: lõi sản phẩm",
+                "duration_minutes": 90,
+                "content": "Hoàn thiện luồng chính đầu-cuối",
+                "challenge": "Mốc 2 đạt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây 2: lõi sản phẩm\": Hoàn thiện luồng chính đầu-cuối. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Cứu hộ 10 phút': bé nào đang kẹt nhất được cả lớp 'đổ bộ' gợi ý trong 10 phút – luật: chỉ gợi ý hướng, không cầm chuột hộ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mốc 2 đạt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.3",
+                "name": "Tuần xây 3: tích hợp AI",
+                "duration_minutes": 90,
+                "content": "Gắn pipeline AI đã học vào sản phẩm",
+                "challenge": "Mốc 3 đạt: AI chạy trong sản phẩm",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây 3: tích hợp AI\": Gắn pipeline AI đã học vào sản phẩm. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giờ vàng tập trung': 25 phút 'deep work' cả lớp im lặng xây sản phẩm theo nhạc nhẹ, hết giờ mỗi bé khoe 1 thứ vừa làm xong – biến sự tập trung thành trò chơi có nhịp"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mốc 3 đạt: AI chạy trong sản phẩm"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.4",
+                "name": "Tuần xây 4: tính năng phụ",
+                "duration_minutes": 90,
+                "content": "Tính năng hỗ trợ quan trọng thứ hai",
+                "challenge": "Mốc 4 đạt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây 4: tính năng phụ\": Tính năng hỗ trợ quan trọng thứ hai. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Cứu hộ 10 phút': bé nào đang kẹt nhất được cả lớp 'đổ bộ' gợi ý trong 10 phút – luật: chỉ gợi ý hướng, không cầm chuột hộ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mốc 4 đạt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.5",
+                "name": "Kiểm thử giữa kỳ",
+                "duration_minutes": 90,
+                "content": "Người ngoài dùng thử bản giữa kỳ",
+                "challenge": "Biên bản test + danh sách sửa",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Kiểm thử giữa kỳ\": Người ngoài dùng thử bản giữa kỳ. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giờ vàng tập trung': 25 phút 'deep work' cả lớp im lặng xây sản phẩm theo nhạc nhẹ, hết giờ mỗi bé khoe 1 thứ vừa làm xong – biến sự tập trung thành trò chơi có nhịp"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Biên bản test + danh sách sửa"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.6",
+                "name": "Tuần xây 5: sửa & gia cố",
+                "duration_minutes": 90,
+                "content": "Sửa theo phản hồi, vá điểm yếu",
+                "challenge": "Mốc 5 đạt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây 5: sửa & gia cố\": Sửa theo phản hồi, vá điểm yếu. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Cứu hộ 10 phút': bé nào đang kẹt nhất được cả lớp 'đổ bộ' gợi ý trong 10 phút – luật: chỉ gợi ý hướng, không cầm chuột hộ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Mốc 5 đạt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.7",
+                "name": "Tuần xây 6: hoàn thiện",
+                "duration_minutes": 90,
+                "content": "Làm đẹp, viết hướng dẫn sử dụng",
+                "challenge": "Bản ứng viên phát hành",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần xây 6: hoàn thiện\": Làm đẹp, viết hướng dẫn sử dụng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giờ vàng tập trung': 25 phút 'deep work' cả lớp im lặng xây sản phẩm theo nhạc nhẹ, hết giờ mỗi bé khoe 1 thứ vừa làm xong – biến sự tập trung thành trò chơi có nhịp"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Bản ứng viên phát hành"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.8",
+                "name": "Tổng kiểm thử",
+                "duration_minutes": 90,
+                "content": "Danh sách kiểm cuối: mọi luồng chính chạy đúng",
+                "challenge": "Checklist phát hành tick đủ",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng kiểm thử\": Danh sách kiểm cuối: mọi luồng chính chạy đúng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Cứu hộ 10 phút': bé nào đang kẹt nhất được cả lớp 'đổ bộ' gợi ý trong 10 phút – luật: chỉ gợi ý hướng, không cầm chuột hộ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Checklist phát hành tick đủ"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.9",
+                "name": "Phát hành Capstone",
+                "duration_minutes": 90,
+                "content": "Đưa sản phẩm đến người dùng thật",
+                "challenge": "Capstone chính thức có người dùng",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Phát hành Capstone\": Đưa sản phẩm đến người dùng thật. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Giờ vàng tập trung': 25 phút 'deep work' cả lớp im lặng xây sản phẩm theo nhạc nhẹ, hết giờ mỗi bé khoe 1 thứ vừa làm xong – biến sự tập trung thành trò chơi có nhịp"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Capstone chính thức có người dùng"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.6.10",
+                "name": "Tuần theo dõi",
+                "duration_minutes": 90,
+                "content": "Thu số liệu tuần đầu, sửa lỗi nóng",
+                "challenge": "Báo cáo tuần đầu sau phát hành",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + standup 1 phút + cập nhật bảng công việc và burn-down đơn giản (còn bao nhiêu việc đến mốc tuần)."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tuần theo dõi\": Thu số liệu tuần đầu, sửa lỗi nóng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Cứu hộ 10 phút': bé nào đang kẹt nhất được cả lớp 'đổ bộ' gợi ý trong 10 phút – luật: chỉ gợi ý hướng, không cầm chuột hộ"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Báo cáo tuần đầu sau phát hành"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": "PROJECT MODULE 4.6: Capstone hoàn chỉnh – sản phẩm có tích hợp AI, có người dùng thật, có số liệu tuần đầu, có tài liệu hướng dẫn",
+            "teacher_recap": "Qua module này, con đã học được: xây sản phẩm lớn theo từng mốc tuần – lõi trước, phụ sau; tích hợp pipeline AI vào sản phẩm thật; kiểm thử giữa kỳ với người ngoài rồi gia cố; chạy checklist phát hành như kỹ sư thật; và Capstone của con đã có người dùng thật cùng số liệu tuần đầu."
+          },
+          {
+            "code": "4.7",
+            "name": "Demo Day & tốt nghiệp",
+            "sessions": 6,
+            "warmup_ritual": "3' gõ phím + 'Ký ức 6 mùa': coach chiếu 1 ảnh/sản phẩm cũ từ Level 1-3, bé đoán của ai và kể lại kỷ niệm – hâm nóng câu chuyện hành trình cho bài tốt nghiệp.",
+            "games_pool": [
+              "'Tổng duyệt kiểu gameshow': bốc thăm thứ tự pitch, có chuông tính giờ, ban giám khảo nhí chấm theo rubric thật – căng thẳng giả để Demo Day thật bớt run"
+            ],
+            "lessons": [
+              {
+                "code": "4.7.1",
+                "name": "Câu chuyện 2 năm",
+                "duration_minutes": 90,
+                "content": "Nhìn lại từ buổi gõ phím đầu tiên đến Capstone",
+                "challenge": "Dàn ý bài trình bày tốt nghiệp",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Ký ức 6 mùa': coach chiếu 1 ảnh/sản phẩm cũ từ Level 1-3, bé đoán của ai và kể lại kỷ niệm – hâm nóng câu chuyện hành trình cho bài tốt nghiệp."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Câu chuyện 2 năm\": Nhìn lại từ buổi gõ phím đầu tiên đến Capstone. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tổng duyệt kiểu gameshow': bốc thăm thứ tự pitch, có chuông tính giờ, ban giám khảo nhí chấm theo rubric thật – căng thẳng giả để Demo Day thật bớt run"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Dàn ý bài trình bày tốt nghiệp"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.7.2",
+                "name": "Hồ sơ năng lực",
+                "duration_minutes": 90,
+                "content": "Gom mọi sản phẩm: portfolio số của em",
+                "challenge": "Portfolio hoàn chỉnh dạng trang web/tài liệu",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Ký ức 6 mùa': coach chiếu 1 ảnh/sản phẩm cũ từ Level 1-3, bé đoán của ai và kể lại kỷ niệm – hâm nóng câu chuyện hành trình cho bài tốt nghiệp."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Hồ sơ năng lực\": Gom mọi sản phẩm: portfolio số của em. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tổng duyệt kiểu gameshow': bốc thăm thứ tự pitch, có chuông tính giờ, ban giám khảo nhí chấm theo rubric thật – căng thẳng giả để Demo Day thật bớt run"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Portfolio hoàn chỉnh dạng trang web/tài liệu"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.7.3",
+                "name": "Slide & luyện nói",
+                "duration_minutes": 90,
+                "content": "Bài trình bày 7 phút: hành trình + demo Capstone",
+                "challenge": "Slide xong + duyệt lần 1",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Ký ức 6 mùa': coach chiếu 1 ảnh/sản phẩm cũ từ Level 1-3, bé đoán của ai và kể lại kỷ niệm – hâm nóng câu chuyện hành trình cho bài tốt nghiệp."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Slide & luyện nói\": Bài trình bày 7 phút: hành trình + demo Capstone. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tổng duyệt kiểu gameshow': bốc thăm thứ tự pitch, có chuông tính giờ, ban giám khảo nhí chấm theo rubric thật – căng thẳng giả để Demo Day thật bớt run"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Slide xong + duyệt lần 1"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.7.4",
+                "name": "Tổng duyệt",
+                "duration_minutes": 90,
+                "content": "Chạy thử toàn bộ Demo Day, xử lý sự cố kỹ thuật",
+                "challenge": "Vượt tổng duyệt",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Ký ức 6 mùa': coach chiếu 1 ảnh/sản phẩm cũ từ Level 1-3, bé đoán của ai và kể lại kỷ niệm – hâm nóng câu chuyện hành trình cho bài tốt nghiệp."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Tổng duyệt\": Chạy thử toàn bộ Demo Day, xử lý sự cố kỹ thuật. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tổng duyệt kiểu gameshow': bốc thăm thứ tự pitch, có chuông tính giờ, ban giám khảo nhí chấm theo rubric thật – căng thẳng giả để Demo Day thật bớt run"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Vượt tổng duyệt"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.7.5",
+                "name": "DEMO DAY tốt nghiệp",
+                "duration_minutes": 90,
+                "content": "Trình bày trước phụ huynh, khách mời, các bé khóa dưới",
+                "challenge": "Trình bày chính thức + phản biện",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Ký ức 6 mùa': coach chiếu 1 ảnh/sản phẩm cũ từ Level 1-3, bé đoán của ai và kể lại kỷ niệm – hâm nóng câu chuyện hành trình cho bài tốt nghiệp."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"DEMO DAY tốt nghiệp\": Trình bày trước phụ huynh, khách mời, các bé khóa dưới. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tổng duyệt kiểu gameshow': bốc thăm thứ tự pitch, có chuông tính giờ, ban giám khảo nhí chấm theo rubric thật – căng thẳng giả để Demo Day thật bớt run"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Trình bày chính thức + phản biện"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              },
+              {
+                "code": "4.7.6",
+                "name": "Lễ tốt nghiệp & định hướng",
+                "duration_minutes": 90,
+                "content": "Nhận chứng nhận; con đường tiếp theo: học sâu, thi, dự án riêng",
+                "challenge": "Chứng nhận hoàn thành + bản định hướng cá nhân",
+                "plan90": [
+                  {
+                    "time": "0–10'",
+                    "phase": "Khởi động",
+                    "activity": "3' gõ phím + 'Ký ức 6 mùa': coach chiếu 1 ảnh/sản phẩm cũ từ Level 1-3, bé đoán của ai và kể lại kỷ niệm – hâm nóng câu chuyện hành trình cho bài tốt nghiệp."
+                  },
+                  {
+                    "time": "10–25'",
+                    "phase": "Khám phá kiến thức mới",
+                    "activity": "Coach dẫn dắt chủ đề \"Lễ tốt nghiệp & định hướng\": Nhận chứng nhận; con đường tiếp theo: học sâu, thi, dự án riêng. Cách dạy: mở đầu bằng 1 câu hỏi/tình huống gần gũi để bé tự đoán trước, coach chốt lại bằng ví dụ trực quan (demo trên máy hoặc vật thật); với bé 6–9 tuổi dùng nhiều hình ảnh và trò nhập vai, bé 9–15 tuổi cho tự khám phá rồi giải thích lại."
+                  },
+                  {
+                    "time": "25–50'",
+                    "phase": "Thực hành có hướng dẫn",
+                    "activity": "Bé thực hành nội dung vừa học trên máy/giấy theo từng bước nhỏ; coach đi vòng hỗ trợ, bé xong sớm được làm phiên bản khó hơn hoặc kèm bạn chậm hơn. Kết quả thực hành là bước đệm trực tiếp cho thử thách cuối bài."
+                  },
+                  {
+                    "time": "50–65'",
+                    "phase": "Trò chơi vận dụng",
+                    "activity": "'Tổng duyệt kiểu gameshow': bốc thăm thứ tự pitch, có chuông tính giờ, ban giám khảo nhí chấm theo rubric thật – căng thẳng giả để Demo Day thật bớt run"
+                  },
+                  {
+                    "time": "65–85'",
+                    "phase": "Thử thách / Mini project",
+                    "activity": "Chứng nhận hoàn thành + bản định hướng cá nhân"
+                  },
+                  {
+                    "time": "85–90'",
+                    "phase": "Tổng kết & sao thưởng",
+                    "activity": "Hỏi nhanh 2 câu về kiến thức chính của bài; bé tự nói 1 điều mình học được + 1 điều muốn thử thêm; phát sticker/sao cho nỗ lực nổi bật (không chỉ cho kết quả tốt nhất). Buổi cuối module: coach đọc phần 'Tổng kết cho bé' của module."
+                  }
+                ]
+              }
+            ],
+            "module_project": null,
+            "teacher_recap": "Qua module này, con đã nhìn lại cả hành trình: từ buổi đầu tập gõ phím đến sản phẩm Capstone có người dùng thật; con đã gom tất cả thành portfolio của riêng mình; trình bày 7 phút trước cộng đồng và trả lời phản biện; và con tốt nghiệp – không chỉ biết DÙNG AI mà biết HIỂU, KIỂM CHỨNG và TẠO RA sản phẩm với AI."
+          }
+        ]
+      }
+    ]
+  }
+}
+```
