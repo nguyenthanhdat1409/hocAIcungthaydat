@@ -450,11 +450,6 @@ function renderCurriculum(){
   });
   html += `</div></div>`;
 
-  /* Nguyên tắc chương trình */
-  html += `<div class="prinWrap"><h3 class="beatHead">🧭 Nguyên tắc chương trình</h3><div class="prinGrid">`;
-  data.principles.forEach(p => { html += `<div class="prinCard">${esc(p)}</div>`; });
-  html += `</div></div>`;
-
   /* Thanh công cụ: tìm kiếm */
   html += `<div class="curTools">
       <div class="curSearch"><span>🔎</span><input id="curSearchInput" type="search" placeholder="Tìm bài học theo tên hoặc nội dung…" oninput="onCurSearch(this.value)" value="${esc(curSearch)}"></div>
