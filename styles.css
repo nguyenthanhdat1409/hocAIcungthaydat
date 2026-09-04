@@ -1598,3 +1598,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
   .card::before{border-radius:22px 22px 0 0}
   .opt{font-size:15.5px}
 }
+
+/* Bỏ dải gradient trên thẻ chọn tuổi (nhìn thừa) */
+.dvAge::before{display:none}
