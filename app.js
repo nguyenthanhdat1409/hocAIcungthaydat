@@ -200,8 +200,36 @@ function setText(id, v){ const el = document.getElementById(id); if(el) el.textC
 /* ---------- Modal (đóng — tái dùng cho giáo án 90') ---------- */
 function closeLesson(e){
   if(e && e.target && e.target.id !== "lessonModal" && e.type === "click" && e.currentTarget.id === "lessonModal") return;
+  stopReading();
   document.getElementById("lessonModal").classList.add("hidden");
   document.body.style.overflow = "";
+}
+
+/* ---------- Đọc bài bằng giọng nói (Web Speech API — miễn phí, offline) ---------- */
+let _readText = "", _reading = false;
+function stripForRead(html){
+  const d = document.createElement("div"); d.innerHTML = html;
+  return (d.textContent || "")
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}←-⇿⬀-⯿️‍]/gu, " ")
+    .replace(/\s+/g, " ").trim();
+}
+function updateReadBtn(on){
+  const b = document.getElementById("readBtn");
+  if(b){ b.classList.toggle("on", on); b.textContent = on ? "⏹️" : "🔊"; b.title = on ? "Dừng đọc" : "Nghe đọc bài"; }
+}
+function stopReading(){ try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch{} _reading = false; updateReadBtn(false); }
+function readLesson(){
+  if(!("speechSynthesis" in window) || !_readText){ return; }
+  if(_reading){ stopReading(); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(_readText);
+  u.lang = "vi-VN"; u.rate = 0.95; u.pitch = 1.05;
+  const voices = window.speechSynthesis.getVoices() || [];
+  const vi = voices.find(v => /vi[-_]?VN|vietnam/i.test((v.lang || "") + " " + (v.name || "")));
+  if(vi) u.voice = vi;
+  u.onend = stopReading; u.onerror = stopReading;
+  window.speechSynthesis.speak(u);
+  _reading = true; updateReadBtn(true);
 }
 
 /* ---------- Kiểm tra (quiz thích ứng theo sao) ---------- */
@@ -608,7 +636,7 @@ function renderLevel(lv, li){
 
 function renderModule(m, li, mi){
   const hasProj = !!m.module_project;
-  let h = `<div class="modCard${hasProj?" hasProj":""}" data-mod="${li}-${mi}">
+  let h = `<div class="modCard${hasProj?" hasProj":""}" data-mod="${li}-${mi}" data-code="${esc(m.code)}">
     <button class="modHead" onclick="toggleModule(this)">
       <span class="modArrow">▸</span>
       <span class="modTitle"><b>MODULE ${esc(m.code)}</b> – ${esc(m.name)} <span class="modCount">(${m.sessions} buổi)</span></span>
@@ -676,6 +704,10 @@ function openPlan(li, mi, lsi){
     coach += `<div class="coachNote"><b>🎮 Kho trò chơi:</b><ul>${m.games_pool.map(g=>`<li>${esc(g)}</li>`).join("")}</ul></div>`;
   coach += `<div class="secTitle" data-icon="🗺️">Các bước lên lớp (90')</div><div class="planList">${steps}</div>`;
 
+  const lessonHtml = buildLessonBody(ls);
+  stopReading();
+  _readText = ("Bài " + ls.code + ". " + ls.name + ". " + stripForRead(lessonHtml));
+
   document.getElementById("lessonBody").innerHTML =
     `<div class="lessonHero" style="--lc:${c}">
        <div class="lessonArt">${art}</div>
@@ -683,10 +715,11 @@ function openPlan(li, mi, lsi){
      </div>
      <div class="lessonBar" style="background:linear-gradient(135deg,${c},${c}cc)">
        <div class="lessonBarText"><span class="lhCode">Bài ${esc(ls.code)}</span><h2>${esc(ls.name)}</h2></div>
+       <button class="readBtn" id="readBtn" onclick="readLesson()" title="Nghe đọc bài" aria-label="Nghe đọc bài">🔊</button>
        <button class="coachQ" onclick="toggleCoachPanel(this)" title="Gợi ý cho giáo viên" aria-label="Gợi ý cho giáo viên">?</button>
      </div>
      <div class="lContent">
-       ${buildLessonBody(ls)}
+       ${lessonHtml}
        ${renderLessonQuiz(ls)}
        <div class="coachPanel hidden" id="coachPanel">
          <div class="coachPanelHead">🎓 Gợi ý cho giáo viên <span>(bấm dấu ? để ẩn)</span></div>
@@ -886,7 +919,7 @@ function plRecommend(){
     antoan:"chú trọng an toàn & kiểm chứng (Module 1.3.6, 2.6–2.7)"
   };
   let focus = (weakest && weakVal < 0.6) ? FOCUS[weakest] : "";
-  return {avg, tier, start, desc, ageNote, focus, acc};
+  return {avg, tier, mod:_t.mod, start, desc, ageNote, focus, acc};
 }
 function plResult(){
   document.getElementById("bar").style.width = "100%";
@@ -926,7 +959,7 @@ function plResult(){
     <div class="secTitle">📊 Năng lực theo nhóm</div>
     <div class="catList">${bars}</div>
     <div class="center">
-      <button class="btn" onclick="exitRunner(); go('baihoc')">Vào lộ trình 📚</button>
+      <button class="btn" onclick="gotoModule('${r.mod}')">Học module gợi ý 📚</button>
       <button class="btn light" onclick="startPlacement()" style="margin-left:8px">Làm lại 🔄</button>
     </div>`;
   el.classList.remove("hidden");
@@ -951,29 +984,44 @@ function tierFor(avg, age){
   age = age || plAge;
   const young = age <= 8, older = age >= 12;
   if(avg < 1.5){
-    return {tier:"Mới bắt đầu", start:"Level 1 · Module 1.1 – Làm quen máy tính",
+    return {tier:"Mới bắt đầu", mod:"1.1", start:"Level 1 · Module 1.1 – Làm quen máy tính",
       desc:"Bé nên khởi động từ nền tảng số: bộ phận máy tính, chuột–bàn phím, thư mục, an toàn." +
         (young ? " Ở tuổi nhỏ, học chậm–chắc và nhiều trò chơi trực quan." : "")};
   }
   if(avg < 2.0){
-    return {tier:"Nền tảng", start:"Level 1 · Module 1.2–1.3 – Gõ phím & Gặp gỡ AI",
+    return {tier:"Nền tảng", mod:"1.2", start:"Level 1 · Module 1.2–1.3 – Gõ phím & Gặp gỡ AI",
       desc:"Luyện gõ 10 ngón cho vững rồi bước vào làm quen AI."};
   }
   if(avg < 2.5){
     // Khá: bé nhỏ tuổi nên đi đủ Level 1 cho chắc; bé lớn có thể vào phần prompt/tư duy sớm
     return young
-      ? {tier:"Khá", start:"Level 1 · Module 1.3–1.4 – Gặp gỡ AI & Prompt cơ bản",
+      ? {tier:"Khá", mod:"1.3", start:"Level 1 · Module 1.3–1.4 – Gặp gỡ AI & Prompt cơ bản",
          desc:"Bé nắm khá tốt; ở tuổi nhỏ nên đi qua đủ Level 1 cho vững, học nhiều qua trò chơi."}
-      : {tier:"Khá", start:"Level 1 · Module 1.4–1.6 – Prompt & Tư duy thuật toán",
+      : {tier:"Khá", mod:"1.4", start:"Level 1 · Module 1.4–1.6 – Prompt & Tư duy thuật toán",
          desc:"Tập trung viết prompt và tư duy phân rã, flowchart."};
   }
   // Vững: chỉ nhảy Level 2 khi ĐỦ TUỔI; bé nhỏ giỏi vẫn nên xây nền Level 1 (học nhanh)
-  if(older) return {tier:"Vững", start:"Level 2 – Hiểu AI & Kiểm chứng",
+  if(older) return {tier:"Vững", mod:"2.1", start:"Level 2 – Hiểu AI & Kiểm chứng",
     desc:"Bé đủ vững và đủ tuổi — có thể vào Level 2 (AI học từ dữ liệu, kiểm chứng, prompt có phương pháp)."};
-  if(age >= 10) return {tier:"Vững", start:"Level 1 · Module 1.6–1.7 rồi sang Level 2",
+  if(age >= 10) return {tier:"Vững", mod:"1.6", start:"Level 1 · Module 1.6–1.7 rồi sang Level 2",
     desc:"Rất tốt! Hoàn thành nhanh cuối Level 1 (thuật toán, Scratch) rồi tiến lên Level 2."};
-  return {tier:"Vững", start:"Level 1 – học nhanh, chú trọng Tư duy & Scratch (Module 1.5–1.7)",
+  return {tier:"Vững", mod:"1.5", start:"Level 1 – học nhanh, chú trọng Tư duy & Scratch (Module 1.5–1.7)",
     desc:"Bé giỏi nhưng còn nhỏ — nên hoàn thành Level 1 để xây nền chắc, có thể học với nhịp nhanh hơn."};
+}
+/* Nhảy tới một module cụ thể trong trang Bài học và làm nổi bật nó */
+function gotoModule(code){
+  document.getElementById("runner").classList.add("hidden");
+  document.body.style.overflow = "";
+  go("baihoc");
+  let tries = 0;
+  (function wait(){
+    const card = code && document.querySelector('.modCard[data-code="' + code + '"]');
+    if(card){
+      card.classList.add("open", "flash");
+      card.scrollIntoView({behavior:"smooth", block:"center"});
+      setTimeout(() => card.classList.remove("flash"), 2400);
+    } else if(tries++ < 50){ setTimeout(wait, 150); }
+  })();
 }
 function comboResult(){
   document.getElementById("bar").style.width = "100%";
@@ -1013,7 +1061,7 @@ function comboResult(){
       ${ageHtml}
     </div>
     <div class="center">
-      <button class="btn" onclick="exitRunner(); go('baihoc')">Vào lộ trình 📚</button>
+      <button class="btn" onclick="gotoModule('${t.mod}')">Học module gợi ý 📚</button>
       <button class="btn light" onclick="startCombo()" style="margin-left:8px">Làm lại 🔄</button>
     </div>`;
   el.classList.remove("hidden");
@@ -1083,7 +1131,8 @@ function tyResult(wpm, acc){
   else { rate = "Rất tốt! 🏆"; note = "Kỹ năng gõ của em đã ổn — có thể tập trung sang các kỹ năng khác."; }
   sfx.win(); burst(12);
   document.getElementById("tyEnd").innerHTML =
-    `<div class="lqResult">⌨️ <b>${wpm} WPM</b> · độ chính xác <b>${acc}%</b> — ${rate}<br><span style="font-weight:600">${note}</span></div>`;
+    `<div class="lqResult">⌨️ <b>${wpm} WPM</b> · độ chính xác <b>${acc}%</b> — ${rate}<br><span style="font-weight:600">${note}</span>
+      <div class="center" style="margin-top:10px"><button class="btn" onclick="gotoModule('1.2')">Luyện gõ phím ⌨️</button></div></div>`;
 }
 
 /* =========================================================
@@ -1157,7 +1206,7 @@ function thResult(){
     <div class="plTier"><b>${thScore}/${n}</b> câu đúng (${pct}%) — ${rate}</div>
     <div class="plRec"><p>${note}</p></div>
     <div class="center">
-      <button class="btn" onclick="exitRunner(); go('baihoc')">Vào lộ trình 📚</button>
+      <button class="btn" onclick="gotoModule('1.5')">Luyện tư duy 🧩</button>
       <button class="btn light" onclick="startThinking()" style="margin-left:8px">Làm lại 🔄</button>
     </div>`;
   el.classList.remove("hidden");
