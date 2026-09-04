@@ -1570,3 +1570,31 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 /* Làm nổi bật module được gợi ý (từ Kiểm tra đầu vào) */
 .modCard.flash{border-color:var(--lc)!important;animation:flashPulse 1.2s ease-in-out 2}
 @keyframes flashPulse{0%,100%{box-shadow:0 0 0 3px rgba(124,58,237,.15)}50%{box-shadow:0 0 0 9px rgba(124,58,237,.45)}}
+
+/* =========================================================
+   CARD to hơn & đẹp hơn (v27)
+   ========================================================= */
+.app{max-width:720px}
+.card{
+  border-radius:28px;
+  background:linear-gradient(180deg,#ffffff 0%,#fbfaff 100%);
+  border:1px solid rgba(124,58,237,.08);
+  box-shadow:0 8px 0 rgba(30,27,75,.05), 0 26px 60px -14px rgba(76,29,149,.30), 0 2px 6px rgba(0,0,0,.05);
+  position:relative;
+}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;border-radius:28px 28px 0 0;
+  background:linear-gradient(90deg,var(--vio),var(--pink),var(--org))}
+.app .card{padding:38px 34px}
+.quizIntro{padding:40px 32px}
+.dvAge{padding:18px 22px !important}
+.card .qTitle{font-size:clamp(20px,4vw,26px)}
+.card .secTitle{font-size:19px}
+.opt{font-size:17.5px}
+@media(max-width:600px){
+  .app{max-width:100%}
+  .app .card{padding:24px 18px}
+  .quizIntro{padding:26px 18px}
+  .card{border-radius:22px}
+  .card::before{border-radius:22px 22px 0 0}
+  .opt{font-size:15.5px}
+}
