@@ -1639,3 +1639,28 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
   color:var(--ink);cursor:pointer;text-align:left;transition:border-color .14s, transform .14s}
 .oStep:hover:not(:disabled){border-color:#C7D2FE;transform:translateX(2px)}
 .oStep.done{opacity:.38;cursor:default}
+
+/* =========================================================
+   GAME NHẬP VAI & TRANH BIỆN
+   ========================================================= */
+.rpHead{background:linear-gradient(135deg,#4C1D95,#7C3AED)!important}
+.rpHead span{font-family:var(--font-body);font-weight:500;font-size:12px;opacity:.9;display:block;margin-top:2px}
+.rpCard{border-left-color:#7C3AED}
+.rpCard .emCode{color:#7C3AED}
+
+.rpTitle{font-family:var(--font-display);font-weight:800;font-size:22px;color:var(--ink);margin:8px 0 10px;line-height:1.2}
+.rpNarr{font-size:16px;line-height:1.65;color:#334155;background:#F8FAFF;border:1px solid #E7EAF3;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.rpRole{font-weight:700;color:#5B21B6;background:#EDE9FE;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14.5px}
+.rpChoices{display:flex;flex-direction:column;gap:10px}
+.rpChoice{background:#fff;border:2px solid #E2E8F0;border-radius:14px;padding:14px 16px;font:inherit;font-size:15.5px;
+  color:var(--ink);cursor:pointer;text-align:left;line-height:1.4;transition:border-color .14s, transform .14s, box-shadow .14s;box-shadow:0 4px 0 #E2E8F0}
+.rpChoice:hover:not(:disabled){border-color:var(--vio);transform:translateY(-2px)}
+.rpChoice:disabled{cursor:default;box-shadow:none}
+.rpChoice.rgood{border-color:#22C55E;background:#ECFDF5;box-shadow:0 4px 0 #22C55E}
+.rpChoice.rok{border-color:#F59E0B;background:#FFFBEB;box-shadow:0 4px 0 #F59E0B}
+.rpChoice.rbad{border-color:#EF4444;background:#FEF2F2;box-shadow:0 4px 0 #EF4444}
+.rpReply{margin-top:12px}
+.rpReplyBox{border-radius:14px;padding:13px 16px;font-size:14.5px;line-height:1.55;animation:planIn .35s ease}
+.rpReplyBox.good{background:#ECFDF5;border:2px solid #6EE7B7;color:#065F46}
+.rpReplyBox.ok{background:#FFFBEB;border:2px solid #FCD34D;color:#78350F}
+.rpReplyBox.bad{background:#FEF2F2;border:2px solid #FCA5A5;color:#991B1B}

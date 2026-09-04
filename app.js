@@ -1286,6 +1286,18 @@ function renderExHub(){
   const host = document.getElementById("baitap"); const P = window.CURRICULUM.program;
   let html = `<div class="pageHead"><h2 class="sectionHead">✏️ Bài tập</h2>
     <p class="sectionSub">Chọn một module để luyện tập — trắc nghiệm, đúng/sai, nối cặp, sắp xếp thứ tự.</p></div>`;
+  // Game nhập vai & tranh biện (đạo đức AI · tư duy phản biện)
+  if(window.ROLEPLAY){
+    html += `<div class="exLevel"><h3 class="exLevelH rpHead">🎭 Nhập vai &amp; Tranh biện <span>đạo đức AI · tư duy phản biện · 10–15 tuổi</span></h3><div class="exGrid">`;
+    Object.keys(window.ROLEPLAY).forEach(k => {
+      const r = window.ROLEPLAY[k];
+      html += `<button class="exModCard rpCard" onclick="startRolePlay('${k}')">
+        <span class="emCode">${r.emoji || "🎭"} NHẬP VAI</span>
+        <span class="emName">${esc(r.title.replace(/^\S+\s/, ""))}</span>
+        <span class="emMeta">${esc(r.tag || "")}</span></button>`;
+    });
+    html += `</div></div>`;
+  }
   P.levels.forEach((lv, li) => {
     html += `<div class="exLevel" style="--lc:${LEVEL_COLORS[li]}"><h3 class="exLevelH">${esc(lv.name)} · ${esc(lv.title)}</h3><div class="exGrid">`;
     lv.modules.forEach(m => {
@@ -1430,6 +1442,79 @@ function exResult(){
       <button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button>
     </div>`;
   el.classList.remove("hidden");
+  document.getElementById("runner").scrollTo({top:0});
+}
+
+/* =========================================================
+   2g) GAME NHẬP VAI & TRANH BIỆN (đạo đức AI · tư duy phản biện)
+   Dữ liệu ở roleplay.js (window.ROLEPLAY)
+   ========================================================= */
+let rpData = null, rpKey = "", rpScene = -1, rpScore = 0, rpMax = 0, rpLocked = false;
+function startRolePlay(key){
+  rpData = window.ROLEPLAY && window.ROLEPLAY[key]; if(!rpData) return;
+  rpKey = key; rpScene = -1; rpScore = 0;
+  rpMax = rpData.stages.reduce((s, st) => s + Math.max.apply(null, st.choices.map(c => c.score)), 0);
+  runnerReturn = "baitap";
+  document.getElementById("runner").classList.remove("hidden");
+  document.getElementById("runnerTop").classList.remove("hidden");
+  document.getElementById("starBox").classList.add("hidden");
+  document.getElementById("resultCard").classList.add("hidden");
+  document.getElementById("qCard").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  rpIntro();
+}
+function rpIntro(){
+  document.getElementById("counter").textContent = "Nhập vai";
+  document.getElementById("bar").style.width = "0%";
+  document.getElementById("qCard").innerHTML =
+    `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">🎭 ${esc(rpData.tag || "Nhập vai")}</span>
+     <div class="rpTitle">${esc(rpData.title)}</div>
+     <div class="rpNarr">${esc(rpData.intro)}</div>
+     <div class="rpRole">🎬 ${esc(rpData.role)}</div>
+     <div class="center"><button class="btn" onclick="rpNext()">Bắt đầu ▶</button></div>`;
+  document.getElementById("runner").scrollTo({top:0});
+}
+function rpNext(){ rpScene++; if(rpScene < rpData.stages.length) rpStage(); else rpResult(); }
+function rpStage(){
+  rpLocked = false;
+  const st = rpData.stages[rpScene], n = rpData.stages.length;
+  document.getElementById("counter").textContent = "Cảnh " + (rpScene+1) + "/" + n;
+  document.getElementById("bar").style.width = (rpScene / n * 100) + "%";
+  let h = `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">🎭 Cảnh ${rpScene+1}</span>
+     <div class="rpNarr">${esc(st.text)}</div><div class="rpChoices">`;
+  st.choices.forEach((c,i) => { h += `<button class="rpChoice" onclick="rpChoose(${i},this)">${esc(c.label)}</button>`; });
+  h += `</div><div class="rpReply" id="rpReply"></div><div class="center"><button class="btn next hidden" id="btnNext" onclick="rpNext()">Tiếp ➜</button></div>`;
+  document.getElementById("qCard").innerHTML = h;
+  document.getElementById("runner").scrollTo({top:0});
+}
+function rpChoose(i, el){
+  if(rpLocked) return; rpLocked = true;
+  const c = rpData.stages[rpScene].choices[i];
+  document.querySelectorAll(".rpChoice").forEach(b => { b.disabled = true; });
+  el.classList.add(c.score >= 2 ? "rgood" : c.score >= 1 ? "rok" : "rbad");
+  rpScore += c.score;
+  const rep = document.getElementById("rpReply");
+  rep.innerHTML = `<div class="rpReplyBox ${c.score>=2?'good':c.score>=1?'ok':'bad'}">${c.score>=2?"👍 ":c.score>=1?"🤔 ":"⚠️ "}${esc(c.reply)}</div>`;
+  document.getElementById("btnNext").classList.remove("hidden");
+  if(c.score >= 2){ sfx.correct(); burst(4); } else sfx.pop();
+}
+function rpResult(){
+  document.getElementById("bar").style.width = "100%";
+  document.getElementById("runnerTop").classList.add("hidden");
+  document.getElementById("qCard").classList.add("hidden");
+  const pct = rpMax ? Math.round(rpScore / rpMax * 100) : 0;
+  const tier = pct >= 85 ? "Nhà tư duy phản biện xuất sắc! 🏆" : pct >= 60 ? "Lập luận tốt! 😎" : pct >= 40 ? "Khá ổn, luyện thêm nhé 💪" : "Hãy cân nhắc kỹ hơn 📖";
+  if(pct >= 50){ sfx.win(); burst(18); }
+  document.getElementById("resultCard").innerHTML = `
+    <div class="hostMini" style="margin:0 auto;width:66px;height:66px;font-size:36px">${rpData.emoji || "🎭"}</div>
+    <h2 style="margin-top:10px">${esc(rpData.title)}</h2>
+    <div class="plTier">Tư duy phản biện: <b>${rpScore}/${rpMax}</b> (${pct}%) — ${tier}</div>
+    <div class="plRec"><div class="plRecHead">💡 Bài học rút ra</div><p>${esc(rpData.lesson)}</p></div>
+    <div class="center">
+      <button class="btn" onclick="startRolePlay('${rpKey}')">Chơi lại 🔄</button>
+      <button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button>
+    </div>`;
+  document.getElementById("resultCard").classList.remove("hidden");
   document.getElementById("runner").scrollTo({top:0});
 }
 
