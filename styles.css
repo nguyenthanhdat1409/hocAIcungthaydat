@@ -1540,3 +1540,21 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 .csTile .csIco{font-size:26px}
 .csTile b{font-family:var(--font-display);font-size:18px;color:var(--vio)}
 .csTile span{font-size:11.5px;color:#64748B}
+
+/* =========================================================
+   Căn đều đáp án A/B/C/D + nới rộng popup quiz (v24)
+   ========================================================= */
+.app .card{padding:30px 26px}
+.qTitle{margin-bottom:16px !important;line-height:1.35}
+.opts{gap:14px}
+.opt{justify-content:flex-start !important;text-align:left !important;gap:12px;padding:15px 18px;line-height:1.4;min-height:62px}
+.opt > span:last-child{flex:1}
+.opt .key{width:30px;height:30px;font-size:15px;border-radius:9px}
+/* Giữ căn giữa cho ô emoji/chữ cái (bài học chữ cái cũ) */
+.opt.emoji,.opt.letter{justify-content:center !important;text-align:center !important}
+/* Khoảng cách chip phía trên câu hỏi */
+.catChip,.lvChip{margin-bottom:6px}
+@media(max-width:600px){
+  .app .card{padding:22px 16px}
+  .opt{padding:13px 14px;min-height:56px}
+}
