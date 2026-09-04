@@ -124,7 +124,7 @@ function burst(n){
 }
 
 /* ---------- Điều hướng ---------- */
-const SECTIONS = ["home","baihoc","kiemtra","dauvao"];
+const SECTIONS = ["home","baihoc","kiemtra","dauvao","baitap"];
 let navLock = false;
 let runnerReturn = "home";
 if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
@@ -144,6 +144,7 @@ function go(id){
   if(("#" + id) !== location.hash){ navLock = true; location.hash = id; }
   window.scrollTo(0, 0);
   if(id === "baihoc") showCurriculum();
+  if(id === "baitap") showExercises();
 }
 
 /* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
@@ -1252,6 +1253,181 @@ function thResult(){
     <div class="center">
       <button class="btn" onclick="gotoModule('1.5')">Luyện tư duy 🧩</button>
       <button class="btn light" onclick="startThinking()" style="margin-left:8px">Làm lại 🔄</button>
+    </div>`;
+  el.classList.remove("hidden");
+  document.getElementById("runner").scrollTo({top:0});
+}
+
+/* =========================================================
+   2f) BÀI TẬP theo module (mcq · tf · match · order)
+   ========================================================= */
+let exList = [], exIdx = 0, exScore = 0, exLocked = false, exCur = null;
+let exModCode = "", exSelLeft = -1, exMatched = 0, exOrderSeq = [];
+
+function findModule(code){
+  const P = window.CURRICULUM && window.CURRICULUM.program; if(!P) return null;
+  for(const lv of P.levels){ for(const m of lv.modules){ if(m.code === code) return {lv, m}; } }
+  return null;
+}
+function exCount(code, m){
+  let mcq = 0;
+  if(window.LESSON_QUIZ) m.lessons.forEach(l => { mcq += (window.LESSON_QUIZ[l.code] || []).length; });
+  const other = (window.EXERCISES && window.EXERCISES[code] || []).length;
+  return mcq + other;
+}
+function showExercises(){
+  const host = document.getElementById("baitap"); if(!host) return;
+  if(host.dataset.rendered && window.CURRICULUM) return;
+  if(window.CURRICULUM){ renderExHub(); return; }
+  host.innerHTML = `<div class="curLoading"><span class="curSpin">⏳</span> Đang tải bài tập…</div>`;
+  loadCurriculumData().then(renderExHub).catch(() => { host.innerHTML = `<div class="curLoading">😕 Không tải được bài tập. Hãy tải lại trang.</div>`; });
+}
+function renderExHub(){
+  const host = document.getElementById("baitap"); const P = window.CURRICULUM.program;
+  let html = `<div class="pageHead"><h2 class="sectionHead">✏️ Bài tập</h2>
+    <p class="sectionSub">Chọn một module để luyện tập — trắc nghiệm, đúng/sai, nối cặp, sắp xếp thứ tự.</p></div>`;
+  P.levels.forEach((lv, li) => {
+    html += `<div class="exLevel" style="--lc:${LEVEL_COLORS[li]}"><h3 class="exLevelH">${esc(lv.name)} · ${esc(lv.title)}</h3><div class="exGrid">`;
+    lv.modules.forEach(m => {
+      const total = exCount(m.code, m);
+      const hasOther = !!(window.EXERCISES && window.EXERCISES[m.code]);
+      html += `<button class="exModCard" onclick="startExercise('${m.code}')" ${total ? "" : "disabled"}>
+        <span class="emCode">MODULE ${esc(m.code)}</span>
+        <span class="emName">${esc(m.name)}</span>
+        <span class="emMeta">📝 ${total} câu${hasOther ? " · nhiều dạng" : ""}</span></button>`;
+    });
+    html += `</div></div>`;
+  });
+  host.innerHTML = html; host.dataset.rendered = "1";
+}
+function startExercise(code){
+  if(!window.CURRICULUM) return;
+  const found = findModule(code); if(!found) return;
+  exModCode = code;
+  let mcq = [];
+  found.m.lessons.forEach(l => {
+    (window.LESSON_QUIZ && window.LESSON_QUIZ[l.code] || []).forEach(q => mcq.push({type:"mcq", q:q.q, opts:q.o, a:q.a}));
+  });
+  mcq = shuffle(mcq).slice(0, 8);
+  const other = (window.EXERCISES && window.EXERCISES[code] || []).slice();
+  exList = shuffle(mcq.concat(other)).slice(0, 14);
+  if(!exList.length) return;
+  exList.forEach(it => { delete it._p; });
+  exIdx = 0; exScore = 0; runnerReturn = "baitap";
+  document.getElementById("runner").classList.remove("hidden");
+  document.getElementById("runnerTop").classList.remove("hidden");
+  document.getElementById("starBox").classList.add("hidden");
+  document.getElementById("resultCard").classList.add("hidden");
+  document.getElementById("qCard").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  exRender();
+}
+function exRender(){
+  exCur = exList[exIdx]; exLocked = false; exSelLeft = -1; exMatched = 0; exOrderSeq = [];
+  document.getElementById("counter").textContent = (exIdx+1) + "/" + exList.length;
+  document.getElementById("bar").style.width = (exIdx / exList.length * 100) + "%";
+  const t = exCur.type;
+  const badge = {mcq:"🔤 Trắc nghiệm", tf:"✅❌ Đúng hay Sai", match:"🔗 Nối cặp", order:"🪜 Sắp xếp thứ tự"}[t] || "Bài tập";
+  let inner = `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">${badge}</span>`;
+  if(t === "mcq"){
+    if(!exCur._p) exCur._p = prep({opts:exCur.opts, a:exCur.a});
+    inner += `<div class="qTitle">${esc(exCur.q)}</div><div class="opts">`;
+    exCur._p.opts.forEach((o,i) => { inner += `<button class="opt" onclick="exMCQ(${i},this)"><span class="key">${KEYS[i]}</span><span>${esc(o)}</span></button>`; });
+    inner += `</div>`;
+  } else if(t === "tf"){
+    inner += `<div class="qTitle">${esc(exCur.q)}</div>
+      <div class="opts"><button class="opt tfBtn" onclick="exTF(true,this)"><span>✅ Đúng</span></button>
+      <button class="opt tfBtn" onclick="exTF(false,this)"><span>❌ Sai</span></button></div>`;
+  } else if(t === "match"){
+    inner += `<div class="qTitle">${esc(exCur.title || "Nối các cặp cho đúng")}</div>`;
+    const rights = shuffle(exCur.pairs.map((p,j) => ({t:p[1], j})));
+    inner += `<div class="matchWrap"><div class="mCol" id="mLeft">`;
+    exCur.pairs.forEach((p,i) => { inner += `<button class="mItem" data-i="${i}" onclick="exSelL(this)">${esc(p[0])}</button>`; });
+    inner += `</div><div class="mCol" id="mRight">`;
+    rights.forEach(r => { inner += `<button class="mItem" data-j="${r.j}" onclick="exSelR(this)">${esc(r.t)}</button>`; });
+    inner += `</div></div><p class="muted" id="mHint">Bấm một ý bên trái, rồi bấm ý tương ứng bên phải.</p>`;
+  } else if(t === "order"){
+    inner += `<div class="qTitle">${esc(exCur.q)}</div><div class="orderSeq" id="orderSeq"></div><div class="orderPool" id="orderPool">`;
+    shuffle(exCur.steps.map((s,i) => ({s,i}))).forEach(o => { inner += `<button class="oStep" data-i="${o.i}" onclick="exOrder(this)">${esc(o.s)}</button>`; });
+    inner += `</div>`;
+  }
+  inner += `<div class="feedback" id="fb"><div class="hostMini">✏️</div><div class="fbBubble" id="fbText"></div></div>`;
+  inner += `<div class="center"><button class="btn next hidden" id="btnNext" onclick="exNext()">Tiếp theo ➜</button></div>`;
+  document.getElementById("qCard").innerHTML = inner;
+  document.getElementById("runner").scrollTo({top:0});
+}
+function _exDone(ok, msg){
+  const fb = document.getElementById("fb"), fbText = document.getElementById("fbText");
+  fb.classList.add("show", ok ? "good" : "bad"); fbText.innerHTML = msg || (ok ? rand(PRAISE) : "Chưa đúng rồi!");
+  document.getElementById("btnNext").classList.remove("hidden");
+  if(ok){ exScore++; sfx.correct(); burst(4); } else sfx.wrong();
+}
+function exMCQ(i, el){
+  if(exLocked) return; exLocked = true;
+  const opts = document.querySelectorAll(".opt"); opts.forEach(o => o.classList.add("locked"));
+  const a = exCur._p.a, ok = (i === a);
+  if(ok){ el.classList.add("correct"); opts.forEach((o,j)=>{ if(j!==i) o.classList.add("dim"); }); }
+  else { el.classList.add("wrong"); opts[a].classList.add("correct"); opts.forEach((o,j)=>{ if(j!==i && j!==a) o.classList.add("dim"); }); }
+  _exDone(ok, ok ? null : ("Đáp án: <b>" + esc(exCur._p.opts[a]) + "</b>"));
+}
+function exTF(val, el){
+  if(exLocked) return; exLocked = true;
+  const opts = document.querySelectorAll(".opt"); opts.forEach(o => o.classList.add("locked"));
+  const ok = (val === exCur.a);
+  if(ok) el.classList.add("correct");
+  else { el.classList.add("wrong"); opts.forEach(o => { if(/Đúng/.test(o.textContent) === exCur.a) o.classList.add("correct"); }); }
+  _exDone(ok, ok ? null : ("Đáp án đúng: <b>" + (exCur.a ? "Đúng" : "Sai") + "</b>"));
+}
+function exSelL(btn){
+  if(btn.disabled) return;
+  document.querySelectorAll("#mLeft .mItem").forEach(b => b.classList.remove("sel"));
+  btn.classList.add("sel"); exSelLeft = +btn.dataset.i;
+}
+function exSelR(btn){
+  if(btn.disabled || exSelLeft < 0) return;
+  const j = +btn.dataset.j;
+  if(j === exSelLeft){
+    btn.classList.add("done"); btn.disabled = true;
+    const left = document.querySelector('#mLeft .mItem[data-i="' + j + '"]');
+    if(left){ left.classList.add("done"); left.classList.remove("sel"); left.disabled = true; }
+    exMatched++; exSelLeft = -1; sfx.pop();
+    if(exMatched === exCur.pairs.length) _exDone(true, "Nối đúng hết! 🎉");
+  } else {
+    btn.classList.add("flash"); setTimeout(() => btn.classList.remove("flash"), 500);
+    const left = document.querySelector('#mLeft .mItem.sel'); if(left) left.classList.remove("sel");
+    exSelLeft = -1; const h = document.getElementById("mHint"); if(h) h.textContent = "Chưa đúng cặp, thử lại nhé!";
+    sfx.wrong();
+  }
+}
+function exOrder(btn){
+  if(btn.disabled) return;
+  btn.classList.add("done"); btn.disabled = true;
+  exOrderSeq.push(+btn.dataset.i);
+  const seq = document.getElementById("orderSeq");
+  seq.innerHTML = exOrderSeq.map((idx,pos) => `<span class="oChip">${pos+1}. ${esc(exCur.steps[idx])}</span>`).join("");
+  if(exOrderSeq.length === exCur.steps.length){
+    const ok = exOrderSeq.every((v,k) => v === k);
+    if(!ok) seq.innerHTML += `<div class="oCorrect">Thứ tự đúng: ${exCur.steps.map((s,k) => `<b>${k+1}.</b> ${esc(s)}`).join(" · ")}</div>`;
+    _exDone(ok, ok ? "Sắp đúng thứ tự! 🎉" : null);
+  }
+}
+function exNext(){ exIdx++; if(exIdx < exList.length){ exRender(); } else { exResult(); } }
+function exResult(){
+  document.getElementById("bar").style.width = "100%";
+  document.getElementById("qCard").classList.add("hidden");
+  document.getElementById("runnerTop").classList.add("hidden");
+  const n = exList.length, pct = Math.round(exScore / n * 100);
+  const tier = pct >= 85 ? "Xuất sắc! 🏆" : pct >= 60 ? "Giỏi lắm! 😎" : pct >= 40 ? "Cố thêm nhé! 💪" : "Ôn lại bài nha! 📖";
+  if(pct >= 50){ sfx.win(); burst(18); }
+  const el = document.getElementById("resultCard");
+  el.innerHTML = `
+    <div class="hostMini" style="margin:0 auto;width:66px;height:66px;font-size:36px">✏️</div>
+    <h2 style="margin-top:10px">Kết quả bài tập · Module ${esc(exModCode)}</h2>
+    <div class="plTier"><b>${exScore}/${n}</b> đúng (${pct}%) — ${tier}</div>
+    <div class="center">
+      <button class="btn" onclick="startExercise('${exModCode}')">Làm lại 🔄</button>
+      <button class="btn light" onclick="gotoModule('${exModCode}')" style="margin-left:8px">Xem bài học 📖</button>
+      <button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button>
     </div>`;
   el.classList.remove("hidden");
   document.getElementById("runner").scrollTo({top:0});

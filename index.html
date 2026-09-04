@@ -7,7 +7,7 @@
 <meta name="description" content="Khởi đầu học AI cho mọi người — bài học trực quan, vui nhộn, dễ hiểu.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=29">
+<link rel="stylesheet" href="styles.css?v=31">
 </head>
 <body>
 
@@ -23,6 +23,7 @@
       <a data-nav="home"    href="#home"    onclick="go('home');return false;">🏠 Trang chủ</a>
       <a data-nav="dauvao"  href="#dauvao"  onclick="go('dauvao');return false;">🎯 Đầu vào</a>
       <a data-nav="baihoc"  href="#baihoc"  onclick="go('baihoc');return false;">📚 Bài học</a>
+      <a data-nav="baitap"  href="#baitap"  onclick="go('baitap');return false;">✏️ Bài tập</a>
       <a data-nav="kiemtra" href="#kiemtra" onclick="go('kiemtra');return false;">🏆 Kiểm tra</a>
     </nav>
   </div>
@@ -76,6 +77,9 @@
   <section id="baihoc" class="page hidden">
     <div id="curriculum"></div>
   </section>
+
+  <!-- ---------- BÀI TẬP (hub theo module) ---------- -->
+  <section id="baitap" class="page hidden"></section>
 
   <!-- ---------- KIỂM TRA ĐẦU VÀO (trung tâm 3 bài test) ---------- -->
   <section id="dauvao" class="page hidden">
@@ -168,6 +172,7 @@
 <!-- Dữ liệu bài học (curriculum, lessons_content, lesson_quiz) nạp ĐỘNG khi mở trang Bài học — xem loadCurriculumData() trong app.js -->
 <script defer src="art.js?v=18"></script>
 <script defer src="placement.js?v=30"></script>
-<script defer src="app.js?v=30"></script>
+<script defer src="exercises.js?v=31"></script>
+<script defer src="app.js?v=31"></script>
 </body>
 </html>
