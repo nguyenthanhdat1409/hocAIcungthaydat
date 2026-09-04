@@ -1298,7 +1298,7 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Càng ghi nhiều vấn đề thì?", o:["Càng nhiều lựa chọn để chọn","Càng rối vô ích","Càng tệ","Không đổi"], a:0},
     {q:"Vấn đề tốt là vấn đề?", o:["Có thật, ai đó đang gặp","Tưởng tượng","Không ai gặp","Không giải được"], a:0},
     {q:"Quan sát giúp em?", o:["Tìm ra vấn đề đáng giải","Bỏ lỡ cơ hội","Không thấy gì","Mất thời gian"], a:0},
-    {q:"Nên ghi bao nhiêu vấn đề?", o:["Càng nhiều càng tốt (vd 10)","Đúng 1","Không ghi","Không quan trọng"], a:0},
+    {q:"Nên ghi bao nhiêu vấn đề?", o:["Càng nhiều càng tốt (ví dụ 10)","Đúng 1","Không ghi","Không quan trọng"], a:0},
     {q:"Bài học?", o:["Ý tưởng đến từ quan sát khó khăn thật","Ngồi nghĩ vu vơ","Chép mạng","Đợi may mắn"], a:0}
   ],
 
@@ -1502,7 +1502,7 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Chuỗi (string) là?", o:["Dãy ký tự","Dãy số cộng","Một hình","Một âm thanh"], a:0},
     {q:"Với danh sách, em có thể?", o:["Thêm, đếm, tìm kiếm","Chỉ xem","Không làm gì","Chỉ xoá"], a:0},
     {q:"Ví dụ dùng danh sách?", o:["Sổ việc cần làm","Một con số","Một màu","Một âm"], a:0},
-    {q:"Nên đặt tên biến danh sách?", o:["Theo số nhiều, vd viec_can_lam","Ngẫu nhiên","Toàn số","Bỏ trống"], a:0},
+    {q:"Nên đặt tên biến danh sách?", o:["Theo số nhiều, ví dụ viec_can_lam","Ngẫu nhiên","Toàn số","Bỏ trống"], a:0},
     {q:"Đếm phần tử trong danh sách để?", o:["Biết có bao nhiêu mục","Đổi màu","Tắt máy","Vẽ"], a:0},
     {q:"Tìm kiếm trong danh sách giúp?", o:["Biết một mục có trong đó không","Xoá danh sách","In tất cả","Không gì"], a:0},
     {q:"Chuỗi 'Xin chao' gồm?", o:["Các ký tự ghép lại","Các số","Một hình","Một màu"], a:0},

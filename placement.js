@@ -36,7 +36,7 @@ window.PLACEMENT = {
   3: [
     {cat:"khainiem", q:"Vì sao AI đôi khi 'bịa' thông tin?", opts:["Nó đoán theo xác suất, không tra sự thật","Do trời nóng","Do màn hình nhỏ","Do bàn phím cũ"], a:0},
     {cat:"antoan", q:"Cách kiểm chứng một tin đáng nghi?", opts:["Đối chiếu 2 nguồn độc lập đáng tin","Tin ngay nguồn đầu tiên","Chia sẻ cho nhanh","Đoán bừa"], a:0},
-    {cat:"prompt", q:"'Giao vai cho AI' nghĩa là?", opts:["Bảo AI đóng vai ai đó (vd thầy giáo)","Tặng quà cho AI","Đặt tên cho máy","Tắt rồi bật lại"], a:0},
+    {cat:"prompt", q:"'Giao vai cho AI' nghĩa là?", opts:["Bảo AI đóng vai ai đó (ví dụ thầy giáo)","Tặng quà cho AI","Đặt tên cho máy","Tắt rồi bật lại"], a:0},
     {cat:"tuduy", q:"'Trừu tượng hoá' là?", opts:["Giữ điều quan trọng, bỏ chi tiết thừa","Giữ mọi chi tiết","Bỏ hết thông tin","Thêm chi tiết vô ích"], a:0},
     {cat:"khainiem", q:"Câu nào ĐÚNG về AI hiện nay?", opts:["Giỏi từng việc cụ thể, không 'biết tuốt'","Có cảm xúc thật như người","Luôn đúng 100%","Không cần dữ liệu"], a:0},
     {cat:"prompt", q:"Kỹ thuật 'few-shot' là?", opts:["Đưa vài ví dụ mẫu để AI làm theo","Chụp vài tấm ảnh","Hỏi thật nhanh","Gõ chữ in hoa"], a:0},
@@ -57,3 +57,27 @@ window.PLACEMENT_CATS = {
   prompt:   {name:"Giao tiếp với AI", emoji:"💬"},
   antoan:   {name:"An toàn & kiểm chứng", emoji:"🛡️"}
 };
+
+/* Câu để luyện/đo gõ phím (đo WPM & độ chính xác) */
+window.TYPING_TEXTS = [
+  "Em thích học về trí tuệ nhân tạo",
+  "Máy tính giúp em học và chơi mỗi ngày",
+  "Gõ mười ngón nhanh mà không cần nhìn phím",
+  "Trí tuệ nhân tạo đang thay đổi thế giới",
+  "Hôm nay em học lập trình rất vui",
+  "Chuột và bàn phím là bạn của em"
+];
+
+/* Test tư duy logic (câu đố) — {q, opts:[đúng, sai, sai, sai], a:0} */
+window.THINKING = [
+  {q:"Dãy số 3, 6, 9, … số tiếp theo là?", opts:["12","10","15","8"], a:0},
+  {q:"Chuỗi 🔴🔵🔴🔵🔴 … hình tiếp theo là?", opts:["🔵","🔴","🟢","🟡"], a:0},
+  {q:"Số nào KHÔNG cùng nhóm: 2, 4, 7, 8?", opts:["7 (số lẻ)","2","4","8"], a:0},
+  {q:"Làm bánh: bước nào làm TRƯỚC?", opts:["Trộn bột","Nướng bánh","Lấy bánh ra","Ăn bánh"], a:0},
+  {q:"Dãy 1, 2, 4, 8, … số tiếp theo là?", opts:["16","10","12","9"], a:0},
+  {q:"Thứ nào KHÔNG cùng nhóm: táo, chuối, cà rốt, cam?", opts:["Cà rốt (là rau củ)","Táo","Chuối","Cam"], a:0},
+  {q:"Hôm nay là thứ Ba, 2 ngày nữa là thứ mấy?", opts:["Thứ Năm","Thứ Tư","Thứ Sáu","Thứ Hai"], a:0},
+  {q:"Ong sống ở tổ, vậy gấu sống ở đâu?", opts:["Hang","Tổ","Chuồng","Ao"], a:0},
+  {q:"Muốn giải việc lớn, ta nên?", opts:["Chia thành các bước nhỏ","Làm thật nhanh một lần","Bỏ qua","Chờ may mắn"], a:0},
+  {q:"Dãy 🔺🔺🔻🔺🔺🔻 … hình tiếp theo là?", opts:["🔺","🔻","⬛","⭕"], a:0}
+];

@@ -1,6 +1,6 @@
 /* =========================================================
    lessons_content.js — LÝ THUYẾT bài học (soạn tay, thêm dần)
-   Khoá theo mã bài (vd "1.1.1"). Nếu một bài có ở đây thì
+   Khoá theo mã bài (ví dụ "1.1.1"). Nếu một bài có ở đây thì
    phần "Nội dung bài học" trong modal sẽ hiện lý thuyết này.
    Dùng lớp có sẵn: .secTitle (data-icon), .tipBox, <p>, <ul>.
    ========================================================= */

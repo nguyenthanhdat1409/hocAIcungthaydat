@@ -940,6 +940,132 @@ function plResult(){
 }
 
 /* =========================================================
+   2d) TEST GÕ PHÍM (đo WPM & độ chính xác)
+   ========================================================= */
+let tyText = "", tyStart = 0, tyDone = false;
+function startTyping(){
+  if(!window.TYPING_TEXTS) return;
+  runnerReturn = "dauvao";
+  tyText = rand(window.TYPING_TEXTS);
+  tyStart = 0; tyDone = false;
+  document.getElementById("runner").classList.remove("hidden");
+  document.getElementById("runnerTop").classList.add("hidden");
+  document.getElementById("resultCard").classList.add("hidden");
+  document.getElementById("qCard").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  const chars = [...tyText].map((ch,i) => `<span data-i="${i}">${ch === " " ? "&nbsp;" : esc(ch)}</span>`).join("");
+  document.getElementById("qCard").innerHTML =
+    `<div class="secTitle" data-icon="⌨️">Test gõ phím</div>
+     <p class="muted">Gõ lại đúng câu dưới đây. Đồng hồ bắt đầu khi em gõ chữ đầu tiên.</p>
+     <div class="tyTarget" id="tyTarget">${chars}</div>
+     <textarea class="tyInput" id="tyInput" rows="2" placeholder="Gõ ở đây…" oninput="tyCheck()" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+     <div class="tyStats"><span>⚡ <b id="tyWpm">0</b> WPM</span><span>🎯 <b id="tyAcc">100</b>%</span><span>⏱️ <b id="tyTime">0.0</b>s</span></div>
+     <div class="tyEnd" id="tyEnd"></div>
+     <div class="center"><button class="btn light" onclick="exitRunner()">Thoát</button></div>`;
+  const inp = document.getElementById("tyInput"); if(inp) inp.focus();
+  document.getElementById("runner").scrollTo({top:0});
+}
+function tyCheck(){
+  const val = document.getElementById("tyInput").value;
+  if(!tyStart && val.length > 0) tyStart = Date.now();
+  const spans = document.querySelectorAll("#tyTarget span");
+  let correct = 0;
+  spans.forEach((s, i) => {
+    s.classList.remove("ok","bad","cur");
+    if(i < val.length){ if(val[i] === tyText[i]){ s.classList.add("ok"); correct++; } else s.classList.add("bad"); }
+    else if(i === val.length) s.classList.add("cur");
+  });
+  const elapsed = tyStart ? (Date.now() - tyStart) / 1000 : 0;
+  const wpm = elapsed > 0 ? Math.round((val.length / 5) / (elapsed / 60)) : 0;
+  const acc = val.length ? Math.round(correct / val.length * 100) : 100;
+  setText("tyWpm", wpm); setText("tyAcc", acc); setText("tyTime", elapsed.toFixed(1));
+  if(val.length >= tyText.length && !tyDone){ tyDone = true; tyResult(wpm, acc); }
+}
+function tyResult(wpm, acc){
+  let rate, note;
+  if(acc < 80){ rate = "Cần chính xác hơn 🎯"; note = "Hãy gõ chậm và đúng trước, tốc độ sẽ tự tăng. Bắt đầu từ <b>Module 1.2 – Gõ phím 10 ngón</b>."; }
+  else if(wpm < 12){ rate = "Cần luyện thêm 💪"; note = "Nên bắt đầu từ <b>Module 1.2 – Gõ phím 10 ngón</b> để gõ nhanh và không mỏi."; }
+  else if(wpm < 22){ rate = "Khá tốt 👍"; note = "Tiếp tục luyện ở <b>Module 1.2</b> để tăng tốc độ nhé."; }
+  else { rate = "Rất tốt! 🏆"; note = "Kỹ năng gõ của em đã ổn — có thể tập trung sang các kỹ năng khác."; }
+  sfx.win(); burst(12);
+  document.getElementById("tyEnd").innerHTML =
+    `<div class="lqResult">⌨️ <b>${wpm} WPM</b> · độ chính xác <b>${acc}%</b> — ${rate}<br><span style="font-weight:600">${note}</span></div>`;
+}
+
+/* =========================================================
+   2e) TEST TƯ DUY (câu đố logic)
+   ========================================================= */
+let thList = [], thIdx = 0, thScore = 0, thLocked = false, thCur = null;
+function startThinking(){
+  if(!window.THINKING) return;
+  runnerReturn = "dauvao";
+  thList = shuffle(window.THINKING).slice(0, 8).map(prep);
+  thIdx = 0; thScore = 0; thLocked = false;
+  document.getElementById("runner").classList.remove("hidden");
+  document.getElementById("runnerTop").classList.remove("hidden");
+  document.getElementById("starBox").classList.add("hidden");
+  document.getElementById("resultCard").classList.add("hidden");
+  document.getElementById("qCard").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  thRender();
+}
+function thRender(){
+  thCur = thList[thIdx];
+  thLocked = false;
+  document.getElementById("counter").textContent = (thIdx+1) + "/" + thList.length;
+  document.getElementById("bar").style.width = (thIdx / thList.length * 100) + "%";
+  let inner = `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">🧩 Tư duy logic</span>`;
+  inner += `<div class="qTitle">${thCur.q}</div><div class="opts">`;
+  thCur.opts.forEach((o, i) => {
+    inner += `<button class="opt" onclick="thPick(${i}, this)"><span class="key">${KEYS[i]}</span><span>${o}</span></button>`;
+  });
+  inner += `</div><div class="feedback" id="fb"><div class="hostMini">🧩</div><div class="fbBubble" id="fbText"></div></div>`;
+  inner += `<div class="center"><button class="btn next hidden" id="btnNext" onclick="thNext()">Câu tiếp theo ➜</button></div>`;
+  document.getElementById("qCard").innerHTML = inner;
+  document.getElementById("runner").scrollTo({top:0});
+}
+function thPick(i, el){
+  if(thLocked) return; thLocked = true;
+  const q = thCur, opts = document.querySelectorAll(".opt");
+  opts.forEach(o => o.classList.add("locked"));
+  const ok = (i === q.a);
+  const fb = document.getElementById("fb"), fbText = document.getElementById("fbText");
+  if(ok){
+    el.classList.add("correct"); opts.forEach((o,j)=>{ if(j!==i) o.classList.add("dim"); });
+    thScore++; fb.classList.add("show","good"); fbText.textContent = rand(PRAISE); sfx.correct(); burst(4);
+  } else {
+    el.classList.add("wrong"); opts[q.a].classList.add("correct");
+    opts.forEach((o,j)=>{ if(j!==i && j!==q.a) o.classList.add("dim"); });
+    fb.classList.add("show","bad"); fbText.textContent = "Chưa đúng · Đáp án: " + q.opts[q.a]; sfx.wrong();
+  }
+  document.getElementById("btnNext").classList.remove("hidden");
+}
+function thNext(){ thIdx++; if(thIdx < thList.length){ thRender(); } else { thResult(); } }
+function thResult(){
+  document.getElementById("bar").style.width = "100%";
+  document.getElementById("qCard").classList.add("hidden");
+  document.getElementById("runnerTop").classList.add("hidden");
+  const n = thList.length, pct = Math.round(thScore/n*100);
+  let rate, note;
+  if(thScore <= n*0.4){ rate = "Nên luyện tư duy 💪"; note = "Bắt đầu từ <b>Module 1.5 – Tư duy phân rã</b> và <b>1.6 – Thuật toán & Flowchart</b>."; }
+  else if(thScore <= n*0.75){ rate = "Khá tốt 👍"; note = "Tư duy của em khá ổn — luyện thêm ở <b>Module 1.5–1.6</b>."; }
+  else { rate = "Tư duy tốt! 🏆"; note = "Em có tư duy logic tốt — có thể học nhanh phần thuật toán & lập trình."; }
+  if(pct >= 50){ sfx.win(); burst(16); }
+  const el = document.getElementById("resultCard");
+  el.innerHTML = `
+    <div class="hostMini" style="margin:0 auto;width:66px;height:66px;font-size:36px">🧩</div>
+    <h2 style="margin-top:10px">Kết quả test tư duy</h2>
+    <div class="plTier"><b>${thScore}/${n}</b> câu đúng (${pct}%) — ${rate}</div>
+    <div class="plRec"><p>${note}</p></div>
+    <div class="center">
+      <button class="btn" onclick="exitRunner(); go('baihoc')">Vào lộ trình 📚</button>
+      <button class="btn light" onclick="startThinking()" style="margin-left:8px">Làm lại 🔄</button>
+    </div>`;
+  el.classList.remove("hidden");
+  document.getElementById("runner").scrollTo({top:0});
+}
+
+/* =========================================================
    3) KHỞI ĐỘNG
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {

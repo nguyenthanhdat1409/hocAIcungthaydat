@@ -7,7 +7,7 @@
 <meta name="description" content="Khởi đầu học AI cho mọi người — bài học trực quan, vui nhộn, dễ hiểu.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=21">
+<link rel="stylesheet" href="styles.css?v=22">
 </head>
 <body>
 
@@ -77,23 +77,37 @@
     <div id="curriculum"></div>
   </section>
 
-  <!-- ---------- KIỂM TRA ĐẦU VÀO (màn giới thiệu) ---------- -->
+  <!-- ---------- KIỂM TRA ĐẦU VÀO (trung tâm 3 bài test) ---------- -->
   <section id="dauvao" class="page hidden">
-    <div class="card hero quizIntro">
-      <div class="avatar">🧭</div>
-      <h1>Kiểm tra đầu vào<br><span class="grad">Tìm điểm bắt đầu phù hợp</span></h1>
-      <p class="intro"><b>20 câu thích ứng</b> · trả lời đúng thì câu sau khó hơn (lên sao), sai thì dễ lại.<br>Cuối bài gợi ý bé nên <b>bắt đầu từ module nào</b> cho hợp.</p>
-      <div class="rules">
-        <div class="rule up"><div class="ic">⭐</div><div><div class="tt">Đúng → lên sao</div><div class="dd">Câu khó hơn</div></div></div>
-        <div class="rule down"><div class="ic">📉</div><div><div class="tt">Sai → xuống sao</div><div class="dd">Câu dễ lại</div></div></div>
-        <div class="rule rand"><div class="ic">🎯</div><div><div class="tt">5 nhóm kỹ năng</div><div class="dd">AI, tư duy, gõ phím…</div></div></div>
-      </div>
-      <div class="agePick">
-        <div class="apLabel">👶 Bé mấy tuổi?</div>
-        <div class="ageBtns" id="ageBtns"></div>
-      </div>
-      <button class="btn pulseBtn" onclick="startPlacement()">Bắt đầu kiểm tra 🎯</button>
+    <div class="pageHead">
+      <h2 class="sectionHead">🎯 Kiểm tra đầu vào</h2>
+      <p class="sectionSub">Làm các bài test ngắn để biết bé nên bắt đầu học từ đâu.</p>
     </div>
+    <div class="card dvAge">
+      <div class="apLabel">👶 Bé mấy tuổi?</div>
+      <div class="ageBtns" id="ageBtns"></div>
+    </div>
+    <div class="testGrid">
+      <div class="testCard" style="--tc:#7C3AED" onclick="startPlacement()">
+        <div class="tcIco">🧠</div>
+        <h3>Kiến thức AI</h3>
+        <p>20 câu thích ứng: đúng thì khó hơn. Về AI, prompt, an toàn…</p>
+        <span class="tcGo">Bắt đầu ➜</span>
+      </div>
+      <div class="testCard" style="--tc:#06B6D4" onclick="startTyping()">
+        <div class="tcIco">⌨️</div>
+        <h3>Gõ phím</h3>
+        <p>Gõ lại một câu, đo tốc độ (WPM) và độ chính xác của bé.</p>
+        <span class="tcGo">Bắt đầu ➜</span>
+      </div>
+      <div class="testCard" style="--tc:#22C55E" onclick="startThinking()">
+        <div class="tcIco">🧩</div>
+        <h3>Tư duy</h3>
+        <p>8 câu đố logic: tìm quy luật, sắp thứ tự, phân nhóm…</p>
+        <span class="tcGo">Bắt đầu ➜</span>
+      </div>
+    </div>
+    <p class="sectionSub" style="text-align:center;margin-top:18px">💡 Làm cả 3 bài để có gợi ý đầy đủ nhất về điểm bắt đầu phù hợp cho bé.</p>
   </section>
 
   <!-- ---------- KIỂM TRA (màn giới thiệu) ---------- -->
@@ -142,7 +156,7 @@
 
 <!-- Dữ liệu bài học (curriculum, lessons_content, lesson_quiz) nạp ĐỘNG khi mở trang Bài học — xem loadCurriculumData() trong app.js -->
 <script defer src="art.js?v=18"></script>
-<script defer src="placement.js?v=21"></script>
-<script defer src="app.js?v=21"></script>
+<script defer src="placement.js?v=22"></script>
+<script defer src="app.js?v=22"></script>
 </body>
 </html>
