@@ -143,6 +143,35 @@ function go(id){
   document.getElementById("nav").classList.remove("open");
   if(("#" + id) !== location.hash){ navLock = true; location.hash = id; }
   window.scrollTo(0, 0);
+  if(id === "baihoc") showCurriculum();
+}
+
+/* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
+const ASSET_VER = "18";
+let _curDataPromise = null;
+function loadCurriculumData(){
+  if(_curDataPromise) return _curDataPromise;
+  _curDataPromise = new Promise((resolve, reject) => {
+    const files = ["curriculum.js", "lessons_content.js", "lesson_quiz.js"];
+    let i = 0;
+    (function next(){
+      if(i >= files.length){ resolve(); return; }
+      const s = document.createElement("script");
+      s.src = files[i] + "?v=" + ASSET_VER;
+      s.onload = () => { i++; next(); };
+      s.onerror = reject;
+      document.head.appendChild(s);
+    })();
+  });
+  return _curDataPromise;
+}
+function showCurriculum(){
+  const host = document.getElementById("curriculum");
+  if(!host || host.dataset.rendered) return;
+  if(window.CURRICULUM){ renderCurriculum(); return; }
+  host.innerHTML = `<div class="curLoading"><span class="curSpin">⏳</span> Đang tải bài học…</div>`;
+  loadCurriculumData().then(() => { renderCurriculum(); })
+    .catch(() => { host.innerHTML = `<div class="curLoading">😕 Không tải được bài học. Hãy tải lại trang.</div>`; });
 }
 window.addEventListener("hashchange", () => {
   if(navLock){ navLock = false; return; }
@@ -159,8 +188,8 @@ function renderHome(){
   // Thống kê tự động
   const totalQ = [1,2,3].reduce((s,lv)=>s+BANK[lv].length,0);
   const cst = curriculumStats();
-  setText("statLessons", cst.lessons);
-  setText("statTopics", cst.modules || Object.keys(TOPICS).length);
+  setText("statLessons", cst.lessons || 192);   // số cố định khi chưa tải dữ liệu bài học
+  setText("statTopics", cst.modules || 31);
   setText("statQuiz", totalQ);
   setText("quizCount", totalQ + " câu");
   document.getElementById("quizTags").innerHTML =
@@ -539,6 +568,7 @@ function renderCurriculum(){
   html += `</div>`;
 
   host.innerHTML = html;
+  host.dataset.rendered = "1";
   if(curSearch) applyCurSearch();
   observeReveal();
 }
@@ -727,7 +757,6 @@ function applyCurSearch(){
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
   renderHome();
-  renderCurriculum();
-  go((location.hash || "#home").slice(1));
+  go((location.hash || "#home").slice(1)); // nếu mở thẳng #baihoc, go() sẽ tự nạp dữ liệu
   window.scrollTo(0, 0);
 });

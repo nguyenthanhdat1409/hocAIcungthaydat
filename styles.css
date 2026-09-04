@@ -1450,3 +1450,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 
 /* Ảnh banner: nền chờ nhẹ trong lúc tải */
 .lessonPhoto{background:rgba(255,255,255,.06)}
+
+/* Trạng thái đang tải bài học (lazy-load) */
+.curLoading{max-width:1080px;margin:60px auto;text-align:center;color:#fff;
+  font-family:var(--font-display);font-weight:700;font-size:20px;
+  background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25);
+  border-radius:20px;padding:40px 20px}
+.curSpin{display:inline-block;animation:spin 1.1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
