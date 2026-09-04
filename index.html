@@ -7,7 +7,7 @@
 <meta name="description" content="Khởi đầu học AI cho mọi người — bài học trực quan, vui nhộn, dễ hiểu.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=18">
+<link rel="stylesheet" href="styles.css?v=21">
 </head>
 <body>
 
@@ -21,6 +21,7 @@
     <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">☰</button>
     <nav class="navLinks" id="navLinks">
       <a data-nav="home"    href="#home"    onclick="go('home');return false;">🏠 Trang chủ</a>
+      <a data-nav="dauvao"  href="#dauvao"  onclick="go('dauvao');return false;">🎯 Đầu vào</a>
       <a data-nav="baihoc"  href="#baihoc"  onclick="go('baihoc');return false;">📚 Bài học</a>
       <a data-nav="kiemtra" href="#kiemtra" onclick="go('kiemtra');return false;">🏆 Kiểm tra</a>
     </nav>
@@ -76,6 +77,25 @@
     <div id="curriculum"></div>
   </section>
 
+  <!-- ---------- KIỂM TRA ĐẦU VÀO (màn giới thiệu) ---------- -->
+  <section id="dauvao" class="page hidden">
+    <div class="card hero quizIntro">
+      <div class="avatar">🧭</div>
+      <h1>Kiểm tra đầu vào<br><span class="grad">Tìm điểm bắt đầu phù hợp</span></h1>
+      <p class="intro"><b>20 câu thích ứng</b> · trả lời đúng thì câu sau khó hơn (lên sao), sai thì dễ lại.<br>Cuối bài gợi ý bé nên <b>bắt đầu từ module nào</b> cho hợp.</p>
+      <div class="rules">
+        <div class="rule up"><div class="ic">⭐</div><div><div class="tt">Đúng → lên sao</div><div class="dd">Câu khó hơn</div></div></div>
+        <div class="rule down"><div class="ic">📉</div><div><div class="tt">Sai → xuống sao</div><div class="dd">Câu dễ lại</div></div></div>
+        <div class="rule rand"><div class="ic">🎯</div><div><div class="tt">5 nhóm kỹ năng</div><div class="dd">AI, tư duy, gõ phím…</div></div></div>
+      </div>
+      <div class="agePick">
+        <div class="apLabel">👶 Bé mấy tuổi?</div>
+        <div class="ageBtns" id="ageBtns"></div>
+      </div>
+      <button class="btn pulseBtn" onclick="startPlacement()">Bắt đầu kiểm tra 🎯</button>
+    </div>
+  </section>
+
   <!-- ---------- KIỂM TRA (màn giới thiệu) ---------- -->
   <section id="kiemtra" class="page hidden">
     <div class="card hero quizIntro">
@@ -122,6 +142,7 @@
 
 <!-- Dữ liệu bài học (curriculum, lessons_content, lesson_quiz) nạp ĐỘNG khi mở trang Bài học — xem loadCurriculumData() trong app.js -->
 <script defer src="art.js?v=18"></script>
-<script defer src="app.js?v=20"></script>
+<script defer src="placement.js?v=21"></script>
+<script defer src="app.js?v=21"></script>
 </body>
 </html>

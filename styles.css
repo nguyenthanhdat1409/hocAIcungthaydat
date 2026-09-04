@@ -1458,3 +1458,29 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
   border-radius:20px;padding:40px 20px}
 .curSpin{display:inline-block;animation:spin 1.1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* =========================================================
+   KIỂM TRA ĐẦU VÀO (placement)
+   ========================================================= */
+.agePick{margin:18px 0 6px}
+.apLabel{font-weight:700;color:var(--ink);margin-bottom:10px}
+.ageBtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.ageBtn{width:46px;height:46px;border-radius:14px;border:2px solid #E2E8F0;background:#fff;
+  font-family:var(--font-display);font-weight:800;font-size:17px;color:var(--ink);cursor:pointer;transition:.15s}
+.ageBtn:hover{border-color:var(--vio);transform:translateY(-2px)}
+.ageBtn.on{background:var(--vio);color:#fff;border-color:var(--vio);box-shadow:0 6px 14px -4px var(--vio)}
+
+/* Kết quả gợi ý */
+.plTier{font-weight:700;color:#475569;margin:6px 0 14px;font-size:14.5px}
+.plRec{background:linear-gradient(135deg,#EFF6FF,#F5F3FF);border:2px solid #C7D2FE;border-radius:18px;
+  padding:16px 18px;text-align:left;margin:0 auto 8px;max-width:520px}
+.plRecHead{font-family:var(--font-display);font-weight:800;color:var(--vio);font-size:15px}
+.plRecStart{font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--ink);margin:6px 0 8px;line-height:1.25}
+.plRec p{margin:6px 0 0;font-size:14px;color:#334155;line-height:1.55}
+.plRec .plAge{color:#6D28D9}
+.catList{display:flex;flex-direction:column;gap:8px;max-width:520px;margin:0 auto}
+.catRow{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.catName{flex:0 0 42%;text-align:left;font-weight:600;color:var(--ink)}
+.catBar{flex:1;height:12px;background:#EDE9FE;border-radius:999px;overflow:hidden}
+.catBar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--vio),var(--pink));transition:width .5s ease}
+.catPct{flex:0 0 auto;font-weight:800;color:var(--vio);min-width:38px;text-align:right}

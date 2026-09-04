@@ -124,7 +124,7 @@ function burst(n){
 }
 
 /* ---------- Điều hướng ---------- */
-const SECTIONS = ["home","baihoc","kiemtra"];
+const SECTIONS = ["home","baihoc","kiemtra","dauvao"];
 let navLock = false;
 let runnerReturn = "home";
 if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
@@ -753,10 +753,198 @@ function applyCurSearch(){
 }
 
 /* =========================================================
+   2c) KIỂM TRA ĐẦU VÀO (thích ứng — gợi ý module phù hợp)
+   Dữ liệu ở placement.js (window.PLACEMENT, window.PLACEMENT_CATS)
+   ========================================================= */
+let plAge = 11, plTotal = 20, plIdx = 0, plStar = 1, plLocked = false;
+let plCorrect = 0, plLevelSum = 0, plCurrent = null;
+let plUsed = {1:new Set(), 2:new Set(), 3:new Set()};
+let plCat = {};
+
+function renderAgeButtons(){
+  const box = document.getElementById("ageBtns");
+  if(!box) return;
+  let h = "";
+  for(let a = 6; a <= 15; a++){
+    h += `<button class="ageBtn${a===plAge?" on":""}" onclick="setAge(${a})">${a}</button>`;
+  }
+  box.innerHTML = h;
+}
+function setAge(a){ plAge = a; renderAgeButtons(); }
+
+function startPlacement(){
+  if(!window.PLACEMENT){ return; }
+  runnerReturn = "dauvao";
+  plIdx = 0; plStar = 1; plCorrect = 0; plLevelSum = 0; plLocked = false;
+  plUsed = {1:new Set(), 2:new Set(), 3:new Set()};
+  plCat = {};
+  enterRunner(true);
+  plUpdateStars(false);
+  plRender();
+}
+function plUpdateStars(pulse){
+  const box = document.getElementById("starBox");
+  box.innerHTML = [1,2,3].map(i => `<span class="${i <= plStar ? "" : "off"}">⭐</span>`).join("");
+  if(pulse){ box.classList.remove("pulse"); void box.offsetWidth; box.classList.add("pulse"); }
+}
+function plDraw(){
+  let lv = plStar;
+  let pool = window.PLACEMENT[lv].map((_,i) => i).filter(i => !plUsed[lv].has(i));
+  if(pool.length === 0){
+    const borrow = lv === 1 ? [2,3] : lv === 2 ? [1,3] : [2,1];
+    for(const l of borrow){
+      const p2 = window.PLACEMENT[l].map((_,i) => i).filter(i => !plUsed[l].has(i));
+      if(p2.length){ lv = l; pool = p2; break; }
+    }
+  }
+  if(pool.length === 0){ plUsed[lv] = new Set(); pool = window.PLACEMENT[lv].map((_,i) => i); }
+  const pi = pool[Math.floor(Math.random()*pool.length)];
+  plUsed[lv].add(pi);
+  return prep(Object.assign({}, window.PLACEMENT[lv][pi], {lv}));
+}
+function plRender(){
+  plCurrent = plDraw();
+  plLocked = false;
+  const q = plCurrent, cat = (window.PLACEMENT_CATS||{})[q.cat] || {name:"", emoji:"❓"};
+  document.getElementById("counter").textContent = (plIdx+1) + "/" + plTotal;
+  document.getElementById("bar").style.width = (plIdx / plTotal * 100) + "%";
+  let inner = `<span class="catChip" style="background:#DBEAFE;color:#1E40AF;border:2px solid #3B82F6">${cat.emoji} ${cat.name}</span>`;
+  inner += `<span class="lvChip">${"⭐".repeat(q.lv)} Mức ${q.lv}</span>`;
+  inner += `<div class="qTitle">${q.q}</div><div class="opts">`;
+  q.opts.forEach((o, i) => {
+    inner += `<button class="opt" onclick="plPick(${i}, this)"><span class="key">${KEYS[i]}</span><span>${o}</span></button>`;
+  });
+  inner += `</div>`;
+  inner += `<div class="feedback" id="fb"><div class="hostMini">🧭</div><div class="fbBubble" id="fbText"></div></div>`;
+  inner += `<div class="center"><button class="btn next hidden" id="btnNext" onclick="plNext()">Câu tiếp theo ➜</button></div>`;
+  document.getElementById("qCard").innerHTML = inner;
+  document.getElementById("runner").scrollTo({top:0});
+}
+function plPick(i, el){
+  if(plLocked) return;
+  plLocked = true;
+  const q = plCurrent;
+  const opts = document.querySelectorAll(".opt");
+  opts.forEach(o => o.classList.add("locked"));
+  const ok = (i === q.a);
+  plLevelSum += q.lv;
+  plCat[q.cat] = plCat[q.cat] || {c:0, t:0};
+  plCat[q.cat].t++;
+  const fb = document.getElementById("fb"), fbText = document.getElementById("fbText");
+  if(ok){
+    el.classList.add("correct");
+    opts.forEach((o,j) => { if(j !== i) o.classList.add("dim"); });
+    plCorrect++; plCat[q.cat].c++;
+    const up = plStar < 3;
+    plStar = Math.min(3, plStar + 1);
+    fb.classList.add("show","good"); fbText.textContent = up ? `Chính xác! Lên mức ${plStar} ⭐` : "Chính xác! Giữ mức 3 ⭐ 🏆";
+    sfx.correct(); burst(5);
+  } else {
+    el.classList.add("wrong");
+    opts[q.a].classList.add("correct");
+    opts.forEach((o,j) => { if(j !== i && j !== q.a) o.classList.add("dim"); });
+    plStar = Math.max(1, plStar - 1);
+    fb.classList.add("show","bad"); fbText.textContent = `Chưa đúng · về mức ${plStar} ⭐`;
+    sfx.wrong();
+  }
+  plUpdateStars(true);
+  document.getElementById("btnNext").classList.remove("hidden");
+}
+function plNext(){ plIdx++; if(plIdx < plTotal){ plRender(); } else { plResult(); } }
+
+function plRecommend(){
+  const avg = plLevelSum / plTotal; // ~1..3
+  // độ chính xác từng nhóm
+  const cats = Object.keys(window.PLACEMENT_CATS);
+  const acc = {};
+  cats.forEach(c => { const o = plCat[c]; acc[c] = (o && o.t) ? o.c/o.t : null; });
+  // nhóm yếu nhất (có làm ≥1 câu)
+  const done = cats.filter(c => acc[c] !== null);
+  const weak = done.slice().sort((a,b) => acc[a] - acc[b]);
+  const weakest = weak[0], weakVal = weakest ? acc[weakest] : 1;
+
+  // Bậc năng lực theo điểm trung bình + tuổi
+  let tier, start, desc;
+  if(avg < 1.5){
+    tier = "Mới bắt đầu";
+    start = "Level 1 · Module 1.1 – Làm quen máy tính";
+    desc = "Bé nên khởi động từ nền tảng số: các bộ phận máy tính, chuột–bàn phím, thư mục và an toàn.";
+  } else if(avg < 2.0){
+    tier = "Nền tảng";
+    start = "Level 1 · Module 1.2–1.3 – Gõ phím & Gặp gỡ AI";
+    desc = "Bé đã có ý niệm cơ bản. Luyện gõ 10 ngón cho vững tay rồi bước vào làm quen AI.";
+  } else if(avg < 2.5){
+    tier = "Khá";
+    start = "Level 1 · Module 1.4–1.6 – Prompt & Tư duy thuật toán";
+    desc = "Bé nắm khá tốt kiến thức nền. Tập trung viết prompt và tư duy phân rã, flowchart.";
+  } else {
+    tier = "Vững";
+    start = (plAge >= 12) ? "Level 2 – Hiểu AI & Kiểm chứng" : "Level 1 · Module 1.6–1.7 rồi sang Level 2";
+    desc = (plAge >= 12)
+      ? "Bé đã vững nền tảng và đủ tuổi — có thể vào Level 2 (AI học từ dữ liệu, kiểm chứng, prompt có phương pháp)."
+      : "Bé rất tốt! Hoàn thành nhanh phần còn lại của Level 1 rồi tiến lên Level 2.";
+  }
+  // Ghi chú theo tuổi
+  let ageNote = "";
+  if(plAge <= 8) ageNote = "Ở tuổi này nên học chậm–chắc, nhiều trò chơi và hình ảnh trực quan.";
+  else if(plAge >= 12) ageNote = "Ở tuổi này bé có thể tự khám phá và tiến nhanh hơn.";
+  // Gợi ý luyện thêm theo nhóm yếu
+  const FOCUS = {
+    khainiem:"ôn khái niệm AI (Module 1.3, 2.1–2.4)",
+    tuduy:"luyện tư duy & thuật toán (Module 1.5–1.6)",
+    gophim:"luyện gõ 10 ngón (Module 1.2)",
+    prompt:"luyện viết prompt (Module 1.4, 2.5)",
+    antoan:"chú trọng an toàn & kiểm chứng (Module 1.3.6, 2.6–2.7)"
+  };
+  let focus = (weakest && weakVal < 0.6) ? FOCUS[weakest] : "";
+  return {avg, tier, start, desc, ageNote, focus, acc};
+}
+function plResult(){
+  document.getElementById("bar").style.width = "100%";
+  document.getElementById("qCard").classList.add("hidden");
+  document.getElementById("runnerTop").classList.add("hidden");
+  const r = plRecommend();
+  const pct = Math.round(plCorrect / plTotal * 100);
+  if(pct >= 50) sfx.win();
+
+  const CATS = window.PLACEMENT_CATS || {};
+  let bars = Object.keys(CATS).map(c => {
+    const a = r.acc[c];
+    const val = a === null ? 0 : Math.round(a*100);
+    const shown = a === null ? "–" : val + "%";
+    return `<div class="catRow"><span class="catName">${CATS[c].emoji} ${CATS[c].name}</span>
+      <span class="catBar"><span style="width:${val}%"></span></span><span class="catPct">${shown}</span></div>`;
+  }).join("");
+
+  const el = document.getElementById("resultCard");
+  el.innerHTML = `
+    <div class="hostMini" style="margin:0 auto;width:66px;height:66px;font-size:36px">🧭</div>
+    <h2 style="margin-top:10px">Kết quả kiểm tra đầu vào</h2>
+    <div class="plTier">Bậc: <b>${r.tier}</b> · ${plCorrect}/${plTotal} câu đúng (${pct}%) · ${plAge} tuổi</div>
+    <div class="plRec">
+      <div class="plRecHead">📚 Gợi ý điểm bắt đầu</div>
+      <div class="plRecStart">${r.start}</div>
+      <p>${r.desc}</p>
+      ${r.focus ? `<p>💪 Nên luyện thêm: <b>${r.focus}</b>.</p>` : ""}
+      ${r.ageNote ? `<p class="plAge">👶 ${r.ageNote}</p>` : ""}
+    </div>
+    <div class="secTitle">📊 Năng lực theo nhóm</div>
+    <div class="catList">${bars}</div>
+    <div class="center">
+      <button class="btn" onclick="exitRunner(); go('baihoc')">Vào lộ trình 📚</button>
+      <button class="btn light" onclick="startPlacement()" style="margin-left:8px">Làm lại 🔄</button>
+    </div>`;
+  el.classList.remove("hidden");
+  document.getElementById("runner").scrollTo({top:0});
+  if(pct >= 50) burst(18);
+}
+
+/* =========================================================
    3) KHỞI ĐỘNG
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
   renderHome();
+  renderAgeButtons();
   go((location.hash || "#home").slice(1)); // nếu mở thẳng #baihoc, go() sẽ tự nạp dữ liệu
   window.scrollTo(0, 0);
   // Nạp trước dữ liệu bài học lúc máy rảnh → lần mở đầu tiên mượt hơn (bỏ qua nếu mạng chậm / tiết kiệm dữ liệu)
