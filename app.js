@@ -147,7 +147,7 @@ function go(id){
 }
 
 /* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
-const ASSET_VER = "19";
+const ASSET_VER = "25";
 let _curDataPromise = null;
 function loadCurriculumData(){
   if(_curDataPromise) return _curDataPromise;
@@ -871,26 +871,8 @@ function plRecommend(){
   const weakest = weak[0], weakVal = weakest ? acc[weakest] : 1;
 
   // Bậc năng lực theo điểm trung bình + tuổi
-  let tier, start, desc;
-  if(avg < 1.5){
-    tier = "Mới bắt đầu";
-    start = "Level 1 · Module 1.1 – Làm quen máy tính";
-    desc = "Bé nên khởi động từ nền tảng số: các bộ phận máy tính, chuột–bàn phím, thư mục và an toàn.";
-  } else if(avg < 2.0){
-    tier = "Nền tảng";
-    start = "Level 1 · Module 1.2–1.3 – Gõ phím & Gặp gỡ AI";
-    desc = "Bé đã có ý niệm cơ bản. Luyện gõ 10 ngón cho vững tay rồi bước vào làm quen AI.";
-  } else if(avg < 2.5){
-    tier = "Khá";
-    start = "Level 1 · Module 1.4–1.6 – Prompt & Tư duy thuật toán";
-    desc = "Bé nắm khá tốt kiến thức nền. Tập trung viết prompt và tư duy phân rã, flowchart.";
-  } else {
-    tier = "Vững";
-    start = (plAge >= 12) ? "Level 2 – Hiểu AI & Kiểm chứng" : "Level 1 · Module 1.6–1.7 rồi sang Level 2";
-    desc = (plAge >= 12)
-      ? "Bé đã vững nền tảng và đủ tuổi — có thể vào Level 2 (AI học từ dữ liệu, kiểm chứng, prompt có phương pháp)."
-      : "Bé rất tốt! Hoàn thành nhanh phần còn lại của Level 1 rồi tiến lên Level 2.";
-  }
+  const _t = tierFor(avg, plAge);            // dùng chung logic năng lực + tuổi
+  const tier = _t.tier, start = _t.start, desc = _t.desc;
   // Ghi chú theo tuổi
   let ageNote = "";
   if(plAge <= 8) ageNote = "Ở tuổi này nên học chậm–chắc, nhiều trò chơi và hình ảnh trực quan.";
@@ -964,11 +946,34 @@ function comboStep(doneLabel, scoreLabel, nextText, nextFn){
   el.classList.remove("hidden");
   document.getElementById("runner").scrollTo({top:0});
 }
-function tierFor(avg){
-  if(avg < 1.5) return {tier:"Mới bắt đầu", start:"Level 1 · Module 1.1 – Làm quen máy tính", desc:"Bé nên khởi động từ nền tảng số: bộ phận máy tính, chuột–bàn phím, thư mục, an toàn."};
-  if(avg < 2.0) return {tier:"Nền tảng", start:"Level 1 · Module 1.2–1.3 – Gõ phím & Gặp gỡ AI", desc:"Luyện gõ 10 ngón cho vững rồi bước vào làm quen AI."};
-  if(avg < 2.5) return {tier:"Khá", start:"Level 1 · Module 1.4–1.6 – Prompt & Tư duy thuật toán", desc:"Tập trung viết prompt và tư duy phân rã, flowchart."};
-  return {tier:"Vững", start:(plAge >= 12) ? "Level 2 – Hiểu AI & Kiểm chứng" : "Cuối Level 1 rồi sang Level 2", desc:(plAge >= 12) ? "Bé đủ vững và đủ tuổi để vào Level 2." : "Bé rất tốt — hoàn thành nhanh Level 1 rồi lên Level 2."};
+/* Gợi ý điểm bắt đầu theo NĂNG LỰC (avg 1..3) KẾT HỢP TUỔI (age) */
+function tierFor(avg, age){
+  age = age || plAge;
+  const young = age <= 8, older = age >= 12;
+  if(avg < 1.5){
+    return {tier:"Mới bắt đầu", start:"Level 1 · Module 1.1 – Làm quen máy tính",
+      desc:"Bé nên khởi động từ nền tảng số: bộ phận máy tính, chuột–bàn phím, thư mục, an toàn." +
+        (young ? " Ở tuổi nhỏ, học chậm–chắc và nhiều trò chơi trực quan." : "")};
+  }
+  if(avg < 2.0){
+    return {tier:"Nền tảng", start:"Level 1 · Module 1.2–1.3 – Gõ phím & Gặp gỡ AI",
+      desc:"Luyện gõ 10 ngón cho vững rồi bước vào làm quen AI."};
+  }
+  if(avg < 2.5){
+    // Khá: bé nhỏ tuổi nên đi đủ Level 1 cho chắc; bé lớn có thể vào phần prompt/tư duy sớm
+    return young
+      ? {tier:"Khá", start:"Level 1 · Module 1.3–1.4 – Gặp gỡ AI & Prompt cơ bản",
+         desc:"Bé nắm khá tốt; ở tuổi nhỏ nên đi qua đủ Level 1 cho vững, học nhiều qua trò chơi."}
+      : {tier:"Khá", start:"Level 1 · Module 1.4–1.6 – Prompt & Tư duy thuật toán",
+         desc:"Tập trung viết prompt và tư duy phân rã, flowchart."};
+  }
+  // Vững: chỉ nhảy Level 2 khi ĐỦ TUỔI; bé nhỏ giỏi vẫn nên xây nền Level 1 (học nhanh)
+  if(older) return {tier:"Vững", start:"Level 2 – Hiểu AI & Kiểm chứng",
+    desc:"Bé đủ vững và đủ tuổi — có thể vào Level 2 (AI học từ dữ liệu, kiểm chứng, prompt có phương pháp)."};
+  if(age >= 10) return {tier:"Vững", start:"Level 1 · Module 1.6–1.7 rồi sang Level 2",
+    desc:"Rất tốt! Hoàn thành nhanh cuối Level 1 (thuật toán, Scratch) rồi tiến lên Level 2."};
+  return {tier:"Vững", start:"Level 1 – học nhanh, chú trọng Tư duy & Scratch (Module 1.5–1.7)",
+    desc:"Bé giỏi nhưng còn nhỏ — nên hoàn thành Level 1 để xây nền chắc, có thể học với nhịp nhanh hơn."};
 }
 function comboResult(){
   document.getElementById("bar").style.width = "100%";
@@ -977,13 +982,17 @@ function comboResult(){
   const ai = comboData.ai || {avg:1, correct:0, total:12, pct:0};
   const ty = comboData.typing || {wpm:0, acc:0};
   const th = comboData.thinking || {score:0, n:8};
-  const t = tierFor(ai.avg || 1);
+  const t = tierFor(ai.avg || 1, plAge);
   // Gợi ý luyện thêm
   const focuses = [];
   if((ty.wpm||0) < 12 || (ty.acc||100) < 80) focuses.push("luyện gõ 10 ngón (Module 1.2)");
   if(th.n && (th.score/th.n) < 0.5) focuses.push("luyện tư duy & thuật toán (Module 1.5–1.6)");
   if(ai.weakFocus) focuses.push(ai.weakFocus);
   const focusHtml = focuses.length ? `<p>💪 Nên luyện thêm: <b>${focuses.join("; ")}</b>.</p>` : "";
+  let ageNote = "";
+  if(plAge <= 8) ageNote = "Ở tuổi này nên học chậm–chắc, nhiều trò chơi và hình ảnh trực quan.";
+  else if(plAge >= 12) ageNote = "Ở tuổi này bé có thể tự khám phá và tiến nhanh hơn.";
+  const ageHtml = ageNote ? `<p class="plAge">👶 ${ageNote}</p>` : "";
   const thPct = th.n ? Math.round(th.score/th.n*100) : 0;
   if(true){ sfx.win(); burst(18); }
   const el = document.getElementById("resultCard");
@@ -1001,6 +1010,7 @@ function comboResult(){
       <div class="plRecStart">${t.start}</div>
       <p>${t.desc}</p>
       ${focusHtml}
+      ${ageHtml}
     </div>
     <div class="center">
       <button class="btn" onclick="exitRunner(); go('baihoc')">Vào lộ trình 📚</button>
