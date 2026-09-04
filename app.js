@@ -772,9 +772,11 @@ function renderAgeButtons(){
 }
 function setAge(a){ plAge = a; renderAgeButtons(); }
 
-function startPlacement(){
+let comboMode = false, comboData = {};
+function _placementRun(total){
   if(!window.PLACEMENT){ return; }
   runnerReturn = "dauvao";
+  plTotal = total;
   plIdx = 0; plStar = 1; plCorrect = 0; plLevelSum = 0; plLocked = false;
   plUsed = {1:new Set(), 2:new Set(), 3:new Set()};
   plCat = {};
@@ -782,6 +784,11 @@ function startPlacement(){
   plUpdateStars(false);
   plRender();
 }
+function startPlacement(){ comboMode = false; _placementRun(20); }
+/* Kiểm tra tổng quát: chạy lần lượt Kiến thức → Gõ phím → Tư duy rồi gợi ý chung */
+function startCombo(){ comboMode = true; comboData = {}; _placementRun(12); }
+function soloTyping(lang){ comboMode = false; startTyping(lang); }
+function soloThinking(){ comboMode = false; startThinking(); }
 function plUpdateStars(pulse){
   const box = document.getElementById("starBox");
   box.innerHTML = [1,2,3].map(i => `<span class="${i <= plStar ? "" : "off"}">⭐</span>`).join("");
@@ -907,6 +914,12 @@ function plResult(){
   const pct = Math.round(plCorrect / plTotal * 100);
   if(pct >= 50) sfx.win();
 
+  if(comboMode){
+    comboData.ai = {avg:r.avg, correct:plCorrect, total:plTotal, pct, acc:r.acc, weakFocus:r.focus};
+    comboStep("Kiến thức AI", `${plCorrect}/${plTotal} đúng`, "⌨️ Tiếp theo: Gõ phím", "startTyping('vi')");
+    return;
+  }
+
   const CATS = window.PLACEMENT_CATS || {};
   let bars = Object.keys(CATS).map(c => {
     const a = r.acc[c];
@@ -939,14 +952,74 @@ function plResult(){
   if(pct >= 50) burst(18);
 }
 
+/* --- Kiểm tra tổng quát: chuyển bước + kết quả chung --- */
+function comboStep(doneLabel, scoreLabel, nextText, nextFn){
+  const done = Object.keys(comboData).length; // số phần đã xong
+  const el = document.getElementById("resultCard");
+  el.innerHTML = `
+    <div class="hostMini" style="margin:0 auto;width:60px;height:60px;font-size:32px">✅</div>
+    <h2 style="margin-top:8px">Xong phần: ${doneLabel}</h2>
+    <div class="plTier">${scoreLabel} · đã xong ${done}/3 phần</div>
+    <div class="center"><button class="btn" onclick="${nextFn}">${nextText} ➜</button></div>`;
+  el.classList.remove("hidden");
+  document.getElementById("runner").scrollTo({top:0});
+}
+function tierFor(avg){
+  if(avg < 1.5) return {tier:"Mới bắt đầu", start:"Level 1 · Module 1.1 – Làm quen máy tính", desc:"Bé nên khởi động từ nền tảng số: bộ phận máy tính, chuột–bàn phím, thư mục, an toàn."};
+  if(avg < 2.0) return {tier:"Nền tảng", start:"Level 1 · Module 1.2–1.3 – Gõ phím & Gặp gỡ AI", desc:"Luyện gõ 10 ngón cho vững rồi bước vào làm quen AI."};
+  if(avg < 2.5) return {tier:"Khá", start:"Level 1 · Module 1.4–1.6 – Prompt & Tư duy thuật toán", desc:"Tập trung viết prompt và tư duy phân rã, flowchart."};
+  return {tier:"Vững", start:(plAge >= 12) ? "Level 2 – Hiểu AI & Kiểm chứng" : "Cuối Level 1 rồi sang Level 2", desc:(plAge >= 12) ? "Bé đủ vững và đủ tuổi để vào Level 2." : "Bé rất tốt — hoàn thành nhanh Level 1 rồi lên Level 2."};
+}
+function comboResult(){
+  document.getElementById("bar").style.width = "100%";
+  document.getElementById("qCard").classList.add("hidden");
+  document.getElementById("runnerTop").classList.add("hidden");
+  const ai = comboData.ai || {avg:1, correct:0, total:12, pct:0};
+  const ty = comboData.typing || {wpm:0, acc:0};
+  const th = comboData.thinking || {score:0, n:8};
+  const t = tierFor(ai.avg || 1);
+  // Gợi ý luyện thêm
+  const focuses = [];
+  if((ty.wpm||0) < 12 || (ty.acc||100) < 80) focuses.push("luyện gõ 10 ngón (Module 1.2)");
+  if(th.n && (th.score/th.n) < 0.5) focuses.push("luyện tư duy & thuật toán (Module 1.5–1.6)");
+  if(ai.weakFocus) focuses.push(ai.weakFocus);
+  const focusHtml = focuses.length ? `<p>💪 Nên luyện thêm: <b>${focuses.join("; ")}</b>.</p>` : "";
+  const thPct = th.n ? Math.round(th.score/th.n*100) : 0;
+  if(true){ sfx.win(); burst(18); }
+  const el = document.getElementById("resultCard");
+  el.innerHTML = `
+    <div class="hostMini" style="margin:0 auto;width:66px;height:66px;font-size:36px">🎯</div>
+    <h2 style="margin-top:10px">Kết quả kiểm tra tổng quát</h2>
+    <div class="plTier">Bậc năng lực: <b>${t.tier}</b> · ${plAge} tuổi</div>
+    <div class="comboStats">
+      <div class="csTile"><span class="csIco">🧠</span><b>${ai.correct}/${ai.total}</b><span>Kiến thức AI</span></div>
+      <div class="csTile"><span class="csIco">⌨️</span><b>${ty.wpm} WPM</b><span>Gõ · ${ty.acc}%</span></div>
+      <div class="csTile"><span class="csIco">🧩</span><b>${th.score}/${th.n}</b><span>Tư duy · ${thPct}%</span></div>
+    </div>
+    <div class="plRec">
+      <div class="plRecHead">📚 Gợi ý điểm bắt đầu</div>
+      <div class="plRecStart">${t.start}</div>
+      <p>${t.desc}</p>
+      ${focusHtml}
+    </div>
+    <div class="center">
+      <button class="btn" onclick="exitRunner(); go('baihoc')">Vào lộ trình 📚</button>
+      <button class="btn light" onclick="startCombo()" style="margin-left:8px">Làm lại 🔄</button>
+    </div>`;
+  el.classList.remove("hidden");
+  document.getElementById("runner").scrollTo({top:0});
+}
+
 /* =========================================================
    2d) TEST GÕ PHÍM (đo WPM & độ chính xác)
    ========================================================= */
-let tyText = "", tyStart = 0, tyDone = false;
-function startTyping(){
+let tyText = "", tyStart = 0, tyDone = false, tyLang = "vi";
+function startTyping(lang){
   if(!window.TYPING_TEXTS) return;
+  tyLang = (lang && window.TYPING_TEXTS[lang]) ? lang : "vi";
+  const info = (window.TYPING_LANGS || {})[tyLang] || {name:"", flag:"⌨️"};
   runnerReturn = "dauvao";
-  tyText = rand(window.TYPING_TEXTS);
+  tyText = rand(window.TYPING_TEXTS[tyLang]);
   tyStart = 0; tyDone = false;
   document.getElementById("runner").classList.remove("hidden");
   document.getElementById("runnerTop").classList.add("hidden");
@@ -955,13 +1028,16 @@ function startTyping(){
   document.body.style.overflow = "hidden";
   const chars = [...tyText].map((ch,i) => `<span data-i="${i}">${ch === " " ? "&nbsp;" : esc(ch)}</span>`).join("");
   document.getElementById("qCard").innerHTML =
-    `<div class="secTitle" data-icon="⌨️">Test gõ phím</div>
+    `<div class="secTitle" data-icon="⌨️">Test gõ phím · ${info.flag} ${esc(info.name)}</div>
      <p class="muted">Gõ lại đúng câu dưới đây. Đồng hồ bắt đầu khi em gõ chữ đầu tiên.</p>
      <div class="tyTarget" id="tyTarget">${chars}</div>
      <textarea class="tyInput" id="tyInput" rows="2" placeholder="Gõ ở đây…" oninput="tyCheck()" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
      <div class="tyStats"><span>⚡ <b id="tyWpm">0</b> WPM</span><span>🎯 <b id="tyAcc">100</b>%</span><span>⏱️ <b id="tyTime">0.0</b>s</span></div>
      <div class="tyEnd" id="tyEnd"></div>
-     <div class="center"><button class="btn light" onclick="exitRunner()">Thoát</button></div>`;
+     <div class="center">
+       <button class="btn" onclick="startTyping('${tyLang}')">Câu khác 🔄</button>
+       <button class="btn light" onclick="exitRunner()" style="margin-left:8px">Thoát</button>
+     </div>`;
   const inp = document.getElementById("tyInput"); if(inp) inp.focus();
   document.getElementById("runner").scrollTo({top:0});
 }
@@ -982,6 +1058,14 @@ function tyCheck(){
   if(val.length >= tyText.length && !tyDone){ tyDone = true; tyResult(wpm, acc); }
 }
 function tyResult(wpm, acc){
+  if(comboMode){
+    comboData.typing = {wpm, acc};
+    sfx.win();
+    document.getElementById("tyEnd").innerHTML =
+      `<div class="lqResult">⌨️ <b>${wpm} WPM</b> · độ chính xác <b>${acc}%</b>
+        <div class="center" style="margin-top:10px"><button class="btn" onclick="startThinking()">🧩 Tiếp theo: Tư duy ➜</button></div></div>`;
+    return;
+  }
   let rate, note;
   if(acc < 80){ rate = "Cần chính xác hơn 🎯"; note = "Hãy gõ chậm và đúng trước, tốc độ sẽ tự tăng. Bắt đầu từ <b>Module 1.2 – Gõ phím 10 ngón</b>."; }
   else if(wpm < 12){ rate = "Cần luyện thêm 💪"; note = "Nên bắt đầu từ <b>Module 1.2 – Gõ phím 10 ngón</b> để gõ nhanh và không mỏi."; }
@@ -1045,6 +1129,11 @@ function thResult(){
   document.getElementById("bar").style.width = "100%";
   document.getElementById("qCard").classList.add("hidden");
   document.getElementById("runnerTop").classList.add("hidden");
+  if(comboMode){
+    comboData.thinking = {score:thScore, n:thList.length};
+    comboResult();
+    return;
+  }
   const n = thList.length, pct = Math.round(thScore/n*100);
   let rate, note;
   if(thScore <= n*0.4){ rate = "Nên luyện tư duy 💪"; note = "Bắt đầu từ <b>Module 1.5 – Tư duy phân rã</b> và <b>1.6 – Thuật toán & Flowchart</b>."; }

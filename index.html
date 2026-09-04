@@ -7,7 +7,7 @@
 <meta name="description" content="Khởi đầu học AI cho mọi người — bài học trực quan, vui nhộn, dễ hiểu.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=22">
+<link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body>
 
@@ -87,6 +87,15 @@
       <div class="apLabel">👶 Bé mấy tuổi?</div>
       <div class="ageBtns" id="ageBtns"></div>
     </div>
+    <!-- Bài kiểm tra TỔNG QUÁT (bao trùm cả 3 phần) -->
+    <button class="comboCard" onclick="startCombo()">
+      <span class="ccIco">🎯</span>
+      <span class="ccText"><b>Kiểm tra tổng quát</b><small>Làm liền cả 3 phần: Kiến thức AI · Gõ phím · Tư duy — cho gợi ý đầy đủ nhất</small></span>
+      <span class="ccGo">Bắt đầu ➜</span>
+    </button>
+
+    <div class="dvOr"><span>hoặc làm riêng từng phần</span></div>
+
     <div class="testGrid">
       <div class="testCard" style="--tc:#7C3AED" onclick="startPlacement()">
         <div class="tcIco">🧠</div>
@@ -94,20 +103,22 @@
         <p>20 câu thích ứng: đúng thì khó hơn. Về AI, prompt, an toàn…</p>
         <span class="tcGo">Bắt đầu ➜</span>
       </div>
-      <div class="testCard" style="--tc:#06B6D4" onclick="startTyping()">
+      <div class="testCard" style="--tc:#06B6D4">
         <div class="tcIco">⌨️</div>
         <h3>Gõ phím</h3>
-        <p>Gõ lại một câu, đo tốc độ (WPM) và độ chính xác của bé.</p>
-        <span class="tcGo">Bắt đầu ➜</span>
+        <p>Gõ lại một câu, đo tốc độ (WPM) và độ chính xác.</p>
+        <div class="tcBtns">
+          <button class="tcBtn" onclick="soloTyping('vi')">🇻🇳 Tiếng Việt</button>
+          <button class="tcBtn" onclick="soloTyping('en')">🇬🇧 Tiếng Anh</button>
+        </div>
       </div>
-      <div class="testCard" style="--tc:#22C55E" onclick="startThinking()">
+      <div class="testCard" style="--tc:#22C55E" onclick="soloThinking()">
         <div class="tcIco">🧩</div>
         <h3>Tư duy</h3>
         <p>8 câu đố logic: tìm quy luật, sắp thứ tự, phân nhóm…</p>
         <span class="tcGo">Bắt đầu ➜</span>
       </div>
     </div>
-    <p class="sectionSub" style="text-align:center;margin-top:18px">💡 Làm cả 3 bài để có gợi ý đầy đủ nhất về điểm bắt đầu phù hợp cho bé.</p>
   </section>
 
   <!-- ---------- KIỂM TRA (màn giới thiệu) ---------- -->
@@ -156,7 +167,7 @@
 
 <!-- Dữ liệu bài học (curriculum, lessons_content, lesson_quiz) nạp ĐỘNG khi mở trang Bài học — xem loadCurriculumData() trong app.js -->
 <script defer src="art.js?v=18"></script>
-<script defer src="placement.js?v=22"></script>
-<script defer src="app.js?v=22"></script>
+<script defer src="placement.js?v=23"></script>
+<script defer src="app.js?v=23"></script>
 </body>
 </html>

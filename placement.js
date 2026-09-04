@@ -58,15 +58,38 @@ window.PLACEMENT_CATS = {
   antoan:   {name:"An toàn & kiểm chứng", emoji:"🛡️"}
 };
 
-/* Câu để luyện/đo gõ phím (đo WPM & độ chính xác) */
-window.TYPING_TEXTS = [
-  "Em thích học về trí tuệ nhân tạo",
-  "Máy tính giúp em học và chơi mỗi ngày",
-  "Gõ mười ngón nhanh mà không cần nhìn phím",
-  "Trí tuệ nhân tạo đang thay đổi thế giới",
-  "Hôm nay em học lập trình rất vui",
-  "Chuột và bàn phím là bạn của em"
-];
+/* Câu để luyện/đo gõ phím (đo WPM & độ chính xác) — 2 loại: tiếng Việt & tiếng Anh */
+window.TYPING_TEXTS = {
+  vi: [
+    "Em thích học về trí tuệ nhân tạo",
+    "Máy tính giúp em học và chơi mỗi ngày",
+    "Gõ mười ngón nhanh mà không cần nhìn phím",
+    "Trí tuệ nhân tạo đang thay đổi thế giới",
+    "Hôm nay em học lập trình rất vui",
+    "Chuột và bàn phím là bạn của em",
+    "Luyện gõ mỗi ngày một chút sẽ tiến bộ nhanh",
+    "An toàn khi dùng máy tính rất quan trọng",
+    "Bé hãy ngồi thẳng lưng khi ngồi học",
+    "Đặt câu hỏi rõ ràng để AI trả lời đúng ý",
+    "Không chia sẻ mật khẩu cho người lạ",
+    "Học lập trình giúp em tư duy logic hơn"
+  ],
+  en: [
+    "I love learning about artificial intelligence",
+    "A computer helps me learn and play",
+    "Typing fast with ten fingers is fun",
+    "Robots can move and follow commands",
+    "Always keep your password a secret",
+    "The mouse moves the cursor on the screen",
+    "Ask the AI a clear and simple question",
+    "Practice a little every single day",
+    "Sit up straight when you use a computer",
+    "Data helps computers learn new things",
+    "Coding helps me solve problems step by step",
+    "Be kind and safe when you go online"
+  ]
+};
+window.TYPING_LANGS = { vi: {name:"Tiếng Việt", flag:"🇻🇳"}, en: {name:"Tiếng Anh", flag:"🇬🇧"} };
 
 /* Test tư duy logic (câu đố) — {q, opts:[đúng, sai, sai, sai], a:0} */
 window.THINKING = [
