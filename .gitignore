@@ -1,9 +1,4 @@
-# Công cụ - KHÔNG đưa vào repo (file rất nặng)
-claude.exe
-
-# Cấu hình editor cá nhân
-.vscode/
-
-# File hệ thống
-Thumbs.db
+node_modules/
+package-lock.json
+*.log
 .DS_Store
