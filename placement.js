@@ -59,16 +59,63 @@ window.PLACEMENT_CATS = {
 };
 
 /* Câu để luyện/đo gõ phím (đo WPM & độ chính xác) — 2 loại: tiếng Việt & tiếng Anh */
+/* Kho CÂU (mỗi lần gõ sẽ ghép ngẫu nhiên nhiều câu thành 1 đoạn dài) */
 window.TYPING_TEXTS = {
   vi: [
-    "Trí tuệ nhân tạo là khi máy tính làm được những việc tưởng chừng chỉ con người mới làm được, như nhận ra khuôn mặt, hiểu lời nói và gợi ý bài hát. Máy tính học từ rất nhiều ví dụ, càng có nhiều dữ liệu tốt thì càng làm tốt hơn. Tuy vậy, trí tuệ nhân tạo không phải lúc nào cũng đúng, nên chúng ta cần kiểm tra lại thông tin quan trọng và dùng nó một cách an toàn, có trách nhiệm.",
-    "Gõ mười ngón là một kỹ năng rất hữu ích. Khi đặt tay đúng trên hàng phím cơ sở và nhìn vào màn hình thay vì nhìn phím, em sẽ gõ nhanh hơn mà không bị mỏi. Hãy luyện tập mỗi ngày một chút, gõ chậm và chính xác trước rồi tốc độ sẽ tự tăng lên. Đừng quên ngồi thẳng lưng và cho đôi mắt nghỉ ngơi sau mỗi hai mươi phút học tập.",
-    "Khi dùng máy tính và Internet, an toàn là điều quan trọng nhất. Em không nên chia sẻ mật khẩu hay địa chỉ nhà cho người lạ, không bấm vào những đường liên kết đáng ngờ và luôn hỏi người lớn khi gặp điều khó hiểu. Dùng công nghệ một cách tử tế và cẩn thận sẽ giúp em học được nhiều điều bổ ích mà vẫn giữ được sự an toàn cho bản thân."
+    "Trí tuệ nhân tạo giúp máy tính hiểu được lời nói và hình ảnh.",
+    "Mỗi ngày em học thêm một điều mới thật là thú vị.",
+    "Gõ mười ngón giúp em làm việc nhanh và đỡ mỏi tay.",
+    "Hãy đặt tay đúng trên hàng phím cơ sở trước khi gõ.",
+    "Nhìn vào màn hình thay vì nhìn phím sẽ giúp em gõ nhanh hơn.",
+    "Máy tính học được rất nhiều điều từ các ví dụ khác nhau.",
+    "Em không nên chia sẻ mật khẩu cho bất kỳ người lạ nào.",
+    "Khi gặp điều khó hiểu, hãy hỏi thầy cô hoặc ba mẹ.",
+    "Luyện tập một chút mỗi ngày sẽ giúp em tiến bộ nhanh.",
+    "Nhớ ngồi thẳng lưng và cho đôi mắt nghỉ ngơi thường xuyên.",
+    "Chú mèo nhỏ đang nằm ngủ ngon bên cạnh khung cửa sổ.",
+    "Buổi sáng, mặt trời chiếu những tia nắng thật ấm áp.",
+    "Em rất thích đọc sách và vẽ tranh vào mỗi cuối tuần.",
+    "Trồng nhiều cây xanh giúp không khí trong lành hơn.",
+    "Bạn bè cùng nhau học tập thì vui hơn rất nhiều.",
+    "Hãy luôn tử tế và lịch sự với mọi người xung quanh.",
+    "Trí tuệ nhân tạo không phải lúc nào cũng trả lời đúng.",
+    "Chúng ta nên kiểm tra lại những thông tin quan trọng.",
+    "Một bức tranh đẹp cần sự kiên nhẫn và tỉ mỉ.",
+    "Nước sạch là nguồn tài nguyên quý giá của Trái Đất.",
+    "Em mơ ước trở thành một kỹ sư giỏi trong tương lai.",
+    "Đọc to từng câu sẽ giúp em nhớ bài lâu hơn.",
+    "Khi làm sai, em sửa lại và cố gắng thêm lần nữa.",
+    "Công nghệ giúp con người kết nối với nhau ở khắp nơi.",
+    "Hãy gõ chậm và chính xác trước, tốc độ rồi sẽ tự tăng.",
+    "Mỗi bạn nhỏ đều có điểm mạnh riêng đáng tự hào."
   ],
   en: [
-    "Artificial intelligence is when a computer can do things that we once thought only people could do, such as understanding speech and recognizing faces. Computers learn from many examples, so the more good data they see, the better they become. However, they are not always right, so we should check important facts and use them in a safe and responsible way.",
-    "Learning to type with ten fingers is a useful skill for life. When you place your hands on the home row and look at the screen instead of the keys, you can type faster without getting tired. Practice a little every day, and start slowly and correctly before you try to go fast. Remember to sit up straight and rest your eyes after every twenty minutes of work.",
-    "When you use a computer and the Internet, staying safe is very important. Do not share your password or home address with strangers, never click on strange links, and always ask an adult when something looks confusing. Using technology in a kind and careful way helps you learn many wonderful things while keeping yourself safe and happy every day."
+    "Artificial intelligence helps computers understand words and pictures.",
+    "Every day I learn something new and interesting.",
+    "Typing with ten fingers helps me work fast without getting tired.",
+    "Place your hands on the home row before you start typing.",
+    "Look at the screen instead of the keys to type faster.",
+    "Computers can learn many things from different examples.",
+    "You should never share your password with a stranger.",
+    "When something is confusing, ask a teacher or a parent.",
+    "A little practice every day helps you improve quickly.",
+    "Remember to sit up straight and rest your eyes often.",
+    "The little cat is sleeping quietly beside the window.",
+    "In the morning, the sun shines with a warm light.",
+    "I really enjoy reading books and drawing on weekends.",
+    "Planting many trees makes the air cleaner and fresher.",
+    "Learning together with friends is much more fun.",
+    "Always be kind and polite to the people around you.",
+    "Artificial intelligence is not always correct.",
+    "We should double check the important information.",
+    "A beautiful painting needs patience and great care.",
+    "Clean water is a precious resource of the Earth.",
+    "I dream of becoming a great engineer one day.",
+    "Reading each sentence aloud helps me remember it.",
+    "When I make a mistake, I fix it and try again.",
+    "Technology helps people connect with each other everywhere.",
+    "Type slowly and correctly first, then speed will come.",
+    "Every child has their own strengths to be proud of."
   ]
 };
 window.TYPING_LANGS = { vi: {name:"Tiếng Việt", flag:"🇻🇳"}, en: {name:"Tiếng Anh", flag:"🇬🇧"} };

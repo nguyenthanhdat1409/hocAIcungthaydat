@@ -1073,15 +1073,27 @@ function comboResult(){
    2d) TEST GÕ PHÍM (đo WPM & độ chính xác)
    ========================================================= */
 const TY_LIMIT = 120; // giây — gõ trong 2 phút
+const TY_MIN_CHARS = 650; // độ dài tối thiểu của đoạn văn để luyện
 let tyText = "", tyStart = 0, tyDone = false, tyLang = "vi", tyTimer = null;
 function _fmt(s){ s = Math.max(0, Math.round(s)); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
 function _tyClear(){ if(tyTimer){ clearInterval(tyTimer); tyTimer = null; } }
+/* Ghép ngẫu nhiên nhiều câu thành 1 đoạn văn dài để luyện gõ */
+function buildTypingPassage(pool){
+  if(!pool || !pool.length) return "";
+  let bag = shuffle(pool), out = [], len = 0, i = 0;
+  while(len < TY_MIN_CHARS){
+    if(i >= bag.length){ bag = shuffle(pool); i = 0; }   // hết thì trộn lại (đề phòng kho ngắn)
+    const s = bag[i++];
+    out.push(s); len += s.length + 1;
+  }
+  return out.join(" ");
+}
 function startTyping(lang){
   if(!window.TYPING_TEXTS) return;
   tyLang = (lang && window.TYPING_TEXTS[lang]) ? lang : "vi";
   const info = (window.TYPING_LANGS || {})[tyLang] || {name:"", flag:"⌨️"};
   runnerReturn = "dauvao";
-  tyText = rand(window.TYPING_TEXTS[tyLang]);
+  tyText = buildTypingPassage(window.TYPING_TEXTS[tyLang]);
   tyStart = 0; tyDone = false; _tyClear();
   document.getElementById("runner").classList.remove("hidden");
   document.getElementById("runnerTop").classList.add("hidden");
