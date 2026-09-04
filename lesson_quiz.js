@@ -1906,3 +1906,637 @@ Object.assign(window.LESSON_QUIZ, {
   ]
 
 });
+
+/* ===== QUIZ — MODULE 4.1 – 4.3 ===== */
+Object.assign(window.LESSON_QUIZ, {
+
+  "4.1.1": [
+    {q:"Số liệu giúp em?", o:["Hiểu câu chuyện về sản phẩm","Trang trí","Không gì","Che sự thật"], a:0},
+    {q:"'Lượt dùng' cho biết?", o:["Có bao nhiêu người dùng","Màu sản phẩm","Giờ giấc","Tên tác giả"], a:0},
+    {q:"'Người quay lại' cho biết?", o:["Ai thấy hữu ích nên dùng tiếp","Ai ghét sản phẩm","Màu áo","Không gì"], a:0},
+    {q:"'Điểm rơi' là?", o:["Chỗ người ta bỏ cuộc","Điểm cao nhất","Màu nền","Tên nút"], a:0},
+    {q:"Khi nhìn số liệu, nên hỏi?", o:["Con số này đang nói điều gì?","Nó màu gì?","Bao giờ hết?","Ai làm ra?"], a:0},
+    {q:"Số liệu chỉ là con số hay?", o:["Kể một câu chuyện nếu biết đọc","Vô nghĩa","Chỉ để khoe","Không quan trọng"], a:0},
+    {q:"Đọc số liệu giúp?", o:["Ra quyết định cải thiện","Không lợi ích","Rối hơn","Che lỗi"], a:0},
+    {q:"Nhiều người quay lại nghĩa là?", o:["Sản phẩm hữu ích","Sản phẩm dở","Không đổi","Thất bại"], a:0},
+    {q:"Điểm rơi cao ở một bước cho biết?", o:["Bước đó cần cải thiện","Bước đó hoàn hảo","Không gì","Nên bỏ số liệu"], a:0},
+    {q:"Bài học?", o:["Từng con số có ý nghĩa, cần biết đọc","Số liệu vô ích","Chỉ nhìn cho vui","Bỏ qua số liệu"], a:0}
+  ],
+
+  "4.1.2": [
+    {q:"Chỉ số ảo ví dụ?", o:["Lượt xem","Người quay lại","Số người dùng thật","Tỉ lệ hài lòng"], a:0},
+    {q:"Chỉ số thật ví dụ?", o:["Người quay lại","Lượt xem đơn thuần","Số lần tải trang","Màu nền"], a:0},
+    {q:"Chỉ số ảo?", o:["Nghe kêu nhưng ít ý nghĩa","Rất quan trọng","Luôn đáng tin","Không tồn tại"], a:0},
+    {q:"Chỉ số thật cho biết?", o:["Sản phẩm có giá trị không","Màu sắc","Giờ giấc","Tên"], a:0},
+    {q:"Nên chọn bao nhiêu chỉ số quan trọng?", o:["Khoảng 3","Tất cả","Không cái nào","100 cái"], a:0},
+    {q:"Vì sao phân biệt chỉ số ảo/thật?", o:["Để tập trung vào cái quan trọng","Cho vui","Không lý do","Để khoe"], a:0},
+    {q:"Lượt xem cao nhưng không ai quay lại nghĩa là?", o:["Sản phẩm chưa đủ hữu ích","Sản phẩm tuyệt vời","Không sao","Thành công"], a:0},
+    {q:"Chỉ số quan trọng nên?", o:["Phản ánh giá trị thật","Chỉ để trưng","Càng nhiều càng tốt","Không cần"], a:0},
+    {q:"Theo dõi chỉ số thật giúp?", o:["Biết sản phẩm thật sự tốt không","Tự lừa mình","Không lợi ích","Che lỗi"], a:0},
+    {q:"Bài học?", o:["Chọn đúng chỉ số thật để theo dõi","Chạy theo chỉ số ảo","Không theo dõi gì","Càng nhiều chỉ số càng tốt"], a:0}
+  ],
+
+  "4.1.3": [
+    {q:"Muốn có số liệu, phải?", o:["Gắn đo lường vào sản phẩm","Đoán bừa","Không làm gì","Hỏi bạn"], a:0},
+    {q:"Nên đo cái gì?", o:["Bao nhiêu lần dùng, bao nhiêu người quay lại","Màu sắc","Thời tiết","Tên tác giả"], a:0},
+    {q:"Chỉ nên đo những gì?", o:["Sẽ dùng để ra quyết định","Mọi thứ có thể","Không gì","Ngẫu nhiên"], a:0},
+    {q:"Gắn đo lường nghĩa là?", o:["Thêm cách đếm đơn giản vào sản phẩm","Xoá sản phẩm","Trang trí","Không liên quan"], a:0},
+    {q:"Đo mà không dùng thì?", o:["Lãng phí công sức","Rất tốt","Bắt buộc","Cần thiết"], a:0},
+    {q:"Sản phẩm bắt đầu ghi số liệu giúp?", o:["Có dữ liệu thật để cải thiện","Rối hơn","Chậm hơn","Không lợi ích"], a:0},
+    {q:"Đo lường đơn giản là?", o:["Đủ để bắt đầu","Quá phức tạp","Không cần","Bí mật"], a:0},
+    {q:"Số liệu thu từ sản phẩm Level 3 giúp?", o:["Biết người dùng thật hành xử ra sao","Cho vui","Không gì","Che lỗi"], a:0},
+    {q:"Vì sao đo lường quan trọng?", o:["Không đo thì không biết cải thiện gì","Không quan trọng","Chỉ để khoe","Làm nặng máy"], a:0},
+    {q:"Bài học?", o:["Gắn đo lường để có số liệu thật","Đoán thay vì đo","Không đo gì","Đo mọi thứ vô ích"], a:0}
+  ],
+
+  "4.1.4": [
+    {q:"Biểu đồ giúp?", o:["Biến số liệu khô thành hình dễ đọc","Làm rối","Che số liệu","Không gì"], a:0},
+    {q:"Biểu đồ cho thấy?", o:["Xu hướng: tăng, giảm, đứng yên","Màu yêu thích","Tên","Giờ giấc"], a:0},
+    {q:"Nên chọn loại biểu đồ?", o:["Hợp với dữ liệu","Càng nhiều màu càng tốt","Ngẫu nhiên","Không quan trọng"], a:0},
+    {q:"Sau khi vẽ biểu đồ, nên?", o:["Viết nhận xét","Bỏ qua","Xoá","Không gì"], a:0},
+    {q:"Quá nhiều màu trên biểu đồ thì?", o:["Rối, khó đọc","Đẹp và rõ","Tốt nhất","Bắt buộc"], a:0},
+    {q:"Biểu đồ đường thường thể hiện?", o:["Xu hướng theo thời gian","Màu sắc","Tên người","Không gì"], a:0},
+    {q:"Đọc xu hướng giúp?", o:["Hiểu sản phẩm đang tốt lên hay xấu đi","Cho vui","Không lợi ích","Che lỗi"], a:0},
+    {q:"Nhận xét biểu đồ là?", o:["Giải thích biểu đồ nói gì","Trang trí","Không cần","Vô nghĩa"], a:0},
+    {q:"Biểu đồ giúp người xem?", o:["Nắm nhanh tình hình","Bối rối hơn","Không gì","Chán"], a:0},
+    {q:"Bài học?", o:["Vẽ biểu đồ và đọc xu hướng","Chỉ nhìn số thô","Không vẽ gì","Vẽ cho đẹp là đủ"], a:0}
+  ],
+
+  "4.1.5": [
+    {q:"Số liệu nói 'cái gì', phỏng vấn nói?", o:["'Vì sao'","'Cái gì' luôn","Không gì","Màu sắc"], a:0},
+    {q:"Thấy người dùng bỏ ở một bước, nên?", o:["Hỏi họ để hiểu lý do","Đoán bừa","Bỏ qua","Trách họ"], a:0},
+    {q:"Con số chỉ ra?", o:["Chỗ có vấn đề","Nguyên nhân đầy đủ","Không gì","Giải pháp"], a:0},
+    {q:"Phỏng vấn giải thích?", o:["Nguyên nhân (vì sao)","Con số","Màu sắc","Giờ giấc"], a:0},
+    {q:"Nên phỏng vấn ai?", o:["Người đã dùng thật","Người chưa biết","Bất kỳ ai","Không ai"], a:0},
+    {q:"Kết hợp số liệu và phỏng vấn giúp?", o:["Hiểu cả 'cái gì' và 'vì sao'","Chỉ một nửa","Rối hơn","Không lợi ích"], a:0},
+    {q:"Số liệu một mình có đủ hiểu nguyên nhân không?", o:["Không, cần phỏng vấn","Có, luôn đủ","Không cần gì","Đủ tuyệt đối"], a:0},
+    {q:"Phỏng vấn người đã dùng cho?", o:["Câu trả lời giá trị","Đoán mò","Không gì","Sai lệch"], a:0},
+    {q:"Vì sao dùng cả hai nguồn?", o:["Bức tranh đầy đủ hơn","Cho dài","Tốn công vô ích","Không lý do"], a:0},
+    {q:"Bài học?", o:["Số liệu + phỏng vấn = hiểu đầy đủ","Chỉ cần số liệu","Chỉ cần phỏng vấn","Không cần gì"], a:0}
+  ],
+
+  "4.1.6": [
+    {q:"Danh sách cải tiến đến từ?", o:["Số liệu + phỏng vấn","Đoán bừa","Chép mạng","May mắn"], a:0},
+    {q:"Nên xếp việc theo?", o:["Tác động và công sức","Màu sắc","Bảng chữ cái","Ngẫu nhiên"], a:0},
+    {q:"Nên làm việc nào trước?", o:["Ảnh hưởng lớn mà không quá tốn công","Tốn công nhất","Ít ảnh hưởng nhất","Ngẫu nhiên"], a:0},
+    {q:"Có nên làm tất cả cùng lúc?", o:["Không, chọn vài việc đáng giá","Có, làm hết","Không làm gì","Ngẫu nhiên"], a:0},
+    {q:"Xếp ưu tiên giúp?", o:["Dùng thời gian hiệu quả","Rối hơn","Tốn thời gian","Không lợi ích"], a:0},
+    {q:"'Tác động' nghĩa là?", o:["Ảnh hưởng đến người dùng","Màu sắc","Kích thước","Tên"], a:0},
+    {q:"Việc tác động lớn, ít công thì?", o:["Nên ưu tiên","Nên bỏ","Không quan trọng","Làm sau cùng"], a:0},
+    {q:"Danh sách cải tiến dùng cho?", o:["Phiên bản 2 (v2)","Xoá sản phẩm","Trang trí","Không gì"], a:0},
+    {q:"Không chọn ưu tiên thì?", o:["Dễ lan man, kém hiệu quả","Tốt hơn","Nhanh hơn","Không sao"], a:0},
+    {q:"Bài học?", o:["Chốt danh sách cải tiến xếp ưu tiên","Làm bừa","Làm hết cùng lúc","Không cải tiến"], a:0}
+  ],
+
+  "4.2.1": [
+    {q:"Phiên bản 2 (v2) nên?", o:["Cải tiến phần cần đổi, giữ phần đang tốt","Đập đi làm lại hết","Không đổi gì","Xoá sản phẩm"], a:0},
+    {q:"Nên vẽ wireframe cho?", o:["Phần thay đổi","Toàn bộ lại","Không phần nào","Phần đang tốt"], a:0},
+    {q:"Có nên đập bỏ phần đang chạy tốt?", o:["Không","Có, luôn luôn","Tuỳ hứng","Bắt buộc"], a:0},
+    {q:"Thay đổi nên?", o:["Có chủ đích, dựa số liệu","Cho 'có vẻ mới'","Ngẫu nhiên","Vô cớ"], a:0},
+    {q:"v2 dựa trên?", o:["Danh sách cải tiến từ số liệu","May mắn","Ý thích bất chợt","Của người khác"], a:0},
+    {q:"Giữ phần đang tốt vì?", o:["Không nên phá thứ đang chạy","Để lười","Không lý do","Cho nhanh"], a:0},
+    {q:"Thiết kế v2 được duyệt nghĩa là?", o:["Sẵn sàng bắt tay làm","Thất bại","Bỏ dự án","Không cần làm"], a:0},
+    {q:"Đổi 'cho có vẻ mới' là?", o:["Không nên","Rất tốt","Bắt buộc","Khôn ngoan"], a:0},
+    {q:"Cải tiến có chủ đích giúp?", o:["Sản phẩm tốt lên đúng hướng","Rối hơn","Không đổi","Tệ đi"], a:0},
+    {q:"Bài học?", o:["v2 cải tiến có chủ đích, giữ phần tốt","Làm lại từ đầu","Đổi bừa","Không cải tiến"], a:0}
+  ],
+
+  "4.2.2": [
+    {q:"Kế hoạch 4 tuần giúp?", o:["Việc lớn không bị dồn cục","Rối hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Mỗi tuần nên có?", o:["Mục tiêu và mốc kiểm tra","Chỉ nghỉ","Không mục tiêu","Ngẫu nhiên"], a:0},
+    {q:"Mốc kiểm tra giúp?", o:["Biết có đúng tiến độ không","Trang trí","Tốn thời gian","Không gì"], a:0},
+    {q:"Mốc nên đặt thế nào?", o:["Cụ thể 'xong cái gì'","Mơ hồ","Không rõ","Chung chung"], a:0},
+    {q:"Chia việc theo tuần giúp?", o:["Quản lý được tiến độ","Rối hơn","Không đổi","Chậm hơn"], a:0},
+    {q:"Mốc mơ hồ thì?", o:["Khó biết đã đạt chưa","Rõ ràng","Tốt nhất","Dễ đo"], a:0},
+    {q:"Kế hoạch tốt giúp?", o:["Không bị trễ dồn về cuối","Tốn công","Vô ích","Rối"], a:0},
+    {q:"Bảng kế hoạch nên có?", o:["Mốc rõ ràng","Chỉ màu sắc","Không mốc","Bí mật"], a:0},
+    {q:"Vì sao chia nhỏ theo tuần?", o:["Dễ theo dõi và hoàn thành","Cho oai","Không lý do","Để lâu hơn"], a:0},
+    {q:"Bài học?", o:["Lập kế hoạch có mốc theo tuần","Không lập kế hoạch","Làm tới đâu hay tới đó","Dồn về cuối"], a:0}
+  ],
+
+  "4.2.3": [
+    {q:"Tuần 1 làm?", o:["Cải tiến ưu tiên số 1","Việc ít quan trọng","Trang trí","Nghỉ"], a:0},
+    {q:"Nên dồn sức cho?", o:["Thay đổi tác động lớn nhất","Việc nhỏ nhặt","Việc cho vui","Không việc nào"], a:0},
+    {q:"Làm xong nên?", o:["Kiểm tra kỹ","Bỏ qua","Ra mắt luôn","Không kiểm"], a:0},
+    {q:"Làm dứt điểm một việc so với dở dang nhiều việc?", o:["Tốt hơn","Kém hơn","Y hệt","Không quan trọng"], a:0},
+    {q:"Ưu tiên số 1 là?", o:["Việc quan trọng nhất","Việc dễ nhất","Việc cho vui","Ngẫu nhiên"], a:0},
+    {q:"Hoàn thành mốc tuần 1 giúp?", o:["Tiến đúng kế hoạch","Trễ hơn","Không đổi","Rối"], a:0},
+    {q:"Dồn sức cho tác động lớn vì?", o:["Hiệu quả cao nhất","Cho oai","Không lý do","Để lâu"], a:0},
+    {q:"Nên kiểm tra sau khi làm để?", o:["Chắc chắn nó hoạt động","Cho đẹp","Tốn thời gian","Không lý do"], a:0},
+    {q:"Nhiều việc dở dang thì?", o:["Không hoàn thành được gì","Tốt","Nhanh","Hiệu quả"], a:0},
+    {q:"Bài học?", o:["Làm dứt điểm việc quan trọng nhất trước","Làm nhiều việc dở dang","Bỏ qua kiểm tra","Không ưu tiên"], a:0}
+  ],
+
+  "4.2.4": [
+    {q:"Tuần 2 làm?", o:["Cải tiến số 2 và sửa lỗi phát sinh","Nghỉ","Xoá tuần 1","Trang trí"], a:0},
+    {q:"Khi thêm cái mới, thường?", o:["Có lỗi mới xuất hiện","Không bao giờ lỗi","Máy tự sửa","Không sao"], a:0},
+    {q:"Mỗi lần đổi lớn, nên?", o:["Thử lại toàn bộ luồng chính","Không thử","Chỉ nhìn","Bỏ qua"], a:0},
+    {q:"Sửa lỗi phát sinh nghĩa là?", o:["Xử lý lỗi mới do thay đổi","Tạo thêm lỗi","Bỏ qua lỗi","Che lỗi"], a:0},
+    {q:"Tiến đều nghĩa là?", o:["Hoàn thành từng mốc","Làm dồn cục","Không làm","Ngẫu nhiên"], a:0},
+    {q:"Thử lại luồng chính giúp?", o:["Bắt lỗi do thay đổi","Che lỗi","Tốn thời gian vô ích","Không lợi ích"], a:0},
+    {q:"Cải tiến số 2 nên làm sau?", o:["Cải tiến số 1","Cải tiến số 3","Ra mắt","Không thứ tự"], a:0},
+    {q:"Lỗi mới xuất hiện khi?", o:["Thay đổi/thêm tính năng","Không làm gì","Tắt máy","Ngồi im"], a:0},
+    {q:"Mốc tuần 2 đạt giúp?", o:["Giữ đúng tiến độ","Trễ hơn","Không đổi","Rối"], a:0},
+    {q:"Bài học?", o:["Cải tiến tiếp và xử lý lỗi mới","Bỏ qua lỗi","Không thử lại","Làm bừa"], a:0}
+  ],
+
+  "4.2.5": [
+    {q:"Tuần 3 làm?", o:["Cải tiến số 3 và gắn đo lường cho tính năng mới","Nghỉ","Xoá tất cả","Trang trí"], a:0},
+    {q:"Tính năng mới cần?", o:["Số liệu để biết hiệu quả","Không cần gì","Chỉ đẹp","Bí mật"], a:0},
+    {q:"Làm tính năng mà không đo thì?", o:["Không biết nó có đáng giữ","Luôn tốt","Không sao","Hoàn hảo"], a:0},
+    {q:"Đo tính năng mới để?", o:["Sau này biết nó hiệu quả không","Cho vui","Tốn công","Không lý do"], a:0},
+    {q:"Gắn đo lường nghĩa là?", o:["Thêm cách đếm cho tính năng","Xoá tính năng","Trang trí","Không liên quan"], a:0},
+    {q:"Vì sao đo cả cái mới?", o:["Để đánh giá nó về sau","Cho oai","Không lý do","Làm nặng máy"], a:0},
+    {q:"Mốc tuần 3 đạt giúp?", o:["Đúng tiến độ","Trễ","Rối","Không đổi"], a:0},
+    {q:"Tính năng không đo được thì?", o:["Khó biết có nên giữ không","Chắc chắn giữ","Chắc chắn bỏ","Không sao"], a:0},
+    {q:"Số liệu tính năng mới giúp?", o:["Quyết định giữ hay bỏ về sau","Trang trí","Không lợi ích","Che lỗi"], a:0},
+    {q:"Bài học?", o:["Tính năng mới cũng cần đo lường","Không cần đo","Chỉ làm cho đẹp","Bỏ số liệu"], a:0}
+  ],
+
+  "4.2.6": [
+    {q:"Kiểm thử hồi quy là?", o:["Bảo đảm tính năng cũ không hỏng vì cái mới","Tạo lỗi","Xoá tính năng","Trang trí"], a:0},
+    {q:"Sau khi thêm/đổi, nên?", o:["Chạy lại danh sách kiểm tính năng cũ","Ra mắt luôn","Không kiểm","Xoá"], a:0},
+    {q:"Nên giữ gì để test nhanh?", o:["Checklist các luồng quan trọng","Không gì","Chỉ tên","Bí mật"], a:0},
+    {q:"'Hồi quy' nghĩa là?", o:["Tính năng cũ quay lại bị lỗi","Tiến bộ","Trang trí","Nghỉ ngơi"], a:0},
+    {q:"Vì sao kiểm thử hồi quy?", o:["Cái mới có thể làm hỏng cái cũ","Cho vui","Tốn công vô ích","Không lý do"], a:0},
+    {q:"Checklist giúp?", o:["Test nhanh mỗi lần đổi","Trang trí","Tốn thời gian","Không lợi ích"], a:0},
+    {q:"Nếu không kiểm thử hồi quy?", o:["Tính năng cũ có thể âm thầm hỏng","Không sao","Tốt hơn","Nhanh hơn"], a:0},
+    {q:"Danh sách kiểm đã tick đủ nghĩa là?", o:["Mọi luồng quan trọng đã được thử","Bỏ qua hết","Chưa thử","Không cần"], a:0},
+    {q:"Kiểm thử hồi quy bảo vệ?", o:["Chất lượng sản phẩm","Màu sắc","Tên","Không gì"], a:0},
+    {q:"Bài học?", o:["Luôn thử lại phần cũ sau khi đổi","Chỉ thử phần mới","Không thử","Bỏ qua"], a:0}
+  ],
+
+  "4.2.7": [
+    {q:"Ra mắt v2 cho?", o:["Người dùng cũ","Không ai","Chỉ mình em","Người ghét sản phẩm"], a:0},
+    {q:"Nên làm gì khi ra mắt v2?", o:["Thông báo điều gì mới, mời trải nghiệm","Giấu đi","Không nói gì","Xoá bản cũ"], a:0},
+    {q:"Nên nêu rõ?", o:["v2 giúp họ tốt hơn ở chỗ nào","Chỉ tên","Chỉ ngày","Không gì"], a:0},
+    {q:"Mời người dùng cũ để?", o:["Họ thử bản mới","Chê họ","Cho vui","Không lý do"], a:0},
+    {q:"Người dùng cũ quan trọng vì?", o:["Họ đã quen, có thể quay lại","Không quan trọng","Nên bỏ","Gây phiền"], a:0},
+    {q:"Nêu lợi ích mới giúp?", o:["Họ muốn thử lại","Họ chán","Không đổi","Rời đi"], a:0},
+    {q:"v2 đến tay ≥5 người nghĩa là?", o:["Bản mới có người dùng","Thất bại","Không quan trọng","Chỉ để khoe"], a:0},
+    {q:"Thông báo ra mắt nên?", o:["Rõ ràng, hấp dẫn","Mơ hồ","Không có","Khó hiểu"], a:0},
+    {q:"Ra mắt v2 là bước?", o:["Đưa cải tiến đến người dùng","Kết thúc dự án","Không cần","Bí mật"], a:0},
+    {q:"Bài học?", o:["Ra mắt v2 và mời người dùng cũ","Giấu v2","Không thông báo","Bỏ người dùng cũ"], a:0}
+  ],
+
+  "4.2.8": [
+    {q:"So sánh v1 và v2 bằng?", o:["Cùng một thước đo (chỉ số)","Cảm tính","Màu sắc","Không gì"], a:0},
+    {q:"Kết luận cải tiến nên dựa vào?", o:["Số liệu","Cảm giác","May mắn","Ý người lạ"], a:0},
+    {q:"'Tốt hơn' cần?", o:["Bằng chứng, không chỉ cảm giác","Chỉ cảm giác","Không cần gì","Lời khen"], a:0},
+    {q:"Đo cùng chỉ số hai phiên bản để?", o:["So sánh công bằng","Cho vui","Rối hơn","Không lý do"], a:0},
+    {q:"Báo cáo so sánh nên có?", o:["Số liệu + biểu đồ","Chỉ chữ","Không gì","Chỉ màu"], a:0},
+    {q:"Nếu v2 không tốt hơn theo số liệu?", o:["Cần xem lại cải tiến","Vẫn tự khen","Không sao","Bỏ số liệu"], a:0},
+    {q:"So sánh có căn cứ giúp?", o:["Quyết định đúng","Tự lừa mình","Không lợi ích","Che lỗi"], a:0},
+    {q:"Dùng chỉ số khác nhau cho 2 bản thì?", o:["Không so sánh công bằng được","Tốt hơn","Chính xác nhất","Bắt buộc"], a:0},
+    {q:"Biểu đồ so sánh giúp?", o:["Thấy rõ khác biệt","Che số liệu","Rối hơn","Không gì"], a:0},
+    {q:"Bài học?", o:["Đánh giá cải tiến bằng số liệu, không cảm tính","Tin cảm giác","Không so sánh","Bỏ số liệu"], a:0}
+  ],
+
+  "4.3.1": [
+    {q:"Có việc?", o:["Một AI không kham nổi, cần nhiều AI","Một AI làm được tất cả","Không AI nào làm","Chỉ người làm"], a:0},
+    {q:"Ví dụ chuỗi AI?", o:["AI tóm tắt → AI dịch → AI đọc thành tiếng","Một AI làm hết","Không AI nào","Người làm hết"], a:0},
+    {q:"Nên làm gì để thấy tổng thể?", o:["Vẽ sơ đồ ai làm việc gì","Không vẽ","Đoán","Che giấu"], a:0},
+    {q:"'Đội AI' nghĩa là?", o:["Nhiều AI phối hợp","Một AI","Không AI","Người thay AI"], a:0},
+    {q:"Vì sao cần nhiều AI?", o:["Việc lớn cần nhiều bước khác nhau","Cho oai","Không lý do","Để phức tạp"], a:0},
+    {q:"Chuỗi AI nối nhau nghĩa là?", o:["Kết quả cái này dùng cho cái kia","Chúng tách rời","Cùng làm một việc","Không liên quan"], a:0},
+    {q:"Một AI có làm được mọi việc không?", o:["Không, có việc cần chuỗi AI","Có, tất cả","Luôn được","Không AI nào làm được"], a:0},
+    {q:"Sơ đồ giúp?", o:["Hiểu từng AI làm gì","Trang trí","Rối hơn","Không lợi ích"], a:0},
+    {q:"Kể việc cần ≥2 AI giúp?", o:["Hiểu khi nào cần phối hợp AI","Cho vui","Không gì","Che giấu"], a:0},
+    {q:"Bài học?", o:["Có việc cần nhiều AI phối hợp","Một AI luôn đủ","Không cần AI","AI làm được mọi thứ"], a:0}
+  ],
+
+  "4.3.2": [
+    {q:"Pipeline là?", o:["Chuỗi bước, đầu ra bước này là đầu vào bước kia","Một con đường thật","Một loại ống nước","Một trò chơi"], a:0},
+    {q:"Thiết kế pipeline cần?", o:["Xác định thứ tự AI và dữ liệu chuyển giữa chúng","Chọn màu","Đặt tên hay","Không gì"], a:0},
+    {q:"Mỗi bước phải nhận?", o:["Đúng thứ bước trước tạo ra","Bất kỳ gì","Không gì","Dữ liệu ngẫu nhiên"], a:0},
+    {q:"Nên vẽ pipeline thành?", o:["Sơ đồ 2-3 bước","Không vẽ","Một bức tranh","Bài hát"], a:0},
+    {q:"'Đầu ra' của một AI dùng làm?", o:["Đầu vào của AI tiếp theo","Rác bỏ đi","Không dùng","Trang trí"], a:0},
+    {q:"Pipeline giúp?", o:["Tổ chức nhiều AI làm việc có thứ tự","Rối hơn","Không lợi ích","Che lỗi"], a:0},
+    {q:"Nếu bước sau nhận sai dữ liệu?", o:["Kết quả sẽ sai","Vẫn đúng","Không sao","Tốt hơn"], a:0},
+    {q:"Thứ tự các AI trong pipeline?", o:["Quan trọng","Không quan trọng","Ngẫu nhiên","Tuỳ ý hoàn toàn"], a:0},
+    {q:"Sơ đồ pipeline 2-3 bước cho?", o:["Một việc thật","Cho vui","Không gì","Trang trí"], a:0},
+    {q:"Bài học?", o:["Thiết kế chuỗi AI có thứ tự rõ ràng","Ghép bừa","Không thứ tự","Bỏ pipeline"], a:0}
+  ],
+
+  "4.3.3": [
+    {q:"Chạy pipeline đầu tiên nghĩa là?", o:["Chạy chuỗi từ đầu đến cuối","Chỉ chạy 1 bước","Không chạy","Xoá pipeline"], a:0},
+    {q:"Ví dụ pipeline 2 AI?", o:["AI tóm tắt → AI dịch","Một AI làm hết","Không AI","Người làm"], a:0},
+    {q:"Nên làm gì trước khi nối chuỗi?", o:["Thử từng bước riêng","Nối hết ngay","Không thử","Bỏ qua"], a:0},
+    {q:"Cần kiểm tra gì?", o:["Dữ liệu chạy suôn qua từng mắt xích","Màu sắc","Tên","Giờ giấc"], a:0},
+    {q:"Thử từng bước riêng giúp?", o:["Dễ tìm lỗi hơn","Rối hơn","Không lợi ích","Che lỗi"], a:0},
+    {q:"Pipeline chạy 'từ đầu đến cuối' nghĩa là?", o:["Hoàn tất mọi bước","Chỉ bước đầu","Không bước nào","Bước cuối trước"], a:0},
+    {q:"Nếu một bước lỗi?", o:["Kết quả cuối bị ảnh hưởng","Không sao","Tốt hơn","Bước khác tự sửa"], a:0},
+    {q:"AI đọc thành tiếng là?", o:["Một mắt xích có thể trong pipeline","Không liên quan","Bước duy nhất","Không phải AI"], a:0},
+    {q:"Chạy được từ đầu đến cuối cho thấy?", o:["Pipeline hoạt động","Thất bại","Không gì","Chỉ ý tưởng"], a:0},
+    {q:"Bài học?", o:["Thử từng bước rồi nối thành chuỗi chạy được","Nối bừa rồi thôi","Không thử","Bỏ pipeline"], a:0}
+  ],
+
+  "4.3.4": [
+    {q:"Trong chuỗi, một mắt xích sai có thể?", o:["Làm hỏng cả kết quả cuối","Không ảnh hưởng","Tự sửa","Tốt hơn"], a:0},
+    {q:"Nên đặt gì giữa các bước?", o:["Điểm kiểm tra","Không gì","Trang trí","Màu sắc"], a:0},
+    {q:"Điểm kiểm tra giúp?", o:["Bắt lỗi sớm trước khi trôi tới cuối","Che lỗi","Rối hơn","Không lợi ích"], a:0},
+    {q:"Lỗi trong chuỗi thường?", o:["Lan truyền qua các bước","Đứng yên","Biến mất","Tự khỏi"], a:0},
+    {q:"Nên kiểm gì ở mỗi bước?", o:["Đầu ra có 'hợp lý' không","Màu sắc","Tên","Giờ"], a:0},
+    {q:"'Lỗi lan truyền' nghĩa là?", o:["Lỗi bước đầu ảnh hưởng bước sau","Lỗi tự hết","Không có lỗi","Lỗi cố định"], a:0},
+    {q:"Cài điểm kiểm tra bắt được?", o:["Lỗi cố tình gài","Màu sắc","Tên","Không gì"], a:0},
+    {q:"Nếu không có điểm kiểm tra?", o:["Lỗi có thể trôi tới cuối mới phát hiện","Không sao","Tốt hơn","Nhanh hơn"], a:0},
+    {q:"Kiểm tra giữa chừng giúp?", o:["Phát hiện lỗi sớm","Làm chậm vô ích","Che lỗi","Không lợi ích"], a:0},
+    {q:"Bài học?", o:["Đặt điểm kiểm tra để bắt lỗi trong chuỗi","Không kiểm tra","Để lỗi trôi","Bỏ qua"], a:0}
+  ],
+
+  "4.3.5": [
+    {q:"Con người ở đâu trong chuỗi AI?", o:["Ở những bước cần duyệt","Không ở đâu","Làm hết mọi bước","Chỉ đứng nhìn"], a:0},
+    {q:"Bước nào cần người duyệt?", o:["Việc quan trọng, nhạy cảm","Mọi việc","Không việc nào","Việc dễ"], a:0},
+    {q:"Bước máy tự làm được là?", o:["Việc lặp, ít rủi ro","Việc nhạy cảm","Mọi việc","Không việc nào"], a:0},
+    {q:"Ai giữ quyền quyết định cuối?", o:["Con người","AI","Máy in","Con chuột"], a:0},
+    {q:"AI làm phần nào?", o:["Phần lặp","Phần quyết định quan trọng","Không phần nào","Tất cả không cần người"], a:0},
+    {q:"Đánh dấu điểm người-duyệt giúp?", o:["Biết chỗ cần con người kiểm","Trang trí","Rối hơn","Không lợi ích"], a:0},
+    {q:"Vì sao cần người trong chuỗi?", o:["Việc quan trọng cần giám sát","Cho vui","Không lý do","Để chậm hơn"], a:0},
+    {q:"Giao hết cho AI ở việc nhạy cảm?", o:["Không nên","Nên","Bắt buộc","Tốt nhất"], a:0},
+    {q:"Con người + AI trong chuỗi?", o:["Máy làm phần lặp, người quyết","Người thừa","Máy thừa","Không ai làm"], a:0},
+    {q:"Bài học?", o:["Đánh dấu điểm cần người duyệt trong pipeline","Bỏ con người","Giao hết AI","Không cần ai"], a:0}
+  ],
+
+  "4.3.6": [
+    {q:"Bước này áp dụng pipeline vào?", o:["Chính sản phẩm v2 của em","Sản phẩm người khác","Không gì","Một trò chơi lạ"], a:0},
+    {q:"Nên thêm tính năng dùng?", o:["≥2 AI phối hợp","1 AI","0 AI","Không AI nào"], a:0},
+    {q:"Tính năng đó giải quyết?", o:["Một việc thật cho người dùng","Việc vô ích","Không việc gì","Việc của người khác"], a:0},
+    {q:"Nên bắt đầu bằng?", o:["Pipeline nhỏ, chạy được rồi mở rộng","Pipeline khổng lồ ngay","Không làm gì","Bỏ pipeline"], a:0},
+    {q:"Tích hợp AI vào sản phẩm nghĩa là?", o:["Dùng chuỗi AI trong tính năng thật","Chỉ nói lý thuyết","Không dùng","Xoá sản phẩm"], a:0},
+    {q:"Pipeline nhỏ chạy được rồi?", o:["Mở rộng dần","Bỏ đi","Không làm tiếp","Xoá"], a:0},
+    {q:"Tính năng dùng ≥2 AI cho thấy?", o:["Em biết phối hợp AI trong sản phẩm","Không hiểu gì","Chỉ lý thuyết","Thất bại"], a:0},
+    {q:"Nên tích hợp AI ở đâu?", o:["Chỗ thật sự cần","Mọi chỗ bừa bãi","Không chỗ nào","Chỗ không liên quan"], a:0},
+    {q:"Bắt đầu nhỏ giúp?", o:["Dễ kiểm soát và chạy được sớm","Rối hơn","Chậm hơn","Không lợi ích"], a:0},
+    {q:"Bài học?", o:["Áp dụng pipeline AI vào sản phẩm thật","Chỉ học lý thuyết","Không tích hợp","Làm phức tạp ngay"], a:0}
+  ],
+
+  "4.3.7": [
+    {q:"Chuỗi AI cũng có?", o:["Chi phí và giới hạn","Không giới hạn gì","Luôn miễn phí","Luôn nhanh"], a:0},
+    {q:"Nhiều bước hơn có thể?", o:["Chậm hơn, tốn hơn","Luôn nhanh hơn","Luôn rẻ hơn","Không đổi"], a:0},
+    {q:"Nên cân nhắc gì?", o:["Khi nào thật sự đáng dùng cả chuỗi","Không cần cân nhắc","Luôn dùng chuỗi dài","Không bao giờ dùng"], a:0},
+    {q:"Giải pháp tốt là?", o:["Đủ dùng, không phải phức tạp nhất","Phức tạp nhất","Đắt nhất","Dài nhất"], a:0},
+    {q:"Bảng đánh giá được/mất giúp?", o:["Quyết định có nên dùng pipeline","Trang trí","Rối hơn","Không lợi ích"], a:0},
+    {q:"Chuỗi AI dài có thể chậm ở đâu?", o:["Ở nhiều bước nối tiếp","Không chậm","Chỉ bước đầu","Không có bước"], a:0},
+    {q:"Khi nào không đáng dùng chuỗi?", o:["Khi lợi ích ít hơn chi phí","Luôn đáng","Không bao giờ","Mọi lúc"], a:0},
+    {q:"'Đủ dùng' nghĩa là?", o:["Giải quyết được vấn đề, không thừa","Càng phức tạp càng tốt","Thiếu chức năng","Không dùng được"], a:0},
+    {q:"Đánh giá chi phí giúp?", o:["Dùng AI hợp lý","Lãng phí","Không lợi ích","Che lỗi"], a:0},
+    {q:"Bài học?", o:["Cân nhắc được/mất khi dùng chuỗi AI","Luôn dùng chuỗi dài","Không bao giờ dùng","Bỏ qua chi phí"], a:0}
+  ],
+
+  "4.3.8": [
+    {q:"Trình diễn pipeline nghĩa là?", o:["Demo chuỗi AI cho lớp","Giấu pipeline","Xoá","Không làm gì"], a:0},
+    {q:"Nên giải thích gì?", o:["Mỗi mắt xích làm gì, vì sao cần","Chỉ màu sắc","Chỉ tên","Không gì"], a:0},
+    {q:"Nên chuẩn bị trả lời?", o:["'Nếu bước này lỗi thì sao?'","Không câu nào","Chỉ câu chào","Trốn tránh"], a:0},
+    {q:"Demo chuỗi AI cho thấy?", o:["Nó chạy thật","Chỉ ý tưởng","Không gì","Ảnh tĩnh"], a:0},
+    {q:"Giải thích từng mắt xích giúp?", o:["Người xem hiểu pipeline","Rối hơn","Che giấu","Không lợi ích"], a:0},
+    {q:"Trả lời chất vấn của lớp cần?", o:["Hiểu rõ pipeline của mình","May mắn","Trốn tránh","Không chuẩn bị"], a:0},
+    {q:"Nên demo pipeline thế nào?", o:["Chạy thật từ đầu đến cuối","Chỉ nói suông","Không demo","Đọc slide"], a:0},
+    {q:"Câu hỏi 'nếu bước lỗi thì sao' liên quan?", o:["Điểm kiểm tra và người duyệt","Màu sắc","Tên","Không gì"], a:0},
+    {q:"Trình diễn tốt cần?", o:["Hiểu và giải thích rõ ràng","Đọc vẹt","Trốn câu hỏi","Không chuẩn bị"], a:0},
+    {q:"Bài học?", o:["Demo và giải thích được pipeline của mình","Giấu pipeline","Không giải thích","Đọc slide"], a:0}
+  ]
+
+});
+
+/* ===== QUIZ — MODULE 4.4 – 4.7 ===== */
+Object.assign(window.LESSON_QUIZ, {
+
+  "4.4.1": [
+    {q:"Dự án lớn cần?", o:["Nghĩ lớn nhưng chia nhỏ","Làm hết một lần","Không chia","Bỏ qua"], a:0},
+    {q:"Từ ý tưởng lớn, nên?", o:["Liệt kê đầu việc và mốc thời gian","Làm ngay không kế hoạch","Đợi may mắn","Bỏ cuộc"], a:0},
+    {q:"Việc còn 'to quá' thì?", o:["Chia tiếp cho đến khi làm được","Để nguyên","Bỏ đi","Không chia"], a:0},
+    {q:"Nên chia đến khi mỗi việc?", o:["Làm được trong 1-2 buổi","To bằng cả dự án","Không rõ","Vô hạn"], a:0},
+    {q:"Phân rã Capstone giúp?", o:["Việc lớn thành nhiều việc nhỏ dễ làm","Rối hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"'Nghĩ lớn, chia nhỏ' là?", o:["Có tầm nhìn nhưng làm từng bước","Chỉ mơ mộng","Chỉ làm vặt","Không nghĩ gì"], a:0},
+    {q:"Bản phân rã Capstone gồm?", o:["≥15 đầu việc cụ thể","1 việc","Không việc nào","Chỉ tên"], a:0},
+    {q:"Mốc thời gian giúp?", o:["Biết khi nào làm gì","Trang trí","Tốn giấy","Không gì"], a:0},
+    {q:"Việc nhỏ dễ làm hơn vì?", o:["Rõ ràng, vừa sức","To hơn","Khó hơn","Mơ hồ hơn"], a:0},
+    {q:"Bài học?", o:["Chia dự án lớn thành nhiều đầu việc","Làm hết một lần","Không chia","Bỏ kế hoạch"], a:0}
+  ],
+
+  "4.4.2": [
+    {q:"Bảng theo dõi công việc gồm cột?", o:["Cần làm - Đang làm - Xong","Đỏ - Vàng - Xanh","Sáng - Trưa - Tối","Không cột nào"], a:0},
+    {q:"Nên cập nhật bảng?", o:["Hằng tuần","Không bao giờ","Một lần rồi thôi","Ngẫu nhiên"], a:0},
+    {q:"Không nên để quá nhiều việc ở?", o:["'Đang làm'","'Xong'","'Cần làm'","Không cột nào"], a:0},
+    {q:"Bảng theo dõi giúp?", o:["Luôn thấy tiến độ","Rối hơn","Không lợi ích","Che việc"], a:0},
+    {q:"Di chuyển việc qua ba cột để?", o:["Theo dõi trạng thái","Trang trí","Cho vui","Không lý do"], a:0},
+    {q:"Quá nhiều việc 'đang làm' thì?", o:["Dễ dở dang","Tốt hơn","Nhanh hơn","Không sao"], a:0},
+    {q:"Việc hoàn thành chuyển sang cột?", o:["Xong","Cần làm","Đang làm","Không cột nào"], a:0},
+    {q:"Bảng quản lý dùng thật giúp?", o:["Không lạc, đúng tiến độ","Rối hơn","Tốn thời gian","Không lợi ích"], a:0},
+    {q:"Cập nhật hằng tuần giúp?", o:["Nắm tình hình đều đặn","Quên việc","Không đổi","Rối"], a:0},
+    {q:"Bài học?", o:["Dùng bảng Cần-Đang-Xong để quản lý","Không quản lý","Nhớ trong đầu hết","Bỏ theo dõi"], a:0}
+  ],
+
+  "4.4.3": [
+    {q:"Việc nào cũng có thể?", o:["Trễ","Không bao giờ trễ","Tự xong","Không cần làm"], a:0},
+    {q:"Nên lường trước?", o:["Rủi ro","Không gì","Chỉ điểm tốt","Màu sắc"], a:0},
+    {q:"Cần xác định?", o:["Việc dễ trễ, dấu hiệu, phương án B","Chỉ tên việc","Chỉ màu","Không gì"], a:0},
+    {q:"'Phương án B' là?", o:["Kế hoạch dự phòng","Kế hoạch chính","Không có gì","Màu sắc"], a:0},
+    {q:"Chuẩn bị cho rủi ro giúp?", o:["Không hoảng khi nó xảy ra","Hoảng hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Bảng rủi ro gồm?", o:["Rủi ro - dấu hiệu - phương án B","Chỉ màu","Chỉ tên","Không gì"], a:0},
+    {q:"'Dấu hiệu' của rủi ro để?", o:["Nhận biết sớm khi rủi ro đến","Trang trí","Cho vui","Không lý do"], a:0},
+    {q:"Ước lượng giúp?", o:["Biết việc nào dễ trễ","Không lợi ích","Rối hơn","Che việc"], a:0},
+    {q:"Không có phương án B thì?", o:["Dễ bị động khi gặp khó","An toàn hơn","Tốt hơn","Không sao"], a:0},
+    {q:"Bài học?", o:["Lường trước rủi ro và có phương án B","Không lo rủi ro","Chỉ hy vọng","Bỏ kế hoạch"], a:0}
+  ],
+
+  "4.4.4": [
+    {q:"Báo cáo tiến độ nên?", o:["Ngắn gọn, đều đặn","Dài dòng","Không báo","Ngẫu nhiên"], a:0},
+    {q:"Báo cáo gồm ba ý?", o:["Xong gì - Vướng gì - Sắp làm gì","Đỏ - Vàng - Xanh","Sáng - Trưa - Tối","Không ý nào"], a:0},
+    {q:"Có nên báo cả khó khăn?", o:["Có, để được giúp sớm","Không, giấu đi","Chỉ báo điều tốt","Không báo gì"], a:0},
+    {q:"Giấu khó khăn thì?", o:["Không được giúp kịp","Tốt hơn","An toàn","Nhanh hơn"], a:0},
+    {q:"Báo cáo dài dòng thì?", o:["Khó theo dõi","Tốt hơn","Rõ hơn","Bắt buộc"], a:0},
+    {q:"'Vướng gì' để?", o:["Nêu khó khăn cần hỗ trợ","Khoe","Che giấu","Không lý do"], a:0},
+    {q:"Báo cáo đều đặn giúp?", o:["Mọi người nắm tình hình","Rối hơn","Không lợi ích","Tốn thời gian"], a:0},
+    {q:"Buổi báo cáo 3 phút nên?", o:["Súc tích, đúng trọng tâm","Lan man","Đọc hết mọi thứ","Bỏ qua"], a:0},
+    {q:"Báo cáo trung thực giúp?", o:["Được hỗ trợ đúng lúc","Bị phạt","Không lợi ích","Mất uy tín"], a:0},
+    {q:"Bài học?", o:["Báo cáo ngắn gọn, nêu cả khó khăn","Chỉ khoe điều tốt","Không báo cáo","Giấu vướng mắc"], a:0}
+  ],
+
+  "4.5.1": [
+    {q:"Capstone là?", o:["Dự án lớn nhất, tham vọng hơn Level 3","Bài tập nhỏ","Trò chơi","Bài kiểm tra"], a:0},
+    {q:"Đề tài Capstone do ai chọn?", o:["Chính em, tự bảo vệ","Coach chọn hộ","Ngẫu nhiên","Không ai"], a:0},
+    {q:"Nên chọn thứ em?", o:["Đủ đam mê để theo đuổi","Không quan tâm","Người khác thích","Dễ nhất"], a:0},
+    {q:"'Tự bảo vệ' đề tài nghĩa là?", o:["Giải thích lý do chọn trước hội đồng","Giấu lý do","Không cần lý do","Cãi nhau"], a:0},
+    {q:"Đề tài Capstone so với Level 3?", o:["Tham vọng hơn","Nhỏ hơn","Y hệt","Dễ hơn"], a:0},
+    {q:"Đề xuất được hội đồng coach duyệt nghĩa là?", o:["Được phép làm","Bị loại","Không cần làm","Đã xong"], a:0},
+    {q:"Đam mê với đề tài giúp?", o:["Kiên trì qua nhiều tuần","Nhanh chán","Không đổi","Bỏ cuộc"], a:0},
+    {q:"Chọn đề tài quá dễ thì?", o:["Chưa xứng tầm Capstone","Tốt nhất","Bắt buộc","An toàn"], a:0},
+    {q:"Bảo vệ đề tài giúp em?", o:["Suy nghĩ kỹ về lựa chọn","Cho vui","Tốn thời gian","Không lý do"], a:0},
+    {q:"Bài học?", o:["Chọn và bảo vệ đề tài Capstone tham vọng","Làm bừa","Không chọn","Coach làm hộ"], a:0}
+  ],
+
+  "4.5.2": [
+    {q:"Đặc tả sản phẩm nói rõ?", o:["Làm gì, cho ai, tính năng bắt buộc","Chỉ màu sắc","Chỉ tên","Không gì"], a:0},
+    {q:"'Tính năng bắt buộc' (must-have) là?", o:["Phần không thể thiếu","Phần cho vui","Phần để sau","Không quan trọng"], a:0},
+    {q:"Đặc tả rõ giúp?", o:["Không 'lạc đề' giữa chừng","Rối hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Nên viết đặc tả thế nào?", o:["Rõ ràng, cụ thể","Mơ hồ","Không viết","Toàn thuật ngữ"], a:0},
+    {q:"Đặc tả dài khoảng?", o:["2 trang","100 trang","0 trang","1 dòng"], a:0},
+    {q:"Tính năng 'để sau' là?", o:["Không bắt buộc ngay","Bắt buộc","Không bao giờ làm","Quan trọng nhất"], a:0},
+    {q:"'Cho ai' trong đặc tả là?", o:["Người dùng mục tiêu","Chính em","Không ai","Máy"], a:0},
+    {q:"Không có đặc tả rõ thì?", o:["Dễ làm lan man","Tốt hơn","Nhanh hơn","Không sao"], a:0},
+    {q:"Đặc tả là?", o:["Bản mô tả sản phẩm sẽ làm","Sản phẩm cuối","Đồ trang trí","Bí mật"], a:0},
+    {q:"Bài học?", o:["Viết đặc tả rõ để giữ hướng","Không cần đặc tả","Viết mơ hồ","Bỏ qua"], a:0}
+  ],
+
+  "4.5.3": [
+    {q:"Kiến trúc là?", o:["Cách các phần ghép với nhau","Một toà nhà","Một bức tranh","Một con số"], a:0},
+    {q:"Nên chọn?", o:["Công cụ phù hợp","Công cụ đắt nhất","Ngẫu nhiên","Không chọn"], a:0},
+    {q:"Sơ đồ kiến trúc thể hiện?", o:["Các phần (giao diện, dữ liệu, AI) kết nối ra sao","Màu sắc","Tên","Giờ"], a:0},
+    {q:"Nên ghi gì cho từng công cụ?", o:["Lý do chọn","Giá tiền","Màu","Không gì"], a:0},
+    {q:"Ghi lý do chọn để?", o:["Sau nhìn lại còn nhớ","Cho dài","Tốn giấy","Không lý do"], a:0},
+    {q:"Kiến trúc giúp?", o:["Hiểu sản phẩm gồm những phần nào","Trang trí","Rối hơn","Không lợi ích"], a:0},
+    {q:"Các phần của sản phẩm ví dụ?", o:["Giao diện, dữ liệu, AI","Chỉ màu","Chỉ tên","Không phần nào"], a:0},
+    {q:"Chọn công cụ nên dựa?", o:["Phù hợp với sản phẩm","Cái 'oách' nhất","Ngẫu nhiên","Đắt nhất"], a:0},
+    {q:"Vẽ sơ đồ kiến trúc giúp?", o:["Thấy bức tranh tổng thể","Che giấu","Rối hơn","Không lợi ích"], a:0},
+    {q:"Bài học?", o:["Chọn công cụ và vẽ sơ đồ các phần","Không lên kiến trúc","Chọn bừa","Bỏ sơ đồ"], a:0}
+  ],
+
+  "4.5.4": [
+    {q:"Wireframe Capstone phác?", o:["Toàn bộ màn hình/luồng chính","Chỉ một nút","Không gì","Chỉ màu"], a:0},
+    {q:"Nên vẽ gì?", o:["Cách người dùng đi từ đầu đến cuối","Chỉ trang trí","Chỉ tên","Không gì"], a:0},
+    {q:"Nên làm gì trên giấy?", o:["Đi thử luồng để bắt lỗi sớm","Không thử","Vẽ đẹp là đủ","Bỏ qua"], a:0},
+    {q:"Wireframe giúp?", o:["Hình dung sản phẩm trước khi làm","Bán sản phẩm","Rối hơn","Không lợi ích"], a:0},
+    {q:"Bắt lỗi thiết kế sớm giúp?", o:["Tiết kiệm công sau này","Tốn công hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Luồng chính là?", o:["Đường người dùng đi qua sản phẩm","Màu nền","Tên file","Giờ"], a:0},
+    {q:"Phác toàn bộ để?", o:["Thấy trước cấu trúc sản phẩm","Cho vui","Tốn giấy","Không lý do"], a:0},
+    {q:"Đi thử luồng trên giấy?", o:["Rẻ và nhanh hơn sửa sản phẩm thật","Đắt hơn","Không làm được","Vô ích"], a:0},
+    {q:"Bộ wireframe hoàn chỉnh là?", o:["Phác đủ các màn hình chính","Một màn hình","Không gì","Sản phẩm cuối"], a:0},
+    {q:"Bài học?", o:["Phác toàn bộ màn hình và luồng trước khi làm","Làm luôn không phác","Chỉ vẽ đẹp","Bỏ wireframe"], a:0}
+  ],
+
+  "4.5.5": [
+    {q:"Kế hoạch 10 tuần là?", o:["Lịch xây dựng chi tiết theo tuần","Một trò chơi","Một bài hát","Không gì"], a:0},
+    {q:"Mỗi tuần có?", o:["Mốc kiểm","Chỉ nghỉ","Không mốc","Ngẫu nhiên"], a:0},
+    {q:"Kế hoạch được duyệt là?", o:["'Lệnh khởi công'","Kết thúc","Thất bại","Không cần làm"], a:0},
+    {q:"Nên chừa gì trong kế hoạch?", o:["Thời gian đệm cho sự cố","Không chừa gì","Chỉ nghỉ","Không lý do"], a:0},
+    {q:"Chia việc theo tuần giúp?", o:["Quản lý tiến độ dài hạn","Rối hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Thời gian đệm dùng khi?", o:["Tuần dễ phát sinh sự cố","Không bao giờ","Chỉ để nghỉ","Không cần"], a:0},
+    {q:"Mốc kiểm mỗi tuần để?", o:["Biết có đúng tiến độ không","Trang trí","Cho vui","Không lý do"], a:0},
+    {q:"Kế hoạch 10 tuần cho Capstone vì?", o:["Đây là dự án lớn, dài hơi","Cho oai","Không lý do","Để lâu"], a:0},
+    {q:"'Lệnh khởi công' nghĩa là?", o:["Được bắt đầu xây dựng","Dừng lại","Bỏ dự án","Nghỉ"], a:0},
+    {q:"Bài học?", o:["Lập kế hoạch chi tiết có mốc và thời gian đệm","Không lập kế hoạch","Làm tới đâu hay tới đó","Bỏ mốc"], a:0}
+  ],
+
+  "4.5.6": [
+    {q:"'Dựng móng' nghĩa là?", o:["Tạo dự án, khung chính chạy được","Xây tường thật","Trang trí","Ra mắt"], a:0},
+    {q:"Khung chính nên?", o:["Mở lên được","Hoàn hảo ngay","Không chạy","Đầy đủ tính năng"], a:0},
+    {q:"Móng vững giúp?", o:["Xây cao an toàn (thêm tính năng)","Sập nhanh","Không đổi","Rối"], a:0},
+    {q:"Nên làm gì đầu tiên?", o:["Khung cơ bản chạy được","Tính năng khó nhất","Trang trí","Ra mắt"], a:0},
+    {q:"'Móng chắc thì xây cao mới an toàn' nghĩa là?", o:["Nền tốt mới phát triển được","Không liên quan","Xây bừa","Bỏ móng"], a:0},
+    {q:"Khung Capstone mở lên được là?", o:["Bước đầu vững chắc","Sản phẩm cuối","Thất bại","Không cần"], a:0},
+    {q:"Dựng móng trước khi?", o:["Thêm các tính năng","Ra mắt","Kết thúc","Nghỉ"], a:0},
+    {q:"Nền vững quan trọng vì?", o:["Mọi tính năng dựa vào đó","Cho oai","Không lý do","Trang trí"], a:0},
+    {q:"Nếu móng yếu?", o:["Sản phẩm dễ gặp vấn đề về sau","Tốt hơn","Không sao","Nhanh hơn"], a:0},
+    {q:"Bài học?", o:["Dựng nền vững trước khi xây tiếp","Bỏ qua nền","Trang trí trước","Ra mắt ngay"], a:0}
+  ],
+
+  "4.6.1": [
+    {q:"Tuần xây 1 làm?", o:["Lõi sản phẩm - tính năng trung tâm","Trang trí","Ra mắt","Nghỉ"], a:0},
+    {q:"Nên ưu tiên?", o:["Phần giải quyết đúng vấn đề chính","Phần cho vui","Phần đẹp","Phần dễ"], a:0},
+    {q:"Cho nó?", o:["Hoạt động trước","Đẹp trước","Không chạy","Bỏ qua"], a:0},
+    {q:"Kết thúc tuần nên?", o:["Báo cáo tiến độ ngắn","Không báo","Ra mắt","Nghỉ dài"], a:0},
+    {q:"Lõi sản phẩm là?", o:["Tính năng trung tâm quan trọng nhất","Phần rìa","Trang trí","Phần thừa"], a:0},
+    {q:"Vì sao làm lõi trước?", o:["Nó quyết định giá trị sản phẩm","Cho oai","Không lý do","Để lâu"], a:0},
+    {q:"Mốc 1 đạt nghĩa là?", o:["Tính năng trung tâm hoạt động","Thất bại","Chưa làm gì","Ra mắt"], a:0},
+    {q:"Báo cáo tiến độ cuối tuần giúp?", o:["Mọi người nắm tình hình","Trang trí","Tốn thời gian","Không lợi ích"], a:0},
+    {q:"Tính năng trung tâm nên?", o:["Chạy được trước tiên","Đẹp trước","Bỏ qua","Làm cuối"], a:0},
+    {q:"Bài học?", o:["Làm lõi sản phẩm hoạt động trước","Trang trí trước","Ra mắt ngay","Không ưu tiên"], a:0}
+  ],
+
+  "4.6.2": [
+    {q:"Tuần xây 2 làm?", o:["Hoàn thiện luồng chính đầu-cuối","Xoá lõi","Trang trí","Nghỉ"], a:0},
+    {q:"Cần bảo đảm?", o:["Người dùng đi được từ đầu đến cuối","Bị kẹt giữa chừng","Không dùng được","Chỉ nửa đường"], a:0},
+    {q:"Một luồng chạy trọn so với nhiều tính năng dở?", o:["Quan trọng hơn","Kém hơn","Y hệt","Không quan trọng"], a:0},
+    {q:"'Luồng chính' là?", o:["Đường đi chính của người dùng","Màu nền","Tên","Giờ"], a:0},
+    {q:"Người dùng bị kẹt nghĩa là?", o:["Luồng chưa hoàn thiện","Sản phẩm tốt","Không sao","Thành công"], a:0},
+    {q:"Hoàn thiện luồng đầu-cuối giúp?", o:["Sản phẩm dùng được trọn vẹn","Rối hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Mốc 2 đạt nghĩa là?", o:["Luồng chính chạy trọn","Chưa làm gì","Thất bại","Ra mắt"], a:0},
+    {q:"Nên tránh?", o:["Nhiều tính năng dở dang","Một luồng hoàn chỉnh","Kiểm thử","Báo cáo"], a:0},
+    {q:"Người dùng cần?", o:["Đi hết được từ đầu đến cuối","Bị kẹt","Nhiều nút vô dụng","Không dùng được"], a:0},
+    {q:"Bài học?", o:["Ưu tiên một luồng chạy trọn vẹn","Nhiều thứ dở dang","Bỏ luồng chính","Ra mắt sớm"], a:0}
+  ],
+
+  "4.6.3": [
+    {q:"Tuần xây 3 làm?", o:["Tích hợp AI vào sản phẩm","Xoá AI","Trang trí","Nghỉ"], a:0},
+    {q:"Gắn pipeline AI đã học vào?", o:["Đúng chỗ cần","Mọi chỗ bừa","Không chỗ nào","Chỗ vô nghĩa"], a:0},
+    {q:"Nên kiểm tra gì?", o:["AI chạy được trong sản phẩm thật","Màu sắc","Tên","Giờ"], a:0},
+    {q:"Nên có gì để bắt lỗi?", o:["Điểm kiểm tra khi AI trả kết quả lạ","Không gì","Trang trí","Màu"], a:0},
+    {q:"Tích hợp AI nghĩa là?", o:["Đưa AI vào hoạt động của sản phẩm","Chỉ nói lý thuyết","Xoá AI","Không dùng"], a:0},
+    {q:"Mốc 3 đạt nghĩa là?", o:["AI chạy trong sản phẩm","Chưa có AI","Thất bại","Ra mắt"], a:0},
+    {q:"Nên gắn AI ở?", o:["Chỗ thật sự cần","Mọi chỗ","Không chỗ nào","Chỗ không liên quan"], a:0},
+    {q:"Kết quả AI lạ thì?", o:["Điểm kiểm tra sẽ bắt được","Bỏ qua","Không sao","Tự khỏi"], a:0},
+    {q:"Pipeline AI đã học từ?", o:["Module phối hợp nhiều AI","Không đâu","Level 1","Tự nghĩ"], a:0},
+    {q:"Bài học?", o:["Tích hợp AI có kiểm soát vào sản phẩm","Gắn bừa","Không dùng AI","Bỏ kiểm tra"], a:0}
+  ],
+
+  "4.6.4": [
+    {q:"Tuần xây 4 làm?", o:["Tính năng phụ quan trọng thứ hai","Xoá lõi","Trang trí trước","Nghỉ"], a:0},
+    {q:"Tính năng phụ giúp?", o:["Sản phẩm hoàn chỉnh hơn","Rối hơn","Hỏng lõi","Không gì"], a:0},
+    {q:"Chỉ làm tính năng phụ sau khi?", o:["Lõi đã ổn","Chưa có lõi","Ra mắt","Không bao giờ"], a:0},
+    {q:"Nên tránh?", o:["Sa đà tính năng phụ khi lõi chưa vững","Làm lõi trước","Kiểm thử","Báo cáo"], a:0},
+    {q:"Tính năng phụ là?", o:["Bổ trợ, không phải trung tâm","Quan trọng nhất","Vô dụng","Thay lõi"], a:0},
+    {q:"Mốc 4 đạt nghĩa là?", o:["Tính năng phụ hoàn thành","Chưa làm gì","Thất bại","Ra mắt"], a:0},
+    {q:"Nếu lõi chưa vững mà làm phụ?", o:["Không nên","Rất tốt","Bắt buộc","Nhanh hơn"], a:0},
+    {q:"Tính năng phụ giúp sản phẩm?", o:["Đầy đủ, tiện hơn","Kém đi","Không đổi","Hỏng"], a:0},
+    {q:"Thứ tự đúng?", o:["Lõi trước, phụ sau","Phụ trước, lõi sau","Chỉ phụ","Không thứ tự"], a:0},
+    {q:"Bài học?", o:["Thêm tính năng phụ sau khi lõi ổn","Làm phụ trước","Bỏ lõi","Trang trí trước"], a:0}
+  ],
+
+  "4.6.5": [
+    {q:"Kiểm thử giữa kỳ là?", o:["Người ngoài dùng thử bản giữa kỳ","Tự thử","Ra mắt","Bỏ thử"], a:0},
+    {q:"Nên quan sát?", o:["Họ dùng, ghi lỗi","Màu áo","Giờ giấc","Không gì"], a:0},
+    {q:"Test sớm giữa kỳ giúp?", o:["Tránh dồn lỗi về cuối","Dồn lỗi","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Sau kiểm thử, lập?", o:["Danh sách cần sửa","Danh sách khen","Không gì","Bài hát"], a:0},
+    {q:"Người ngoài test cho?", o:["Góc nhìn khách quan","Thiên vị","Không lợi ích","Sai lệch"], a:0},
+    {q:"'Giữa kỳ' nghĩa là?", o:["Khoảng giữa quá trình xây dựng","Cuối cùng","Đầu tiên","Sau ra mắt"], a:0},
+    {q:"Test giữa kỳ giúp phát hiện?", o:["Lỗi sớm để còn thời gian sửa","Không gì","Màu sắc","Tên"], a:0},
+    {q:"Biên bản test gồm?", o:["Lỗi và danh sách sửa","Chỉ điểm số","Chỉ màu","Không gì"], a:0},
+    {q:"Dồn lỗi về cuối thì?", o:["Khó sửa kịp","Tốt hơn","Không sao","Nhanh hơn"], a:0},
+    {q:"Bài học?", o:["Kiểm thử giữa kỳ để sửa sớm","Chỉ test cuối","Không test","Che lỗi"], a:0}
+  ],
+
+  "4.6.6": [
+    {q:"Tuần xây 5 làm?", o:["Sửa và gia cố theo phản hồi","Thêm thật nhiều tính năng","Trang trí","Nghỉ"], a:0},
+    {q:"Nên xử lý?", o:["Lỗi từ kiểm thử","Không gì","Chỉ màu","Tên"], a:0},
+    {q:"Ưu tiên sửa?", o:["Lỗi ảnh hưởng người dùng nhiều nhất","Lỗi nhỏ nhất","Không sửa","Lỗi màu"], a:0},
+    {q:"'Gia cố' nghĩa là?", o:["Làm sản phẩm ổn định, chắc hơn","Làm yếu đi","Xoá bớt","Trang trí"], a:0},
+    {q:"Vá điểm yếu giúp?", o:["Sản phẩm bền hơn","Yếu hơn","Không đổi","Hỏng"], a:0},
+    {q:"Mốc 5 đạt nghĩa là?", o:["Đã sửa và gia cố xong","Chưa làm gì","Thất bại","Ra mắt"], a:0},
+    {q:"Phản hồi từ kiểm thử giúp?", o:["Biết sửa gì","Không gì","Rối hơn","Che lỗi"], a:0},
+    {q:"Nên sửa lỗi nào trước?", o:["Ảnh hưởng nhiều nhất","Ít gặp nhất","Về màu","Không sửa"], a:0},
+    {q:"Gia cố sau kiểm thử để?", o:["Sản phẩm sẵn sàng hơn","Cho vui","Tốn thời gian","Không lý do"], a:0},
+    {q:"Bài học?", o:["Sửa lỗi và làm sản phẩm ổn định","Thêm tính năng bừa","Bỏ qua lỗi","Không sửa"], a:0}
+  ],
+
+  "4.6.7": [
+    {q:"Tuần xây 6 làm?", o:["Hoàn thiện và viết hướng dẫn sử dụng","Bắt đầu lại","Xoá sản phẩm","Nghỉ"], a:0},
+    {q:"Nên làm gì về giao diện?", o:["Làm đẹp vừa đủ","Trang trí quá đà","Bỏ giao diện","Làm xấu"], a:0},
+    {q:"Hướng dẫn sử dụng để?", o:["Người mới dùng được ngay","Che thông tin","Cho dài","Không lý do"], a:0},
+    {q:"Nên nhờ ai đọc hướng dẫn?", o:["Người chưa từng dùng","Chỉ mình em","Không ai","Người đã rất quen"], a:0},
+    {q:"Người mới đọc hướng dẫn để?", o:["Xem có hiểu không","Cho vui","Chê","Không lý do"], a:0},
+    {q:"'Bản ứng viên phát hành' nghĩa là?", o:["Bản gần như sẵn sàng ra mắt","Bản nháp đầu","Bản hỏng","Không có"], a:0},
+    {q:"Hoàn thiện gồm?", o:["Làm đẹp vừa đủ + hướng dẫn","Chỉ thêm lỗi","Xoá tính năng","Không gì"], a:0},
+    {q:"Hướng dẫn nên?", o:["Ngắn, dễ hiểu","Dài, khó hiểu","Không có","Toàn thuật ngữ"], a:0},
+    {q:"Vì sao cần hướng dẫn?", o:["Giúp người dùng bắt đầu dễ dàng","Cho dài","Trang trí","Không lý do"], a:0},
+    {q:"Bài học?", o:["Hoàn thiện và viết hướng dẫn dễ hiểu","Bỏ hướng dẫn","Trang trí quá đà","Không hoàn thiện"], a:0}
+  ],
+
+  "4.6.8": [
+    {q:"Tổng kiểm thử trước?", o:["Khi phát hành","Sau phát hành","Không bao giờ","Khi bắt đầu"], a:0},
+    {q:"Nên đi qua?", o:["Danh sách kiểm (checklist)","Không gì","Chỉ màu","Tên"], a:0},
+    {q:"Cần bảo đảm?", o:["Mọi luồng chính chạy đúng, không lỗi nghiêm trọng","Chỉ đẹp","Chỉ nhanh","Không kiểm"], a:0},
+    {q:"Khi nào yên tâm phát hành?", o:["Tick đủ checklist","Chưa kiểm gì","Có lỗi nặng","Không bao giờ"], a:0},
+    {q:"Checklist phát hành giúp?", o:["Không bỏ sót kiểm tra quan trọng","Trang trí","Tốn thời gian","Che lỗi"], a:0},
+    {q:"Lỗi nghiêm trọng còn thì?", o:["Chưa nên phát hành","Cứ phát hành","Không sao","Tốt hơn"], a:0},
+    {q:"'Tổng kiểm thử' là?", o:["Kiểm tra toàn bộ lần cuối","Kiểm một phần","Không kiểm","Trang trí"], a:0},
+    {q:"Mọi luồng chính chạy đúng nghĩa là?", o:["Người dùng dùng được trọn vẹn","Bị kẹt","Không dùng được","Chỉ nửa"], a:0},
+    {q:"Tick đủ checklist rồi?", o:["Mới phát hành","Không phát hành","Xoá đi","Bắt đầu lại"], a:0},
+    {q:"Bài học?", o:["Kiểm tra toàn bộ trước khi phát hành","Phát hành ngay","Bỏ kiểm tra","Che lỗi"], a:0}
+  ],
+
+  "4.6.9": [
+    {q:"Phát hành Capstone là?", o:["Đưa sản phẩm đến người dùng thật","Giấu sản phẩm","Xoá","Không làm gì"], a:0},
+    {q:"Nên mời ai?", o:["Đúng nhóm người cần sản phẩm","Bất kỳ ai","Không ai","Người ghét nó"], a:0},
+    {q:"Nên làm gì cho họ?", o:["Hướng dẫn bắt đầu","Bỏ mặc","Giấu cách dùng","Không nói gì"], a:0},
+    {q:"Đây là cột mốc?", o:["Lớn - sản phẩm ra đời thật","Nhỏ nhặt","Vô nghĩa","Kết thúc buồn"], a:0},
+    {q:"Sản phẩm bước ra đời thật khi?", o:["Có người dùng thật","Nằm im","Chỉ mình biết","Không ai dùng"], a:0},
+    {q:"Phát hành nghĩa là?", o:["Đưa ra cho người dùng","Giữ bí mật","Xoá","Trang trí"], a:0},
+    {q:"Hướng dẫn người dùng bắt đầu giúp?", o:["Họ dùng được ngay","Họ bối rối","Không lợi ích","Rời đi"], a:0},
+    {q:"Capstone chính thức có người dùng là?", o:["Thành công quan trọng","Thất bại","Không đáng kể","Chỉ để khoe"], a:0},
+    {q:"Nên mời người?", o:["Thật sự cần sản phẩm","Không liên quan","Ghét sản phẩm","Bất kỳ"], a:0},
+    {q:"Bài học?", o:["Đưa Capstone đến đúng người dùng thật","Giấu đi","Không phát hành","Mời bừa"], a:0}
+  ],
+
+  "4.6.10": [
+    {q:"Tuần theo dõi sau?", o:["Phát hành","Bắt đầu","Không bao giờ","Kiểm thử"], a:0},
+    {q:"Nên làm gì?", o:["Thu số liệu, sửa lỗi nóng","Nghỉ hẳn","Bỏ mặc","Xoá sản phẩm"], a:0},
+    {q:"'Lỗi nóng' là?", o:["Lỗi gấp cần sửa ngay","Lỗi nhỏ để sau","Không lỗi","Màu sắc"], a:0},
+    {q:"Phản hồi tuần đầu?", o:["Rất quý, cần lắng nghe","Vô ích","Nên bỏ qua","Đáng ghét"], a:0},
+    {q:"Theo dõi giúp?", o:["Biết người dùng phản ứng ra sao","Che số liệu","Không lợi ích","Rối"], a:0},
+    {q:"Nên ghi lại?", o:["Điều cần cải thiện","Không gì","Chỉ màu","Tên"], a:0},
+    {q:"Số liệu tuần đầu cho biết?", o:["Sản phẩm hoạt động thế nào thật sự","Màu yêu thích","Giờ","Không gì"], a:0},
+    {q:"Sửa lỗi nóng để?", o:["Người dùng không bỏ đi","Cho vui","Tốn công","Không lý do"], a:0},
+    {q:"Báo cáo tuần đầu sau phát hành giúp?", o:["Nắm tình hình để cải thiện","Trang trí","Không lợi ích","Che lỗi"], a:0},
+    {q:"Bài học?", o:["Theo dõi và xử lý nhanh sau phát hành","Bỏ mặc","Không theo dõi","Che lỗi"], a:0}
+  ],
+
+  "4.7.1": [
+    {q:"'Câu chuyện 2 năm' nhìn lại?", o:["Từ buổi gõ phím đầu đến Capstone","Chỉ hôm nay","Không gì","Chỉ Capstone"], a:0},
+    {q:"Nên kể gì?", o:["Cột mốc và điều em trưởng thành","Chỉ điểm xấu","Không gì","Chuyện người khác"], a:0},
+    {q:"Đây là chất liệu cho?", o:["Bài trình bày tốt nghiệp","Một trò chơi","Mật khẩu","Không gì"], a:0},
+    {q:"Nên chọn kể?", o:["Vài khoảnh khắc đáng nhớ nhất","Tất cả chi tiết","Không gì","Chuyện không liên quan"], a:0},
+    {q:"Nhìn lại hành trình giúp?", o:["Thấy mình đã tiến xa","Buồn bã","Không đổi","Quên hết"], a:0},
+    {q:"Câu chuyện của em nên?", o:["Chân thật, có cảm xúc","Bịa đặt","Khô khan","Chép của bạn"], a:0},
+    {q:"Nên tránh gì khi kể?", o:["Liệt kê tất cả, dài dòng","Chọn lọc","Kể mạch lạc","Có cảm xúc"], a:0},
+    {q:"Dàn ý bài trình bày để?", o:["Kể hành trình có thứ tự","Cho dài","Trang trí","Không lý do"], a:0},
+    {q:"Khoảnh khắc đáng nhớ giúp?", o:["Bài kể sinh động, cuốn hút","Nhàm chán","Rối","Không gì"], a:0},
+    {q:"Bài học?", o:["Nhìn lại hành trình để kể câu chuyện của mình","Quên hết","Không kể","Chép của bạn"], a:0}
+  ],
+
+  "4.7.2": [
+    {q:"Portfolio (hồ sơ năng lực) là?", o:["Tập hợp mọi sản phẩm của em","Một trò chơi","Một mật khẩu","Một con số"], a:0},
+    {q:"Portfolio dạng?", o:["Trang web hoặc tài liệu","Chỉ trong đầu","Không lưu","Bí mật"], a:0},
+    {q:"Mỗi dự án nên có?", o:["Mô tả và hình ảnh","Chỉ tên","Không gì","Chỉ ngày"], a:0},
+    {q:"Portfolio là 'bằng chứng'?", o:["Em làm được gì","Em thích màu gì","Giờ học","Không gì"], a:0},
+    {q:"Portfolio hữu ích?", o:["Về sau (học, thi, xin việc)","Không lúc nào","Chỉ hôm nay","Không lợi ích"], a:0},
+    {q:"Nên gom gì vào portfolio?", o:["Các dự án đã làm","Bài của người khác","Không gì","Ảnh ngẫu nhiên"], a:0},
+    {q:"Portfolio số nghĩa là?", o:["Lưu dạng số (web/tài liệu)","Vẽ tay giấy","Chỉ nói","Không lưu"], a:0},
+    {q:"Mô tả dự án giúp?", o:["Người xem hiểu em làm gì","Che giấu","Rối hơn","Không lợi ích"], a:0},
+    {q:"Portfolio hoàn chỉnh thể hiện?", o:["Hành trình và năng lực của em","Không gì","Màu sắc","Giờ giấc"], a:0},
+    {q:"Bài học?", o:["Xây portfolio ghi lại thành quả","Không lưu gì","Giấu sản phẩm","Chép của bạn"], a:0}
+  ],
+
+  "4.7.3": [
+    {q:"Bài trình bày tốt nghiệp dài?", o:["Khoảng 7 phút","7 giờ","Cả ngày","10 giây"], a:0},
+    {q:"Nội dung gồm?", o:["Hành trình + demo Capstone","Chỉ hát","Chỉ ảnh","Không gì"], a:0},
+    {q:"Slide nên?", o:["Gọn, nhiều hình","Dày chữ","Không hình","Toàn số"], a:0},
+    {q:"Nên luyện gì?", o:["Nói trôi chảy phần hành trình và demo","Không luyện","Đọc vẹt","Bỏ qua"], a:0},
+    {q:"Nên làm gì khi luyện?", o:["Bấm giờ để vừa 7 phút","Không tính giờ","Nói tuỳ ý","Bỏ qua"], a:0},
+    {q:"Luyện nói giúp?", o:["Trình bày mượt, tự tin","Run hơn","Quên bài","Không đổi"], a:0},
+    {q:"Slide gọn giúp?", o:["Người nghe dễ theo dõi","Rối hơn","Khó hiểu","Không lợi ích"], a:0},
+    {q:"Demo Capstone cho thấy?", o:["Sản phẩm chạy thật","Chỉ ý tưởng","Không gì","Ảnh"], a:0},
+    {q:"Bấm giờ khi luyện để?", o:["Chắc chắn đúng thời lượng","Cho vui","Tốn thời gian","Không lý do"], a:0},
+    {q:"Bài học?", o:["Chuẩn bị slide gọn và luyện nói có bấm giờ","Không luyện","Slide dày chữ","Đọc vẹt"], a:0}
+  ],
+
+  "4.7.4": [
+    {q:"Tổng duyệt là?", o:["Chạy thử toàn bộ Demo Day","Ra mắt luôn","Không thử","Bỏ qua"], a:0},
+    {q:"Nên xử lý trước gì?", o:["Sự cố kỹ thuật (mạng, máy chiếu, âm thanh)","Không gì","Chỉ màu","Tên"], a:0},
+    {q:"Nên chuẩn bị phương án B nếu?", o:["Demo trực tiếp gặp trục trặc","Không cần","Mọi thứ hoàn hảo","Không bao giờ"], a:0},
+    {q:"Ví dụ phương án B?", o:["Video quay sẵn","Không có gì","Bỏ demo","Đọc slide"], a:0},
+    {q:"Diễn tập trọn vẹn giúp?", o:["Tự tin và ít sự cố","Run hơn","Không lợi ích","Rối"], a:0},
+    {q:"Tổng duyệt trước Demo Day để?", o:["Phát hiện và khắc phục vấn đề","Cho vui","Tốn thời gian","Không lý do"], a:0},
+    {q:"Sự cố kỹ thuật thường gặp?", o:["Mạng, máy chiếu, âm thanh","Màu áo","Thời tiết","Giờ ăn"], a:0},
+    {q:"Vượt tổng duyệt nghĩa là?", o:["Sẵn sàng cho Demo Day thật","Thất bại","Kết thúc","Bỏ cuộc"], a:0},
+    {q:"Phương án B giúp?", o:["Không bị động khi trục trặc","Rối hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Bài học?", o:["Chạy thử toàn bộ và có phương án dự phòng","Không diễn tập","Không có phương án B","Bỏ qua"], a:0}
+  ],
+
+  "4.7.5": [
+    {q:"Demo Day tốt nghiệp trình bày trước?", o:["Phụ huynh, khách mời, các bé khoá dưới","Chỉ mình em","Không ai","Con mèo"], a:0},
+    {q:"Nên làm gì?", o:["Tự tin kể hành trình, demo, trả lời phản biện","Trốn tránh","Đọc lí nhí","Bỏ chạy"], a:0},
+    {q:"Đây là lúc?", o:["Toả sáng","Xấu hổ","Sợ hãi","Bỏ cuộc"], a:0},
+    {q:"Nên làm gì để bớt hồi hộp?", o:["Hít thở sâu, nhìn khán giả","Cúi gằm","Nói thật nhanh","Bỏ chạy"], a:0},
+    {q:"Nên tự hào về?", o:["Chặng đường đã qua","Không gì","Người khác","Điểm số"], a:0},
+    {q:"Trả lời phản biện cần?", o:["Hiểu rõ sản phẩm, bình tĩnh","Trốn tránh","Cãi nhau","Im lặng"], a:0},
+    {q:"Demo sản phẩm để?", o:["Cho mọi người thấy nó chạy thật","Chỉ nói suông","Che giấu","Không demo"], a:0},
+    {q:"Nhìn khán giả khi nói giúp?", o:["Kết nối, tự tin hơn","Run hơn","Không lợi ích","Rối"], a:0},
+    {q:"Demo Day tốt nghiệp là?", o:["Cột mốc lớn của hành trình","Bình thường","Vô nghĩa","Kết thúc buồn"], a:0},
+    {q:"Bài học?", o:["Tự tin trình bày và tự hào về hành trình","Trốn tránh","Sợ hãi","Bỏ cuộc"], a:0}
+  ],
+
+  "4.7.6": [
+    {q:"Lễ tốt nghiệp là dịp?", o:["Nhận chứng nhận và định hướng tiếp theo","Kết thúc mọi thứ","Nghỉ hè","Không gì"], a:0},
+    {q:"Con đường tiếp theo có thể?", o:["Học sâu, thi, dự án riêng","Không gì","Quên hết","Bỏ cuộc"], a:0},
+    {q:"Kết thúc lộ trình là?", o:["Điểm khởi đầu cho hành trình lớn hơn","Dấu chấm hết","Thất bại","Vô nghĩa"], a:0},
+    {q:"Chứng nhận hoàn thành ghi nhận?", o:["Nỗ lực và thành quả của em","Không gì","Màu sắc","Giờ giấc"], a:0},
+    {q:"Bản định hướng cá nhân giúp?", o:["Biết bước đi tiếp theo","Trang trí","Cho vui","Không lý do"], a:0},
+    {q:"Sau khi tốt nghiệp, em nên?", o:["Tiếp tục học và phát triển","Ngừng hẳn","Quên hết","Sợ hãi"], a:0},
+    {q:"Hành trình đã cho em?", o:["Kiến thức và kỹ năng thật","Không gì","Chỉ mệt mỏi","Vô ích"], a:0},
+    {q:"'Định hướng' nghĩa là?", o:["Chọn hướng đi tương lai","Kết thúc","Quay lại đầu","Không nghĩ gì"], a:0},
+    {q:"Tự hào về hành trình vì?", o:["Em đã học và làm được nhiều điều","Không có gì","Người khác làm hộ","Vô nghĩa"], a:0},
+    {q:"Bài học cuối cùng?", o:["Đây là khởi đầu, hãy tiếp tục hành trình học AI","Đã hết, dừng lại","Không cần học nữa","Quên tất cả"], a:0}
+  ]
+
+});
