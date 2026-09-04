@@ -147,7 +147,7 @@ function go(id){
 }
 
 /* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
-const ASSET_VER = "18";
+const ASSET_VER = "19";
 let _curDataPromise = null;
 function loadCurriculumData(){
   if(_curDataPromise) return _curDataPromise;
@@ -759,4 +759,11 @@ document.addEventListener("DOMContentLoaded", () => {
   renderHome();
   go((location.hash || "#home").slice(1)); // nếu mở thẳng #baihoc, go() sẽ tự nạp dữ liệu
   window.scrollTo(0, 0);
+  // Nạp trước dữ liệu bài học lúc máy rảnh → lần mở đầu tiên mượt hơn (bỏ qua nếu mạng chậm / tiết kiệm dữ liệu)
+  const idle = window.requestIdleCallback || (f => setTimeout(f, 1800));
+  idle(() => {
+    const c = navigator.connection;
+    if(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ""))) return;
+    loadCurriculumData().catch(() => {});
+  });
 });
