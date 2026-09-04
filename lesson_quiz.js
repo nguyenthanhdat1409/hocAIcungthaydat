@@ -1272,3 +1272,637 @@ Object.assign(window.LESSON_QUIZ, {
   ]
 
 });
+
+/* ===== QUIZ — MODULE 3.1 – 3.4 ===== */
+Object.assign(window.LESSON_QUIZ, {
+
+  "3.1.1": [
+    {q:"Một sản phẩm tốt là thứ?", o:["Giải quyết vấn đề cho người khác","Chỉ mình em thích","Không ai dùng","Để trưng bày"], a:0},
+    {q:"Chiếc ô giải quyết vấn đề gì?", o:["Mưa","Đói","Buồn ngủ","Nóng"], a:0},
+    {q:"Sản phẩm bắt đầu từ?", o:["Một nhu cầu có thật","Một giấc mơ vô lý","Không gì","Sự may mắn"], a:0},
+    {q:"Câu hỏi hữu ích khi nhìn đồ vật?", o:["Nó ra đời để giải quyết khó khăn gì?","Nó màu gì?","Nó nặng không?","Ai làm ra?"], a:0},
+    {q:"App nhắc lịch giải quyết?", o:["Vấn đề hay quên","Vấn đề đói bụng","Vấn đề trời mưa","Không gì"], a:0},
+    {q:"Sản phẩm nên phục vụ?", o:["Người dùng (người khác)","Chỉ bản thân","Không ai","Máy móc"], a:0},
+    {q:"Điều gì làm nên sản phẩm?", o:["Giải một vấn đề thật","Trông đẹp là đủ","Nhiều tính năng vô ích","Đắt tiền"], a:0},
+    {q:"Kể sản phẩm em dùng hằng ngày giúp?", o:["Hiểu sản phẩm giải vấn đề gì","Khoe khoang","Tốn thời gian","Không gì"], a:0},
+    {q:"Sản phẩm chỉ mình em thích thì?", o:["Chưa chắc hữu ích cho người khác","Chắc chắn thành công","Là tốt nhất","Bán chạy"], a:0},
+    {q:"Bài học?", o:["Sản phẩm giải quyết vấn đề cho người dùng","Sản phẩm để đẹp","Không cần người dùng","Càng phức tạp càng tốt"], a:0}
+  ],
+
+  "3.1.2": [
+    {q:"Ý tưởng hay bắt đầu từ?", o:["Săn vấn đề quanh em","Ngồi chờ","Chép của người khác","May mắn"], a:0},
+    {q:"'Săn vấn đề' nghĩa là?", o:["Quan sát khó khăn của người quanh mình","Đi săn thú","Tìm kho báu","Chơi trốn tìm"], a:0},
+    {q:"Nên quan sát ở đâu?", o:["Nhà, lớp, khu phố","Chỉ trên tivi","Không đâu cả","Trên mặt trăng"], a:0},
+    {q:"Nên để ý điều gì?", o:["Ai gặp khó gì, chỗ nào khó chịu","Ai giàu nhất","Trời màu gì","Giờ ăn cơm"], a:0},
+    {q:"'Sổ săn vấn đề' để?", o:["Ghi mọi khó khăn quan sát được","Vẽ tranh","Chép bài","Trang trí"], a:0},
+    {q:"Càng ghi nhiều vấn đề thì?", o:["Càng nhiều lựa chọn để chọn","Càng rối vô ích","Càng tệ","Không đổi"], a:0},
+    {q:"Vấn đề tốt là vấn đề?", o:["Có thật, ai đó đang gặp","Tưởng tượng","Không ai gặp","Không giải được"], a:0},
+    {q:"Quan sát giúp em?", o:["Tìm ra vấn đề đáng giải","Bỏ lỡ cơ hội","Không thấy gì","Mất thời gian"], a:0},
+    {q:"Nên ghi bao nhiêu vấn đề?", o:["Càng nhiều càng tốt (vd 10)","Đúng 1","Không ghi","Không quan trọng"], a:0},
+    {q:"Bài học?", o:["Ý tưởng đến từ quan sát khó khăn thật","Ngồi nghĩ vu vơ","Chép mạng","Đợi may mắn"], a:0}
+  ],
+
+  "3.1.3": [
+    {q:"Nhiều ý tưởng thì?", o:["Chưa chắc đã hay, cần lọc","Chắc chắn hay hết","Đều vô dụng","Không cần lọc"], a:0},
+    {q:"Ba tiêu chí lọc ý tưởng?", o:["Có thật? Làm nổi? Em thích?","Đẹp? Đắt? Lạ?","To? Nhỏ? Nhanh?","Không có tiêu chí"], a:0},
+    {q:"'Làm nổi không?' nghĩa là?", o:["Vừa sức em","Nổi trên nước","To hay nhỏ","Đắt hay rẻ"], a:0},
+    {q:"Nên brainstorm thế nào?", o:["Thật rộng trước, rồi mới lọc","Chỉ 1 ý rồi thôi","Không nghĩ gì","Chê hết"], a:0},
+    {q:"Khi brainstorm, không nên?", o:["Vội chê ý tưởng nào","Nghĩ nhiều ý","Ghi lại hết","Cởi mở"], a:0},
+    {q:"'Em có thích không?' quan trọng vì?", o:["Đủ hứng thú để theo đuổi","Cho vui","Không lý do","Để khoe"], a:0},
+    {q:"Từ 10 ý tưởng nên lọc còn?", o:["3 ý có lý do rõ ràng","Giữ hết 10","Bỏ hết","Chỉ 1 ngẫu nhiên"], a:0},
+    {q:"Ý tưởng 'có thật' nghĩa là?", o:["Giải vấn đề thật sự tồn tại","Tưởng tượng","Không ai cần","Vô lý"], a:0},
+    {q:"Lọc ý tưởng giúp?", o:["Tập trung vào ý đáng làm","Bỏ lỡ ý hay","Rối hơn","Không đổi"], a:0},
+    {q:"Bài học?", o:["Nghĩ rộng rồi lọc theo tiêu chí","Chọn bừa","Không lọc","Giữ tất cả"], a:0}
+  ],
+
+  "3.1.4": [
+    {q:"Đến lúc này cần?", o:["Chốt một hướng đi theo đuổi","Đổi ý liên tục","Bỏ cuộc","Chọn hết"], a:0},
+    {q:"Cam kết đề tài nên nêu?", o:["Vấn đề, ai gặp, vì sao chọn","Chỉ tên em","Chỉ màu sắc","Không gì"], a:0},
+    {q:"Đề tài này là?", o:["Kim chỉ nam cho mọi bước sau","Không quan trọng","Có thể bỏ bất cứ lúc nào","Chỉ để nộp"], a:0},
+    {q:"Nên chọn vấn đề?", o:["Em thật sự quan tâm","Người khác chọn hộ","Không liên quan","Không giải được"], a:0},
+    {q:"Chọn vấn đề mình quan tâm giúp?", o:["Có động lực đi đến cùng","Nhanh chán","Không đổi","Gây rối"], a:0},
+    {q:"'Ai gặp' vấn đề là?", o:["Người dùng mục tiêu","Không ai","Chỉ em","Máy tính"], a:0},
+    {q:"Bản cam kết dài khoảng?", o:["1 trang","100 trang","Không viết","1 dòng"], a:0},
+    {q:"Sau khi chốt đề tài, ta?", o:["Bắt đầu tìm hiểu người dùng","Nộp bài luôn","Bỏ dở","Chọn lại"], a:0},
+    {q:"Vì sao cần nêu 'vì sao chọn'?", o:["Để rõ động cơ và giữ hướng","Cho dài","Không lý do","Để khoe"], a:0},
+    {q:"Bài học?", o:["Chốt đề tài rõ ràng để theo đuổi","Không cần chốt","Đổi liên tục","Chọn bừa"], a:0}
+  ],
+
+  "3.2.1": [
+    {q:"Điều em nghĩ người dùng cần?", o:["Thường khác điều họ thật sự cần","Luôn đúng","Không cần biết","Giống hệt"], a:0},
+    {q:"Nhiều sản phẩm thất bại vì?", o:["Người làm chỉ đoán, không hỏi","Quá tốt","Quá rẻ","Quá đẹp"], a:0},
+    {q:"Hỏi người thật giúp?", o:["Tránh làm nhầm","Mất thời gian vô ích","Rối hơn","Không lợi ích"], a:0},
+    {q:"Thử đoán rồi hỏi thật để?", o:["Thấy khác biệt giữa đoán và thực tế","Khoe","Cho vui","Không gì"], a:0},
+    {q:"Nên dựa vào đâu để làm sản phẩm?", o:["Nhu cầu thật của người dùng","Cảm giác của mình","May mắn","Ý người lạ"], a:0},
+    {q:"Chỉ đoán mà không hỏi thì?", o:["Dễ làm sai thứ người ta cần","Luôn đúng","Nhanh và tốt","Không sao"], a:0},
+    {q:"Người dùng là?", o:["Người sẽ dùng sản phẩm","Chính em","Máy tính","Không ai"], a:0},
+    {q:"Vì sao cần lắng nghe người dùng?", o:["Để làm đúng thứ họ cần","Cho lịch sự","Không lý do","Để khoe"], a:0},
+    {q:"Bài học của module này?", o:["Hỏi người thật thay vì chỉ đoán","Đoán là đủ","Không cần hỏi ai","Tự quyết hết"], a:0},
+    {q:"Kết quả khi hỏi thật thường?", o:["Bất ngờ, khác điều mình nghĩ","Y hệt điều mình đoán","Vô nghĩa","Không có"], a:0}
+  ],
+
+  "3.2.2": [
+    {q:"Câu hỏi mở giúp?", o:["Thu được nhiều thông tin","Chỉ có/không","Ít thông tin","Không gì"], a:0},
+    {q:"Nên tránh loại câu hỏi nào?", o:["Câu hỏi mớm (gợi ý câu trả lời)","Câu hỏi mở","Câu về trải nghiệm","Câu rõ ràng"], a:0},
+    {q:"Ví dụ câu hỏi mớm?", o:["Bạn thấy cái này tiện đúng không?","Bạn thường gặp khó gì khi...?","Kể em nghe về...","Vì sao vậy?"], a:0},
+    {q:"Nên hỏi về?", o:["Trải nghiệm thật đã xảy ra","Phỏng đoán tương lai xa","Điều không liên quan","Cảm giác mơ hồ"], a:0},
+    {q:"Câu hỏi đóng chỉ cho câu trả lời?", o:["Có/không, ngắn","Rất chi tiết","Nhiều ý","Bất ngờ"], a:0},
+    {q:"Cách đặt câu hỏi ảnh hưởng?", o:["Chất lượng thông tin thu được","Màu sắc","Giờ giấc","Không gì"], a:0},
+    {q:"Chuyển câu hỏi mớm thành mở là?", o:["Kỹ năng phỏng vấn tốt","Vô ích","Làm rối","Không cần"], a:0},
+    {q:"Sau câu trả lời hay, nên hỏi?", o:["Vì sao vậy?","Thôi đủ rồi","Không hỏi thêm","Đổi chủ đề"], a:0},
+    {q:"Câu hỏi mở thường bắt đầu bằng?", o:["Như thế nào, vì sao, kể...","Đúng không, phải không","Có... không","Được chứ"], a:0},
+    {q:"Bài học?", o:["Hỏi mở, không mớm để hiểu thật","Hỏi mớm cho nhanh","Chỉ hỏi có/không","Không cần hỏi"], a:0}
+  ],
+
+  "3.2.3": [
+    {q:"Phỏng vấn là kỹ năng cần?", o:["Luyện tập","Bẩm sinh","May mắn","Không học được"], a:0},
+    {q:"Khi luyện, nên tập gì?", o:["Lắng nghe và ghi chép nhanh","Nói thật nhiều","Ngắt lời liên tục","Không nghe"], a:0},
+    {q:"Nên ghi chép thế nào?", o:["Ghi ý chính","Chép từng chữ","Không ghi","Vẽ tranh"], a:0},
+    {q:"Đóng vai hỏi-đáp trong lớp giúp?", o:["Luyện trước khi phỏng vấn thật","Cho vui vô ích","Mất thời gian","Không gì"], a:0},
+    {q:"Sau câu trả lời hay, nên?", o:["Hỏi tiếp 'Vì sao?'","Chuyển chủ đề ngay","Kết thúc","Im lặng"], a:0},
+    {q:"Lắng nghe tốt nghĩa là?", o:["Chú ý và không ngắt lời","Nói át người kia","Nghĩ việc khác","Bỏ đi"], a:0},
+    {q:"Ghi ý chính thay vì từng chữ vì?", o:["Kịp theo cuộc trò chuyện","Cho đẹp","Tốn giấy","Không lý do"], a:0},
+    {q:"Phỏng vấn 1 bạn 10 phút để?", o:["Luyện kỹ năng thu thập ý chính","Làm phiền bạn","Cho vui","Không gì"], a:0},
+    {q:"Kỹ năng phỏng vấn giúp?", o:["Hiểu người dùng sâu hơn","Không lợi ích","Rối hơn","Mất bạn"], a:0},
+    {q:"Bài học?", o:["Luyện lắng nghe và hỏi để phỏng vấn tốt","Nói nhiều là giỏi","Không cần luyện","Chép câu trả lời"], a:0}
+  ],
+
+  "3.2.4": [
+    {q:"Phỏng vấn người thật số 1 là?", o:["Người ngoài lớp, về vấn đề đã chọn","Chính em","Con mèo","Máy tính"], a:0},
+    {q:"Nên ghi lại gì?", o:["Họ gặp khó ở đâu, đang xoay xở thế nào","Màu áo họ","Giờ họ ăn","Không gì"], a:0},
+    {q:"Trước khi ghi chép, nên?", o:["Xin phép","Ghi lén","Không cần gì","Bỏ qua"], a:0},
+    {q:"Sau phỏng vấn nên?", o:["Cảm ơn","Bỏ đi ngay","Chê bai","Không nói gì"], a:0},
+    {q:"Câu nói đáng chú ý nên?", o:["Ghi lại","Bỏ qua","Sửa lại","Quên đi"], a:0},
+    {q:"Biên bản phỏng vấn là?", o:["Ghi chép nội dung cuộc phỏng vấn","Một bức tranh","Một mật khẩu","Một trò chơi"], a:0},
+    {q:"Phỏng vấn người ngoài lớp giúp?", o:["Có góc nhìn thật về vấn đề","Không lợi ích","Rối hơn","Mất thời gian"], a:0},
+    {q:"Nên hỏi về?", o:["Trải nghiệm thật của họ","Chuyện không liên quan","Đời tư riêng nhạy cảm","Bí mật"], a:0},
+    {q:"Thái độ khi phỏng vấn?", o:["Lịch sự, tôn trọng","Vội vàng","Ngắt lời","Coi thường"], a:0},
+    {q:"Bài học?", o:["Thu thập thông tin thật từ người dùng","Tự bịa","Chỉ đoán","Không cần"], a:0}
+  ],
+
+  "3.2.5": [
+    {q:"Nên phỏng vấn thêm bao nhiêu người?", o:["2-3 người nữa","Không ai","100 người ngay","Chỉ 1"], a:0},
+    {q:"Khi phỏng vấn nhiều người, để ý?", o:["Điều gì lặp lại","Màu áo","Giọng nói","Chiều cao"], a:0},
+    {q:"Nhiều người cùng nói một khó khăn là?", o:["Tín hiệu mạnh đáng giải quyết","Ngẫu nhiên","Không quan trọng","Sai"], a:0},
+    {q:"Nên ghi chú gì?", o:["Điểm giống nhau giữa các cuộc","Màu tường","Giờ giấc","Không gì"], a:0},
+    {q:"Điểm lặp lại cho biết?", o:["Nhu cầu chung, thật","Điều hiếm gặp","Không đáng quan tâm","Chuyện riêng"], a:0},
+    {q:"Vì sao cần nhiều cuộc phỏng vấn?", o:["Để thấy điều chung, không dựa 1 ý kiến","Cho vui","Tốn thời gian","Không lý do"], a:0},
+    {q:"Nếu chỉ một người nói, có thể?", o:["Chưa chắc là nhu cầu chung","Chắc chắn phổ biến","Bỏ qua vấn đề","Kết luận ngay"], a:0},
+    {q:"Ghi chú điểm chung giúp?", o:["Tìm ra vấn đề đáng giải","Rối hơn","Không lợi ích","Mất dữ liệu"], a:0},
+    {q:"Thêm phỏng vấn giúp?", o:["Hiểu vấn đề chắc chắn hơn","Kém tin hơn","Không đổi","Nhầm lẫn"], a:0},
+    {q:"Bài học?", o:["Tìm điểm lặp lại qua nhiều cuộc phỏng vấn","Một cuộc là đủ","Không cần chú ý","Tự đoán"], a:0}
+  ],
+
+  "3.2.6": [
+    {q:"Insight là?", o:["Một điều bất ngờ, sâu sắc rút ra","Một con số","Một bức tranh","Một mật khẩu"], a:0},
+    {q:"Insight thường là?", o:["Điều em không ngờ tới","Điều ai cũng biết","Vô nghĩa","Sai"], a:0},
+    {q:"Insight tốt thường?", o:["Chỉ ra hướng giải pháp hay","Làm rối","Không giúp gì","Gây hại"], a:0},
+    {q:"Insight đến từ?", o:["Phân tích các cuộc phỏng vấn","Đoán bừa","Chép mạng","May mắn"], a:0},
+    {q:"Insight tốt khiến em?", o:["Thốt lên 'à, thì ra là vậy!'","Buồn ngủ","Chán","Không cảm giác"], a:0},
+    {q:"Insight KHÔNG phải là?", o:["Điều hiển nhiên ai cũng biết","Điều bất ngờ","Điều sâu sắc","Điều đáng giải"], a:0},
+    {q:"'1 trang insight' ghi?", o:["Điều bất ngờ đáng giải quyết","Toàn bộ phỏng vấn","Màu sắc","Giờ giấc"], a:0},
+    {q:"Từ 3 cuộc phỏng vấn tìm ra?", o:["1 insight đáng giá","10 sản phẩm","Không gì","Nhiều tiền"], a:0},
+    {q:"Insight giúp bước tiếp theo?", o:["Nghĩ ra giải pháp đúng hướng","Bỏ cuộc","Lạc đề","Không đổi"], a:0},
+    {q:"Bài học?", o:["Rút insight từ lắng nghe người dùng","Tự nghĩ ra","Chép của bạn","Đoán bừa"], a:0}
+  ],
+
+  "3.3.1": [
+    {q:"Từ insight, có?", o:["Nhiều cách giải quyết","Chỉ 1 cách duy nhất","Không cách nào","Cách của người khác"], a:0},
+    {q:"Nên chọn cách?", o:["Nhỏ nhất mà vẫn hữu ích","Phức tạp nhất","Đắt nhất","Lạ nhất"], a:0},
+    {q:"Cách nhỏ mà hữu ích thì?", o:["Dễ làm và dễ thử","Khó làm","Vô dụng","Không thử được"], a:0},
+    {q:"Nên tập gì khi chọn giải pháp?", o:["Bảo vệ lựa chọn của mình","Chọn bừa","Không giải thích","Đổi liên tục"], a:0},
+    {q:"'Bảo vệ lựa chọn' nghĩa là?", o:["Giải thích vì sao chọn cách đó","Cãi nhau","Giấu lý do","Không nói gì"], a:0},
+    {q:"Nghĩ nhiều giải pháp rồi?", o:["Chọn 1 để làm","Làm hết cùng lúc","Bỏ hết","Không chọn"], a:0},
+    {q:"Giải pháp lớn ngay từ đầu thường?", o:["Khó làm, khó thử","Tốt nhất","Nhanh nhất","An toàn nhất"], a:0},
+    {q:"Vì sao chọn giải pháp nhỏ trước?", o:["Thử nhanh, học nhanh","Cho oai","Tốn thời gian","Không lý do"], a:0},
+    {q:"Có nên nghĩ nhiều cách trước khi chọn?", o:["Có, để có lựa chọn tốt","Không, chọn ngay cách đầu","Không nghĩ gì","Chép của bạn"], a:0},
+    {q:"Bài học?", o:["Chọn giải pháp nhỏ, hữu ích và bảo vệ được","Chọn cái to nhất","Không chọn","Làm hết"], a:0}
+  ],
+
+  "3.3.2": [
+    {q:"MVP là?", o:["Phiên bản nhỏ nhất mà chạy được","Bản hoàn hảo nhất","Bản đắt nhất","Bản không chạy"], a:0},
+    {q:"MVP nên?", o:["Bỏ hết tính năng 'cho vui'","Có mọi tính năng","Càng nhiều càng tốt","Rất phức tạp"], a:0},
+    {q:"MVP giữ lại phần?", o:["Thật sự cần (cốt lõi)","Trang trí","Không cần thiết","Ngẫu nhiên"], a:0},
+    {q:"Mục đích MVP?", o:["Thử với người dùng sớm","Khoe đẹp","Bán đắt","Không mục đích"], a:0},
+    {q:"Từ 10 tính năng, MVP nên?", o:["Cắt còn 3 cốt lõi","Giữ hết 10","Bỏ hết","Thêm 20"], a:0},
+    {q:"MVP viết tắt của?", o:["Sản phẩm khả dụng tối thiểu","Máy Vẽ Phẳng","Một Vài Phần","Không gì"], a:0},
+    {q:"Vì sao làm MVP trước?", o:["Thử nhanh, học từ người dùng","Cho oai","Tốn công vô ích","Không lý do"], a:0},
+    {q:"Tính năng 'cho vui' nên?", o:["Để sau","Làm trước tiên","Là quan trọng nhất","Không bao giờ bỏ"], a:0},
+    {q:"MVP 'nhỏ mà chạy được' nghĩa là?", o:["Ít tính năng nhưng dùng được","Nhiều tính năng nhưng lỗi","Đẹp mà không chạy","Không có gì"], a:0},
+    {q:"Bài học?", o:["Bắt đầu nhỏ với phần cốt lõi","Làm thật to ngay","Thêm mọi tính năng","Không làm gì"], a:0}
+  ],
+
+  "3.3.3": [
+    {q:"Wireframe là?", o:["Bản phác giấy các màn hình","Sản phẩm hoàn chỉnh","Một bức ảnh chụp","Một mật khẩu"], a:0},
+    {q:"Wireframe vẽ gì?", o:["Màn hình, nút bấm, luồng sử dụng","Chỉ màu sắc đẹp","Chỉ tên em","Không gì"], a:0},
+    {q:"Nên vẽ wireframe thế nào?", o:["Vẽ tay nhanh","Vẽ thật chi tiết như thật","Không vẽ","Vẽ bằng máy phức tạp"], a:0},
+    {q:"Vẽ tay có lợi gì?", o:["Dễ sửa hơn làm rồi mới đổi","Đẹp hơn","Chậm hơn","Không lợi ích"], a:0},
+    {q:"'Luồng sử dụng' là?", o:["Bấm vào thì đi tới đâu","Màu nền","Cỡ chữ","Tên file"], a:0},
+    {q:"Wireframe giúp?", o:["Hình dung sản phẩm trước khi làm","Bán sản phẩm","Không giúp gì","Làm rối"], a:0},
+    {q:"Nên có bao nhiêu màn hình trong wireframe?", o:["Vài màn hình chính (3-5)","100 màn hình","0 màn hình","Chỉ 1 nút"], a:0},
+    {q:"Wireframe là bước?", o:["Trước khi làm thật","Sau khi ra mắt","Không cần","Cuối cùng"], a:0},
+    {q:"Sửa wireframe so với sửa sản phẩm thật?", o:["Rẻ và nhanh hơn","Đắt hơn","Y hệt","Không sửa được"], a:0},
+    {q:"Bài học?", o:["Phác trên giấy trước, làm thật sau","Làm thật ngay","Không cần phác","Vẽ càng đẹp càng tốt"], a:0}
+  ],
+
+  "3.3.4": [
+    {q:"Nên làm gì trước khi tốn công làm thật?", o:["Cho người dùng duyệt bản vẽ","Làm luôn","Giấu bản vẽ","Bỏ qua"], a:0},
+    {q:"Đưa wireframe cho mấy người xem?", o:["2 người","0 người","Cả trường","Chỉ mình em"], a:0},
+    {q:"Nên hỏi họ điều gì?", o:["Có hiểu và thấy hữu ích không","Họ mấy tuổi","Họ thích màu gì","Giờ ăn cơm"], a:0},
+    {q:"Sau khi nghe góp ý?", o:["Sửa theo góp ý","Bỏ qua","Cãi lại","Giữ nguyên"], a:0},
+    {q:"Sửa trên giấy so với sản phẩm thật?", o:["Rẻ và nhanh hơn","Đắt hơn","Không khác","Khó hơn"], a:0},
+    {q:"Duyệt bản vẽ sớm giúp?", o:["Phát hiện vấn đề trước khi làm","Mất thời gian","Không lợi ích","Làm chậm dự án"], a:0},
+    {q:"'Wireframe bản 2' là?", o:["Bản đã sửa theo góp ý","Bản đầu tiên","Sản phẩm cuối","Không có gì"], a:0},
+    {q:"Nếu người xem không hiểu wireframe?", o:["Cần chỉnh cho rõ hơn","Họ dốt","Bỏ mặc","Không sao"], a:0},
+    {q:"Danh sách thay đổi giúp?", o:["Biết đã cải thiện gì","Trang trí","Tốn giấy","Không gì"], a:0},
+    {q:"Bài học?", o:["Hỏi ý người dùng sớm và sửa","Tự quyết hết","Không hỏi ai","Làm xong mới hỏi"], a:0}
+  ],
+
+  "3.4.1": [
+    {q:"Python là?", o:["Ngôn ngữ lập trình viết bằng chữ","Một con rắn thật","Một trò chơi","Một loại chuột"], a:0},
+    {q:"Lệnh print(...) để?", o:["In ra màn hình","Tắt máy","Xoá file","Đổi màu"], a:0},
+    {q:"Biến trong Python là?", o:["Hộp lưu giá trị","Một hình vẽ","Một âm thanh","Một màu"], a:0},
+    {q:"Python so với Scratch?", o:["Thay khối kéo-thả bằng chữ","Hoàn toàn khác ý tưởng","Không liên quan","Khó hơn triệu lần"], a:0},
+    {q:"ten = 'An' nghĩa là?", o:["Gán 'An' cho biến ten","In chữ An","Xoá An","Tạo file An"], a:0},
+    {q:"Python có ưu điểm?", o:["Mạnh mà dễ đọc","Rất khó đọc","Không làm được gì","Chỉ vẽ được"], a:0},
+    {q:"Ý tưởng lập trình trong Python và Scratch?", o:["Giống nhau về cơ bản","Hoàn toàn khác","Không liên quan","Ngược nhau"], a:0},
+    {q:"Chương trình chào hỏi có tên và tuổi dùng?", o:["Biến và print","Chỉ vẽ","Chỉ âm thanh","Không gì"], a:0},
+    {q:"Viết code trong Python bằng?", o:["Gõ chữ (dòng lệnh)","Kéo thả khối","Vẽ tay","Nói"], a:0},
+    {q:"Bài học?", o:["Làm quen in, biến, phép tính trong Python","Học thuộc lòng","Bỏ Scratch","Không cần hiểu"], a:0}
+  ],
+
+  "3.4.2": [
+    {q:"if/else trong Python giống?", o:["Khối 'Nếu... thì...' của Scratch","Vòng lặp","Biến","Print"], a:0},
+    {q:"if kiểm tra?", o:["Một điều kiện Đúng/Sai","Màu sắc","Âm thanh","Kích thước"], a:0},
+    {q:"Ví dụ if?", o:["Nếu điểm ≥ 8 thì in 'Giỏi'","In mọi lúc","Xoá file","Tắt máy"], a:0},
+    {q:"Python dùng gì để biết lệnh thuộc nhánh nào?", o:["Thụt lề","Dấu chấm","Màu chữ","Số dòng"], a:0},
+    {q:"else nghĩa là?", o:["Ngược lại (nếu không)","Bắt đầu","Kết thúc","Lặp"], a:0},
+    {q:"Viết sai thụt lề trong Python sẽ?", o:["Gây lỗi","Không sao","Chạy nhanh hơn","Đẹp hơn"], a:0},
+    {q:"Chương trình phân loại điểm ra lời khen dùng?", o:["if/else","Chỉ print","Chỉ biến","Vòng lặp vô hạn"], a:0},
+    {q:"Điều kiện sai thì chạy?", o:["Nhánh else","Nhánh if","Cả hai","Không nhánh nào"], a:0},
+    {q:"if/else giúp chương trình?", o:["Biết chọn lựa theo tình huống","Đơn điệu","Chậm hơn","Hỏng"], a:0},
+    {q:"Bài học?", o:["Chuyển if/else từ Scratch sang Python","Bỏ điều kiện","Không cần thụt lề","Viết tuỳ ý"], a:0}
+  ],
+
+  "3.4.3": [
+    {q:"Vòng lặp trong Python gồm?", o:["for và while","chỉ print","chỉ if","chỉ biến"], a:0},
+    {q:"for thường dùng để?", o:["Lặp qua từng phần tử danh sách","Tắt máy","Xoá file","Đổi màu"], a:0},
+    {q:"while lặp khi nào?", o:["Chừng nào điều kiện còn đúng","Đúng 1 lần","Không bao giờ","Mãi mãi không dừng được"], a:0},
+    {q:"In bảng cửu chương là bài luyện?", o:["Vòng lặp","Biến đơn","Print một dòng","Điều kiện"], a:0},
+    {q:"Vòng lặp giúp?", o:["Lặp mà không chép code","Chép nhiều hơn","Rối hơn","Hỏng máy"], a:0},
+    {q:"for lặp qua danh sách nghĩa là?", o:["Duyệt từng phần tử","Xoá danh sách","In một lần","Tạo file"], a:0},
+    {q:"while cần chú ý gì?", o:["Điều kiện phải có lúc sai để dừng","Không cần điều kiện","Luôn đúng","Không quan trọng"], a:0},
+    {q:"Vòng lặp trong Python và Scratch?", o:["Cùng ý tưởng lặp lại","Khác hoàn toàn","Không liên quan","Ngược nhau"], a:0},
+    {q:"Lặp 5 lần in 'Xin chào' sẽ?", o:["In 'Xin chào' 5 lần","In 1 lần","Không in","Báo lỗi"], a:0},
+    {q:"Bài học?", o:["Dùng for/while để lặp","Không dùng vòng lặp","Chép tay 100 lần","Bỏ lặp"], a:0}
+  ],
+
+  "3.4.4": [
+    {q:"Danh sách (list) dùng để?", o:["Lưu nhiều thứ","Lưu 1 thứ","Tắt máy","Vẽ tranh"], a:0},
+    {q:"Chuỗi (string) là?", o:["Dãy ký tự","Dãy số cộng","Một hình","Một âm thanh"], a:0},
+    {q:"Với danh sách, em có thể?", o:["Thêm, đếm, tìm kiếm","Chỉ xem","Không làm gì","Chỉ xoá"], a:0},
+    {q:"Ví dụ dùng danh sách?", o:["Sổ việc cần làm","Một con số","Một màu","Một âm"], a:0},
+    {q:"Nên đặt tên biến danh sách?", o:["Theo số nhiều, vd viec_can_lam","Ngẫu nhiên","Toàn số","Bỏ trống"], a:0},
+    {q:"Đếm phần tử trong danh sách để?", o:["Biết có bao nhiêu mục","Đổi màu","Tắt máy","Vẽ"], a:0},
+    {q:"Tìm kiếm trong danh sách giúp?", o:["Biết một mục có trong đó không","Xoá danh sách","In tất cả","Không gì"], a:0},
+    {q:"Chuỗi 'Xin chao' gồm?", o:["Các ký tự ghép lại","Các số","Một hình","Một màu"], a:0},
+    {q:"Danh sách giúp quản lý?", o:["Nhiều dữ liệu gọn gàng","Một dữ liệu","Không gì","Chỉ số 0"], a:0},
+    {q:"Bài học?", o:["Dùng danh sách và chuỗi để lưu, tìm","Không cần danh sách","Chỉ dùng biến đơn","Bỏ dữ liệu"], a:0}
+  ],
+
+  "3.4.5": [
+    {q:"Hàm (function) giúp?", o:["Gói code để dùng nhiều lần","Xoá code","Tắt máy","Đổi màu"], a:0},
+    {q:"Viết hàm một lần thì?", o:["Gọi được nhiều lần","Chỉ dùng 1 lần","Không dùng được","Phải viết lại mỗi lần"], a:0},
+    {q:"Tham số của hàm để?", o:["Hàm làm việc với dữ liệu khác nhau","Trang trí","Làm chậm","Không để gì"], a:0},
+    {q:"Khi nào nên gói thành hàm?", o:["Khi code lặp lại nhiều lần","Không bao giờ","Chỉ 1 dòng","Khi rảnh"], a:0},
+    {q:"Hàm giúp code?", o:["Gọn và dễ đọc","Dài hơn","Rối hơn","Hỏng"], a:0},
+    {q:"Gói 3 đoạn code lặp lại thành?", o:["3 hàm","1 biến","1 danh sách","Không gì"], a:0},
+    {q:"Truyền tham số nghĩa là?", o:["Đưa dữ liệu vào cho hàm dùng","Xoá hàm","Đổi tên hàm","In hàm"], a:0},
+    {q:"Hàm được 'gọi' nghĩa là?", o:["Chạy hàm khi cần","Xoá hàm","Vẽ hàm","Tắt hàm"], a:0},
+    {q:"Lợi ích lớn của hàm?", o:["Tránh lặp lại code","Tốn công hơn","Không lợi ích","Làm rối"], a:0},
+    {q:"Bài học?", o:["Dùng hàm để tái sử dụng code","Chép code nhiều lần","Không dùng hàm","Bỏ code lặp"], a:0}
+  ],
+
+  "3.4.6": [
+    {q:"AI có thể?", o:["Viết code","Không viết được gì","Chỉ vẽ","Chỉ hát"], a:0},
+    {q:"Với code AI viết, em cần?", o:["Đọc hiểu để kiểm","Chép ngay không đọc","Tin tuyệt đối","Bỏ qua"], a:0},
+    {q:"Đọc code AI để?", o:["Xem nó làm gì, tìm chỗ sai","Cho vui","Tốn thời gian","Không lý do"], a:0},
+    {q:"AI viết code có luôn đúng không?", o:["Không, có thể sai","Luôn đúng","Không bao giờ chạy","Hoàn hảo"], a:0},
+    {q:"Có nên chạy code lạ mà không hiểu?", o:["Không","Có","Luôn luôn","Nếu AI bảo"], a:0},
+    {q:"Đọc từng dòng giúp?", o:["Hiểu code làm gì","Rối hơn","Không giúp","Mất thời gian"], a:0},
+    {q:"Bắt lỗi trong code AI cho thấy?", o:["Cần kiểm tra code AI","AI hoàn hảo","Không cần đọc","Tin AI 100%"], a:0},
+    {q:"Hiểu code rồi mới?", o:["Dùng","Xoá","Bỏ","In ra giấy"], a:0},
+    {q:"AI là gì với việc lập trình?", o:["Trợ lý viết code","Người thay em hoàn toàn","Kẻ phá","Không liên quan"], a:0},
+    {q:"Bài học?", o:["Đọc hiểu và kiểm code AI viết","Chép mù quáng","Tin tuyệt đối","Không đọc"], a:0}
+  ],
+
+  "3.4.7": [
+    {q:"Khi code AI sai, em có thể?", o:["Nhờ AI sửa hoặc tự sửa tay","Bỏ cuộc","Xoá hết","Trách máy"], a:0},
+    {q:"Nhờ AI sửa cần?", o:["Mô tả lỗi rõ ràng","Không nói gì","Quát AI","Tắt máy"], a:0},
+    {q:"Tự sửa tay dùng?", o:["Kiến thức của em","May mắn","Đoán bừa","Chép mạng"], a:0},
+    {q:"Nên so hai cách sửa để?", o:["Hiểu vì sao code chạy đúng","Cho vui","Tốn thời gian","Không lý do"], a:0},
+    {q:"Mô tả lỗi rõ giúp AI?", o:["Đề xuất bản vá đúng hơn","Bối rối","Bịa","Im lặng"], a:0},
+    {q:"Sau khi AI đề xuất sửa, em nên?", o:["Kiểm tra bản sửa","Dùng ngay không kiểm","Bỏ qua","Xoá"], a:0},
+    {q:"Hiểu vì sao code chạy đúng giúp?", o:["Em giỏi hơn, không chỉ 'cho nó chạy'","Không lợi ích","Rối hơn","Mất thời gian"], a:0},
+    {q:"Làm code AI chạy đúng theo 2 con đường nghĩa là?", o:["Cả nhờ AI và tự sửa","Chỉ nhờ AI","Chỉ đoán","Không sửa"], a:0},
+    {q:"Người quyết định code cuối là?", o:["Em","AI","Máy in","Con chuột"], a:0},
+    {q:"Bài học?", o:["Biết sửa và cải tiến code (có AI hỗ trợ)","Chỉ chờ AI","Không sửa","Bỏ code"], a:0}
+  ],
+
+  "3.4.8": [
+    {q:"Mini game console dùng?", o:["Tổng hợp biến, if/else, vòng lặp, hàm","Chỉ print","Chỉ 1 biến","Không gì"], a:0},
+    {q:"Ví dụ mini game?", o:["Đoán số, oẳn tù tì","Vẽ tranh","Nghe nhạc","Nấu ăn"], a:0},
+    {q:"'Console' nghĩa là?", o:["Chương trình chạy bằng chữ (dòng lệnh)","Máy chơi game xịn","Màn hình lớn","Loa"], a:0},
+    {q:"Nên làm phần nào trước?", o:["Phần chơi được","Điểm số và lời nhắn đẹp","Không phần nào","Phần khó vô ích"], a:0},
+    {q:"Game đoán số dùng?", o:["So sánh và vòng lặp","Chỉ vẽ","Chỉ âm thanh","Không gì"], a:0},
+    {q:"Thêm điểm số sau khi?", o:["Game chơi được","Trước khi làm gì","Không bao giờ","Thay cho phần chơi"], a:0},
+    {q:"Mini game giúp em?", o:["Vận dụng tổng hợp kiến thức Python","Quên bài","Chỉ chơi","Không học gì"], a:0},
+    {q:"Oẳn tù tì với máy cần?", o:["if/else để so kết quả","Chỉ print","Chỉ biến","Vòng lặp vô hạn"], a:0},
+    {q:"Hoàn thành mini game giúp em?", o:["Tự tin với Python","Sợ lập trình","Quên hết","Không đổi"], a:0},
+    {q:"Bài học?", o:["Ghép mọi kiến thức vào 1 sản phẩm nhỏ","Học rời rạc","Không thực hành","Chỉ lý thuyết"], a:0}
+  ]
+
+});
+
+/* ===== QUIZ — MODULE 3.5 – 3.8 ===== */
+Object.assign(window.LESSON_QUIZ, {
+
+  "3.5.1": [
+    {q:"Có mấy cách chính để xây MVP?", o:["Vibe coding, no-code, code tay","Chỉ code tay","Chỉ vẽ","Không cách nào"], a:0},
+    {q:"No-code nghĩa là?", o:["Ghép sẵn, nhanh, ít linh hoạt","Viết rất nhiều code","Không làm được gì","Chỉ vẽ"], a:0},
+    {q:"Code tay có đặc điểm?", o:["Linh hoạt, cần kỹ năng","Không linh hoạt","Không cần học","Luôn dễ"], a:0},
+    {q:"Vibe coding là?", o:["Mô tả ý muốn, AI phụ dựng","Không dùng máy","Chỉ vẽ tay","Chép mạng"], a:0},
+    {q:"Nên chọn công cụ thế nào?", o:["Hợp sản phẩm và sức của em","Chọn cái 'oách nhất'","Chọn bừa","Cái đắt nhất"], a:0},
+    {q:"Công cụ phù hợp giúp?", o:["Làm MVP hiệu quả","Rối hơn","Chậm hơn","Thất bại"], a:0},
+    {q:"No-code phù hợp khi?", o:["Muốn làm nhanh, đơn giản","Cần cực kỳ linh hoạt","Không làm gì","Chỉ để khoe"], a:0},
+    {q:"Nên có gì trước khi làm?", o:["Kế hoạch công cụ cho MVP","Không cần kế hoạch","Chép của bạn","Đợi may mắn"], a:0},
+    {q:"Chọn công cụ 'oách nhất' mà không hợp thì?", o:["Có thể khó dùng, phản tác dụng","Luôn tốt nhất","Nhanh nhất","An toàn"], a:0},
+    {q:"Bài học?", o:["Chọn công cụ phù hợp với sản phẩm và mình","Càng phức tạp càng tốt","Không cần chọn","Chọn ngẫu nhiên"], a:0}
+  ],
+
+  "3.5.2": [
+    {q:"Bắt đầu xây MVP bằng?", o:["Dựng khung sản phẩm","Làm tính năng khó nhất","Trang trí","Ra mắt luôn"], a:0},
+    {q:"Dựng khung theo?", o:["Wireframe đã vẽ","Cảm hứng bất chợt","Của người khác","Không theo gì"], a:0},
+    {q:"Nên làm gì trước?", o:["Màn hình chính mở lên được","Mọi tính năng","Phần đẹp nhất","Không gì"], a:0},
+    {q:"Có khung chạy được sớm giúp?", o:["Thấy tiến độ, giữ động lực","Nản hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Khung sản phẩm cần?", o:["Mở lên được","Hoàn hảo ngay","Đầy đủ tính năng","Đẹp nhất"], a:0},
+    {q:"Tạo dự án là bước?", o:["Đầu tiên khi dựng khung","Cuối cùng","Không cần","Sau ra mắt"], a:0},
+    {q:"Chưa cần gì ở bước dựng khung?", o:["Đầy đủ tính năng","Màn hình chính","Dự án","Khung cơ bản"], a:0},
+    {q:"Khung là?", o:["Nền để thêm tính năng sau","Sản phẩm cuối","Đồ trang trí","Không quan trọng"], a:0},
+    {q:"Vì sao có khung sớm là tốt?", o:["Có nền để phát triển tiếp","Cho oai","Tốn công","Không lý do"], a:0},
+    {q:"Bài học?", o:["Dựng khung chạy được trước tiên","Trang trí trước","Làm tính năng khó trước","Ra mắt ngay"], a:0}
+  ],
+
+  "3.5.3": [
+    {q:"Tính năng cốt lõi số 1 là?", o:["Phần quan trọng nhất","Phần trang trí","Phần cho vui","Phần dễ nhất"], a:0},
+    {q:"Nó giải quyết?", o:["Đúng vấn đề chính","Vấn đề phụ","Không vấn đề nào","Vấn đề của người khác"], a:0},
+    {q:"Nên làm cho nó?", o:["Chạy được đã, đẹp để sau","Đẹp trước","Không chạy cũng được","Bỏ qua"], a:0},
+    {q:"Nếu tính năng lõi không chạy?", o:["Các thứ khác không cứu được sản phẩm","Vẫn ổn","Không sao","Tốt hơn"], a:0},
+    {q:"Vì sao làm lõi trước?", o:["Nó quyết định giá trị sản phẩm","Cho oai","Vô ích","Không lý do"], a:0},
+    {q:"'Cốt lõi' nghĩa là?", o:["Phần trung tâm, quan trọng nhất","Phần ngoài rìa","Phần trang trí","Phần thừa"], a:0},
+    {q:"Tính năng 1 'demo được' nghĩa là?", o:["Cho người khác xem chạy thật","Chỉ ý tưởng","Không hoạt động","Trên giấy"], a:0},
+    {q:"Đẹp nên làm khi nào?", o:["Sau khi lõi chạy","Trước lõi","Không bao giờ","Thay lõi"], a:0},
+    {q:"Ưu tiên tính năng cốt lõi giúp?", o:["Sản phẩm giải đúng vấn đề","Rối hơn","Chậm hơn","Thất bại"], a:0},
+    {q:"Bài học?", o:["Làm phần quan trọng nhất chạy trước","Trang trí trước","Làm phần phụ trước","Không ưu tiên"], a:0}
+  ],
+
+  "3.5.4": [
+    {q:"Bước này làm?", o:["Tính năng cốt lõi số 2 và kết nối","Ra mắt","Xoá tính năng 1","Trang trí"], a:0},
+    {q:"Cần bảo đảm gì?", o:["Hai tính năng phối hợp mượt","Chúng tách rời","Chỉ 1 cái chạy","Không kết nối"], a:0},
+    {q:"Luồng sử dụng nên?", o:["Liền mạch từ đầu đến cuối","Đứt đoạn","Rối","Không có"], a:0},
+    {q:"Nên thử gì?", o:["Đi hết một lượt như người dùng","Không thử","Chỉ nhìn","Bỏ qua"], a:0},
+    {q:"Thử đi hết giúp?", o:["Phát hiện chỗ gãy","Che lỗi","Tốn thời gian","Không lợi ích"], a:0},
+    {q:"Kết nối hai phần nghĩa là?", o:["Chúng hoạt động cùng nhau","Tách biệt hẳn","Xoá bớt","Không liên quan"], a:0},
+    {q:"Nếu luồng bị gãy?", o:["Người dùng sẽ bị kẹt","Không sao","Tốt hơn","Nhanh hơn"], a:0},
+    {q:"Tính năng 2 nên?", o:["Bổ trợ cho tính năng 1","Thay thế tính năng 1","Vô dụng","Không liên quan"], a:0},
+    {q:"Thử như người dùng thật giúp?", o:["Thấy trải nghiệm thực tế","Cho vui","Không lợi ích","Làm chậm"], a:0},
+    {q:"Bài học?", o:["Ghép các phần thành luồng mượt","Để rời rạc","Bỏ kết nối","Không thử"], a:0}
+  ],
+
+  "3.5.5": [
+    {q:"Bước này thay?", o:["Dữ liệu giả bằng nội dung thật","Nội dung thật bằng giả","Xoá hết dữ liệu","Không đổi"], a:0},
+    {q:"Nội dung thật giúp?", o:["Thấy sản phẩm gần thực tế","Rối hơn","Không lợi ích","Chậm hơn"], a:0},
+    {q:"Dữ liệu giả có thể?", o:["Che mất vấn đề thật","Tốt hơn","Không ảnh hưởng","Chính xác nhất"], a:0},
+    {q:"Nên nhập thêm trường hợp nào?", o:["Trường hợp 'khó'","Chỉ dễ","Không nhập","Ngẫu nhiên vô nghĩa"], a:0},
+    {q:"Trường hợp khó giúp?", o:["Xem sản phẩm xử lý ổn không","Che lỗi","Cho vui","Không gì"], a:0},
+    {q:"'MVP có nội dung thật' nghĩa là?", o:["Dùng dữ liệu thật thay giả","Không có nội dung","Toàn dữ liệu giả","Trống rỗng"], a:0},
+    {q:"Vì sao dùng nội dung thật?", o:["Gần với người dùng thật hơn","Cho khó","Tốn công vô ích","Không lý do"], a:0},
+    {q:"Dữ liệu thật lộ ra?", o:["Vấn đề mà dữ liệu giả giấu","Không gì","Điểm mạnh giả","Màu sắc"], a:0},
+    {q:"Nên thử sản phẩm với?", o:["Nội dung thật, cả trường hợp khó","Chỉ dữ liệu hoàn hảo","Không dữ liệu","Dữ liệu giả mãi"], a:0},
+    {q:"Bài học?", o:["Đưa nội dung thật vào để kiểm nghiệm","Giữ dữ liệu giả","Không cần dữ liệu","Tránh trường hợp khó"], a:0}
+  ],
+
+  "3.5.6": [
+    {q:"Dùng AI để debug hiệu quả cần?", o:["Mô tả lỗi rõ ràng","Không nói gì","Quát AI","Tắt máy"], a:0},
+    {q:"Mô tả lỗi rõ gồm?", o:["Làm gì → mong đợi gì → thực tế ra sao","Chỉ tên em","Chỉ màu","Không gì"], a:0},
+    {q:"Nên đưa gì cho AI khi có lỗi?", o:["Thông báo lỗi","Bức ảnh mèo","Bài hát","Không gì"], a:0},
+    {q:"Sau khi AI đề xuất sửa, nên?", o:["Kiểm tra bản sửa","Dùng ngay không kiểm","Bỏ qua","Xoá code"], a:0},
+    {q:"Nhật ký lỗi ghi?", o:["Lỗi gì, AI gợi ý gì, em quyết gì","Màu sắc","Giờ giấc","Không gì"], a:0},
+    {q:"Debug nghĩa là?", o:["Tìm và sửa lỗi","Tạo lỗi","Xoá sản phẩm","Trang trí"], a:0},
+    {q:"Mô tả lỗi mơ hồ khiến AI?", o:["Khó giúp đúng","Giúp tốt hơn","Không ảnh hưởng","Hoàn hảo"], a:0},
+    {q:"Vì sao kiểm tra bản sửa của AI?", o:["Vì AI có thể sửa chưa đúng","AI luôn đúng","Cho vui","Không lý do"], a:0},
+    {q:"Ghi nhật ký lỗi giúp?", o:["Học từ lỗi, không lặp lại","Tốn giấy","Không lợi ích","Che lỗi"], a:0},
+    {q:"Bài học?", o:["Mô tả lỗi tốt và kiểm bản sửa","Giao hết cho AI","Không ghi gì","Che lỗi"], a:0}
+  ],
+
+  "3.5.7": [
+    {q:"'Làm đẹp vừa đủ' nghĩa là?", o:["Dễ dùng quan trọng hơn hào nhoáng","Càng nhiều hiệu ứng càng tốt","Không cần đẹp","Chỉ cần đẹp"], a:0},
+    {q:"Nên chọn gì cho giao diện?", o:["Màu, chữ, bố cục rõ ràng","Thật nhiều màu loè loẹt","Chữ khó đọc","Bố cục rối"], a:0},
+    {q:"Nên tránh?", o:["Trang trí quá đà làm rối mắt","Bố cục rõ ràng","Chữ dễ đọc","Màu hài hoà"], a:0},
+    {q:"Người dùng cần?", o:["Dễ hiểu, dễ bấm","Nhiều hiệu ứng","Màu chói","Rối rắm"], a:0},
+    {q:"Đẹp mà khó dùng thì?", o:["Không tốt bằng dễ dùng","Tốt nhất","Không sao","Hoàn hảo"], a:0},
+    {q:"'Vừa đủ' nghĩa là?", o:["Không thiếu, không thừa","Càng nhiều càng tốt","Bỏ hết","Thật cầu kỳ"], a:0},
+    {q:"Bố cục rõ ràng giúp?", o:["Người dùng dễ thao tác","Rối hơn","Chậm hơn","Không lợi ích"], a:0},
+    {q:"'MVP bản dùng thử được' nghĩa là?", o:["Đủ đẹp và chạy để người thử","Chỉ đẹp","Chỉ ý tưởng","Không chạy"], a:0},
+    {q:"Trang trí quá đà gây?", o:["Rối mắt, khó dùng","Đẹp và tiện","Nhanh hơn","Không sao"], a:0},
+    {q:"Bài học?", o:["Ưu tiên dễ dùng, đẹp vừa phải","Đẹp bằng mọi giá","Bỏ qua giao diện","Càng phức tạp càng hay"], a:0}
+  ],
+
+  "3.5.8": [
+    {q:"Tổng duyệt nội bộ là?", o:["Cả lớp dùng thử chéo trước khi gặp người thật","Ra mắt luôn","Giấu sản phẩm","Xoá đi"], a:0},
+    {q:"Mục đích tổng duyệt?", o:["Ghi lỗi lần cuối","Khoe","Cho vui","Không gì"], a:0},
+    {q:"Nên ưu tiên sửa lỗi nào?", o:["Lỗi khiến người dùng không dùng tiếp được","Lỗi nhỏ về màu","Không sửa","Lỗi ít gặp"], a:0},
+    {q:"Dùng thử chéo nghĩa là?", o:["Thử sản phẩm của nhau","Tự thử mình","Không thử","Chỉ coach thử"], a:0},
+    {q:"Tổng duyệt giúp?", o:["Phát hiện lỗi trước khi gặp người thật","Che lỗi","Tốn thời gian","Không lợi ích"], a:0},
+    {q:"Sau tổng duyệt, có?", o:["Bản sửa trước khi gặp người dùng thật","Sản phẩm y nguyên","Không gì","Bản cũ"], a:0},
+    {q:"Vì sao thử trước khi ra mắt?", o:["Giảm lỗi khi người thật dùng","Cho oai","Không lý do","Tốn công"], a:0},
+    {q:"Lỗi nghiêm trọng là lỗi?", o:["Khiến không dùng tiếp được","Chỉ về màu","Không ai thấy","Rất nhỏ"], a:0},
+    {q:"Bạn bè dùng thử giúp?", o:["Thấy lỗi mình bỏ sót","Không lợi ích","Rối hơn","Che lỗi"], a:0},
+    {q:"Bài học?", o:["Duyệt chéo và sửa lỗi trước khi ra mắt","Ra mắt ngay","Không thử","Giấu lỗi"], a:0}
+  ],
+
+  "3.6.1": [
+    {q:"Test với người dùng cần?", o:["Kịch bản rõ ràng","Không chuẩn bị","Giấu sản phẩm","Ra mắt luôn"], a:0},
+    {q:"Kịch bản test xác định?", o:["Nhờ họ làm gì, quan sát gì","Màu áo họ","Giờ ăn","Không gì"], a:0},
+    {q:"Em test cái gì?", o:["Sản phẩm","Người dùng","Bạn bè","Máy in"], a:0},
+    {q:"Người dùng có 'sai' không?", o:["Không, họ không có gì sai","Có, họ dốt","Luôn sai","Tuỳ người"], a:0},
+    {q:"Nếu người dùng lúng túng thì?", o:["Sản phẩm cần cải thiện chỗ đó","Họ dốt","Bỏ qua","Không sao"], a:0},
+    {q:"Kịch bản test giúp?", o:["Buổi test có mục tiêu rõ","Rối hơn","Không lợi ích","Tốn thời gian"], a:0},
+    {q:"Quan sát 'gì' khi test?", o:["Họ kẹt ở đâu, nói gì","Màu tường","Thời tiết","Giờ giấc"], a:0},
+    {q:"Test là để?", o:["Tìm chỗ sản phẩm cần sửa","Chê người dùng","Khoe","Cho vui"], a:0},
+    {q:"Kịch bản 1 trang nghĩa là?", o:["Kế hoạch test ngắn gọn","Sản phẩm","Một bức tranh","Không gì"], a:0},
+    {q:"Bài học?", o:["Chuẩn bị kịch bản trước khi test","Test bừa","Không chuẩn bị","Test người dùng"], a:0}
+  ],
+
+  "3.6.2": [
+    {q:"Buổi test số 1 nên?", o:["Quan sát người thật dùng, không nhắc","Nhắc liên tục","Làm hộ họ","Không cho họ dùng"], a:0},
+    {q:"Vì sao không nhắc?", o:["Để họ tự xoay xở, thấy vấn đề thật","Cho khó","Cho vui","Không lý do"], a:0},
+    {q:"Chỗ họ lúng túng chính là?", o:["Chỗ sản phẩm cần cải thiện","Lỗi của họ","Không quan trọng","Điểm mạnh"], a:0},
+    {q:"Nên ghi lại?", o:["Họ kẹt ở đâu","Màu áo họ","Giờ giấc","Không gì"], a:0},
+    {q:"Nên kìm điều gì?", o:["Ý muốn giải thích","Sự quan sát","Việc ghi chép","Sự lịch sự"], a:0},
+    {q:"Im lặng quan sát giúp?", o:["Thấy vấn đề thật","Che lỗi","Làm phiền","Không lợi ích"], a:0},
+    {q:"Nhắc người dùng liên tục sẽ?", o:["Không thấy được vấn đề thật","Giúp test tốt hơn","Không sao","Bắt buộc"], a:0},
+    {q:"Nên có mấy người test?", o:["2 người","0 người","Cả trường","Chỉ mình em"], a:0},
+    {q:"Biên bản test 1 ghi?", o:["Họ kẹt ở đâu, nói gì","Màu sắc","Thời tiết","Không gì"], a:0},
+    {q:"Bài học?", o:["Quan sát yên lặng để thấy vấn đề thật","Nhắc liên tục","Làm hộ","Không quan sát"], a:0}
+  ],
+
+  "3.6.3": [
+    {q:"Sau test, ta?", o:["Phân tích và sửa đợt 1","Ra mắt luôn","Bỏ dự án","Không làm gì"], a:0},
+    {q:"Nên gom lỗi theo?", o:["Mức nặng - nhẹ","Màu sắc","Bảng chữ cái","Ngẫu nhiên"], a:0},
+    {q:"Nên sửa lỗi nào trước?", o:["Quan trọng nhất","Nhỏ nhất","Về màu","Không sửa"], a:0},
+    {q:"Lỗi quan trọng là lỗi?", o:["Khiến người dùng không tiếp tục được","Về màu","Ít gặp","Nhỏ nhặt"], a:0},
+    {q:"Không thể sửa hết cùng lúc nên?", o:["Chọn ưu tiên khôn ngoan","Bỏ hết","Sửa ngẫu nhiên","Không sửa"], a:0},
+    {q:"Bản sửa đợt 1 kèm?", o:["Lý do ưu tiên","Màu mới","Tên mới","Không gì"], a:0},
+    {q:"Phân tích lỗi giúp?", o:["Biết sửa gì trước","Rối hơn","Không lợi ích","Che lỗi"], a:0},
+    {q:"Gom lỗi theo mức giúp?", o:["Ưu tiên đúng","Lộn xộn","Bỏ sót","Không tác dụng"], a:0},
+    {q:"Sửa đợt 1 nhằm?", o:["Khắc phục lỗi lớn từ test","Trang trí","Xoá tính năng","Ra mắt"], a:0},
+    {q:"Bài học?", o:["Ưu tiên sửa lỗi quan trọng trước","Sửa lỗi nhỏ trước","Sửa hết cùng lúc","Không sửa"], a:0}
+  ],
+
+  "3.6.4": [
+    {q:"Buổi test số 2 nên?", o:["Người khác thử bản đã sửa","Cùng người cũ","Không ai thử","Tự thử"], a:0},
+    {q:"Cần xem gì?", o:["Lỗi cũ đã hết chưa, có lỗi mới không","Màu áo","Giờ giấc","Không gì"], a:0},
+    {q:"Nên test với người?", o:["Mới, có góc nhìn tươi","Chỉ người cũ","Không ai","Chính mình"], a:0},
+    {q:"Người mới giúp?", o:["Không quen sản phẩm, thấy vấn đề mới","Quen nên bỏ sót","Không lợi ích","Rối hơn"], a:0},
+    {q:"So sánh với lần 1 để?", o:["Biết đã cải thiện chưa","Cho vui","Tốn thời gian","Không lý do"], a:0},
+    {q:"Nếu lỗi cũ vẫn còn?", o:["Cần sửa tiếp","Bỏ qua","Ra mắt luôn","Không sao"], a:0},
+    {q:"Test bản đã sửa giúp?", o:["Kiểm tra hiệu quả sửa lỗi","Che lỗi","Không lợi ích","Làm chậm"], a:0},
+    {q:"Biên bản test 2 gồm?", o:["So sánh với lần 1","Chỉ màu sắc","Chỉ tên","Không gì"], a:0},
+    {q:"Có thể phát sinh lỗi mới sau khi sửa không?", o:["Có, cần kiểm","Không bao giờ","Không quan trọng","Không kiểm"], a:0},
+    {q:"Bài học?", o:["Test lại với người mới sau khi sửa","Không test lại","Chỉ tự đánh giá","Ra mắt ngay"], a:0}
+  ],
+
+  "3.6.5": [
+    {q:"Sửa đợt 2 là?", o:["Tinh chỉnh lần cuối theo phản hồi","Bắt đầu lại","Xoá sản phẩm","Không làm gì"], a:0},
+    {q:"Sau vòng này em có?", o:["Bản 1.1 ổn định hơn","Bản đầu tiên","Không gì","Bản hỏng"], a:0},
+    {q:"Sản phẩm tốt lên qua?", o:["Nhiều vòng thử - sửa","Một lần duy nhất","May mắn","Không cần sửa"], a:0},
+    {q:"'Bản 1.1' cho thấy?", o:["Đã cải thiện so với bản đầu","Tệ hơn","Y hệt","Bản nháp"], a:0},
+    {q:"Tinh chỉnh nghĩa là?", o:["Sửa những chi tiết còn lại","Làm lại từ đầu","Xoá hết","Thêm thật nhiều"], a:0},
+    {q:"Làm sản phẩm một lần là xong?", o:["Không, cần nhiều vòng","Có, luôn luôn","Tuỳ may mắn","Không cần làm"], a:0},
+    {q:"Phản hồi giúp?", o:["Biết cần tinh chỉnh gì","Không lợi ích","Rối hơn","Che lỗi"], a:0},
+    {q:"Sau sửa đợt 2, sản phẩm?", o:["Sẵn sàng cho đánh giá","Chưa chạy","Hỏng","Không đổi"], a:0},
+    {q:"Nhiều vòng thử-sửa cho thấy?", o:["Cải tiến là quá trình liên tục","Chỉ làm một lần","Không cần cải tiến","Vô ích"], a:0},
+    {q:"Bài học?", o:["Tinh chỉnh dần để sản phẩm ổn định","Bỏ qua phản hồi","Làm một lần","Không sửa"], a:0}
+  ],
+
+  "3.6.6": [
+    {q:"Cho người dùng chấm điểm để?", o:["Nhận phản hồi thẳng thắn","Khoe","Cho vui","Không gì"], a:0},
+    {q:"Nên dùng?", o:["Thang điểm đơn giản","Thang phức tạp","Không thang nào","Tự chấm"], a:0},
+    {q:"Đón nhận phản hồi thế nào?", o:["Bình tĩnh và biết ơn","Giận dữ","Chối bỏ","Buồn bã"], a:0},
+    {q:"Phản hồi thật (dù khó nghe) thì?", o:["Quý hơn lời khen xã giao","Vô giá trị","Nên bỏ qua","Đáng ghét"], a:0},
+    {q:"Ai chấm điểm sản phẩm?", o:["Người dùng thật","Chính em","Máy","Không ai"], a:0},
+    {q:"Bảng điểm từ ≥4 người giúp?", o:["Cái nhìn khách quan hơn","Ít tin hơn","Không lợi ích","Rối"], a:0},
+    {q:"Lời chê giúp em?", o:["Biết chỗ cần cải thiện","Buồn vô ích","Bỏ cuộc","Không gì"], a:0},
+    {q:"Nên tránh phản ứng nào?", o:["Tự ái, cãi lại","Lắng nghe","Cảm ơn","Ghi nhận"], a:0},
+    {q:"Phản hồi thẳng thắn giúp sản phẩm?", o:["Tốt hơn thật sự","Tệ đi","Không đổi","Biến mất"], a:0},
+    {q:"Bài học?", o:["Đón nhận phản hồi để cải thiện","Chỉ nghe lời khen","Phớt lờ chê","Bỏ cuộc khi bị chê"], a:0}
+  ],
+
+  "3.7.1": [
+    {q:"Sản phẩm cần?", o:["Một cái tên và một câu chuyện ngắn","Chỉ số liệu","Không cần tên","Nhiều tên"], a:0},
+    {q:"Tên nên?", o:["Dễ nhớ","Khó đọc","Thật dài","Toàn số"], a:0},
+    {q:"Tagline là?", o:["Câu 'sản phẩm giúp ai làm gì'","Mật khẩu","Một bài hát","Một con số"], a:0},
+    {q:"Nên chọn tên thế nào?", o:["Hỏi bạn bè tên nào dễ nhớ, hợp","Chọn bừa","Càng lạ càng tốt","Không cần chọn"], a:0},
+    {q:"Câu chuyện sản phẩm giúp?", o:["Người khác hiểu nhanh","Rối hơn","Không lợi ích","Che thông tin"], a:0},
+    {q:"Tên khó nhớ thì?", o:["Người ta khó nhắc lại","Tốt hơn","Không sao","Nổi tiếng hơn"], a:0},
+    {q:"Tagline tốt nên?", o:["Ngắn, rõ lợi ích","Dài dòng","Mơ hồ","Toàn thuật ngữ"], a:0},
+    {q:"'Sản phẩm này giúp ai làm gì' trả lời?", o:["Giá trị của sản phẩm","Màu sắc","Giá tiền","Ngày ra mắt"], a:0},
+    {q:"Bình chọn tên trong lớp giúp?", o:["Chọn tên nhiều người thấy hợp","Gây tranh cãi","Vô ích","Không gì"], a:0},
+    {q:"Bài học?", o:["Đặt tên dễ nhớ + câu giới thiệu rõ","Tên càng dài càng tốt","Không cần tên","Giấu sản phẩm"], a:0}
+  ],
+
+  "3.7.2": [
+    {q:"Trang giới thiệu giúp?", o:["Người khác hiểu nhanh sản phẩm","Che thông tin","Không lợi ích","Làm rối"], a:0},
+    {q:"Trang giới thiệu nên nêu?", o:["Vấn đề, giải pháp, ảnh chụp","Chỉ tên em","Chỉ ngày tháng","Không gì"], a:0},
+    {q:"Nên viết thế nào?", o:["Ngắn gọn, rõ ràng, có hình","Dài dòng, khó hiểu","Không hình","Toàn chữ"], a:0},
+    {q:"Nên đặt gì lên đầu?", o:["Lợi ích cho người dùng","Danh sách tính năng khô khan","Giá tiền","Tên tác giả"], a:0},
+    {q:"Ảnh chụp sản phẩm giúp?", o:["Người xem hình dung được","Rối hơn","Không lợi ích","Che sản phẩm"], a:0},
+    {q:"Trang giới thiệu nên?", o:["Hoàn chỉnh, dễ hiểu","Bỏ dở","Khó hiểu","Không có hình"], a:0},
+    {q:"Nêu vấn đề để?", o:["Người xem thấy sản phẩm cần thiết","Cho dài","Không lý do","Che giấu"], a:0},
+    {q:"Liệt kê tính năng khô khan thì?", o:["Kém hấp dẫn hơn nêu lợi ích","Tốt nhất","Hấp dẫn nhất","Bắt buộc"], a:0},
+    {q:"Trang giới thiệu là?", o:["Cách đưa sản phẩm đến người khác","Đồ trang trí","Vô dụng","Bí mật"], a:0},
+    {q:"Bài học?", o:["Giới thiệu rõ vấn đề - giải pháp, đặt lợi ích lên đầu","Chỉ khoe tính năng","Không cần trang giới thiệu","Giấu sản phẩm"], a:0}
+  ],
+
+  "3.7.3": [
+    {q:"Video demo nên dài?", o:["Khoảng 60 giây","1 giờ","Cả ngày","5 giây"], a:0},
+    {q:"Video demo gồm?", o:["Quay màn hình + lời dẫn ngắn","Chỉ nhạc","Chỉ ảnh tĩnh","Không gì"], a:0},
+    {q:"Nội dung video nên?", o:["Súc tích, đi thẳng điểm hay","Lan man","Dài dòng","Không có nội dung"], a:0},
+    {q:"Nên làm gì trước khi quay?", o:["Viết kịch bản","Quay bừa","Không chuẩn bị","Đợi may mắn"], a:0},
+    {q:"Kịch bản giúp video?", o:["Không lan man trong 60 giây","Dài hơn","Rối hơn","Không lợi ích"], a:0},
+    {q:"Lời dẫn nên?", o:["Ngắn gọn, rõ","Dài dòng","Khó hiểu","Không có"], a:0},
+    {q:"Video demo cho thấy?", o:["Sản phẩm chạy thật","Chỉ ý tưởng","Không gì","Một bức ảnh"], a:0},
+    {q:"Vì sao chỉ 60 giây?", o:["Ngắn gọn, giữ sự chú ý","Cho khó","Không lý do","Để dài hơn"], a:0},
+    {q:"Nên quay gì?", o:["Vấn đề, thao tác chính, kết quả","Chỉ logo","Chỉ chữ chạy","Không gì"], a:0},
+    {q:"Bài học?", o:["Làm video demo ngắn, súc tích, có kịch bản","Quay thật dài","Không kịch bản","Bỏ demo"], a:0}
+  ],
+
+  "3.7.4": [
+    {q:"'Đưa đến người dùng' nghĩa là?", o:["Gửi cho người phù hợp dùng thử","Giấu sản phẩm","Xoá đi","Chỉ mình dùng"], a:0},
+    {q:"Nên gửi cho bao nhiêu người?", o:["5-10 người phù hợp","0 người","Cả nước","Chỉ mình em"], a:0},
+    {q:"'Người phù hợp' là?", o:["Đúng nhóm gặp vấn đề","Bất kỳ ai","Người ghét sản phẩm","Không ai"], a:0},
+    {q:"Sản phẩm có ý nghĩa khi?", o:["Có người dùng thật","Nằm im","Chỉ mình biết","Không ai dùng"], a:0},
+    {q:"Mời họ làm gì?", o:["Dùng thử","Chỉ nhìn","Không làm gì","Chê"], a:0},
+    {q:"≥5 người ngoài lớp chạm vào sản phẩm nghĩa là?", o:["Sản phẩm bắt đầu có người dùng thật","Thất bại","Không quan trọng","Chỉ để khoe"], a:0},
+    {q:"Đưa sản phẩm ra ngoài giúp?", o:["Nhận phản hồi thật","Che giấu","Không lợi ích","Làm chậm"], a:0},
+    {q:"Gửi cho người không liên quan thì?", o:["Ít giá trị phản hồi","Tốt nhất","Bắt buộc","Không sao"], a:0},
+    {q:"Ra mắt là?", o:["Bước đưa sản phẩm đến thế giới","Bước cuối vô nghĩa","Không cần","Chỉ để nộp"], a:0},
+    {q:"Bài học?", o:["Đưa sản phẩm đến đúng người dùng","Giữ cho riêng mình","Không ra mắt","Gửi bừa"], a:0}
+  ],
+
+  "3.7.5": [
+    {q:"Theo dõi tuần đầu để?", o:["Biết sản phẩm hoạt động ra sao","Cho vui","Không lý do","Che số liệu"], a:0},
+    {q:"Nên xem gì?", o:["Ai dùng, dùng phần nào, bỏ ở đâu","Màu áo","Thời tiết","Giờ ăn"], a:0},
+    {q:"Số liệu mách em?", o:["Điều cần cải thiện","Không gì","Màu sắc","Giờ giấc"], a:0},
+    {q:"Cần bảng theo dõi thế nào?", o:["Đơn giản là đủ để bắt đầu","Cực kỳ phức tạp","Không cần","Bí mật"], a:0},
+    {q:"'Bỏ ở đâu' cho biết?", o:["Chỗ người dùng gặp khó/chán","Điểm mạnh","Không gì","Màu"], a:0},
+    {q:"Theo dõi giúp?", o:["Hiểu hành vi người dùng","Rối hơn","Không lợi ích","Che lỗi"], a:0},
+    {q:"Bảng theo dõi tuần đầu ghi?", o:["Số liệu sử dụng","Nhật ký cá nhân","Bài hát","Không gì"], a:0},
+    {q:"Ai dùng nhiều phần nào cho biết?", o:["Phần nào hữu ích/hấp dẫn","Màu yêu thích","Giờ học","Không gì"], a:0},
+    {q:"Vì sao theo dõi tuần đầu?", o:["Nắm phản ứng thực tế sớm","Cho oai","Tốn công","Không lý do"], a:0},
+    {q:"Bài học?", o:["Quan sát số liệu để cải thiện","Bỏ qua số liệu","Chỉ đoán","Không theo dõi"], a:0}
+  ],
+
+  "3.7.6": [
+    {q:"Sau ra mắt nên?", o:["Rút bài học","Quên hết","Bỏ dự án","Không làm gì"], a:0},
+    {q:"Nên nhìn lại?", o:["Điều gì hiệu quả, điều gì làm khác nếu lại","Chỉ điểm tốt","Chỉ điểm xấu","Không gì"], a:0},
+    {q:"Bài học ra mắt để?", o:["Làm tốt hơn lần sau","Trách móc","Cho vui","Tốn giấy"], a:0},
+    {q:"Mỗi lần ra mắt là?", o:["Một lần học","Một thất bại tuyệt đối","Vô nghĩa","Kết thúc"], a:0},
+    {q:"Thất bại nhỏ khi ra mắt là?", o:["Kinh nghiệm quý","Điều xấu hổ","Vô ích","Nên giấu"], a:0},
+    {q:"Nên ghi bài học thành?", o:["1 trang cho lần sau","Bí mật","Không ghi","Bài hát"], a:0},
+    {q:"'Làm khác nếu được làm lại' giúp?", o:["Cải thiện lần sau","Buồn bã","Không gì","Bỏ cuộc"], a:0},
+    {q:"Nhìn lại giúp em?", o:["Trưởng thành hơn","Kém đi","Không đổi","Quên hết"], a:0},
+    {q:"Điều hiệu quả nên?", o:["Giữ lại và phát huy","Bỏ đi","Che giấu","Quên"], a:0},
+    {q:"Bài học?", o:["Rút kinh nghiệm sau mỗi lần ra mắt","Không cần rút","Chỉ ăn mừng","Bỏ qua"], a:0}
+  ],
+
+  "3.8.1": [
+    {q:"Pitch là?", o:["Bài trình bày ngắn thuyết phục về sản phẩm","Một trận đấu","Một bài hát","Một mật khẩu"], a:0},
+    {q:"Cấu trúc pitch gồm?", o:["Vấn đề → giải pháp → demo → phản hồi → bước tiếp","Ngẫu nhiên","Chỉ khoe","Không cấu trúc"], a:0},
+    {q:"Nên mở đầu pitch bằng?", o:["Câu chuyện/tình huống về vấn đề","Danh sách tính năng","Lời chào dài","Số liệu khô"], a:0},
+    {q:"Mở đầu bằng câu chuyện để?", o:["Người nghe thấy vấn đề là thật","Cho dài","Gây rối","Không lý do"], a:0},
+    {q:"Phần 'demo' trong pitch cho thấy?", o:["Sản phẩm chạy thật","Chỉ lý thuyết","Không gì","Một bức ảnh"], a:0},
+    {q:"'Phản hồi người dùng' trong pitch là?", o:["Bằng chứng người thật đã dùng","Ý kiến em","Đoán bừa","Không cần"], a:0},
+    {q:"'Bước tiếp theo' cho thấy?", o:["Kế hoạch tương lai","Kết thúc","Màu sắc","Không gì"], a:0},
+    {q:"Dàn ý pitch dài?", o:["Khoảng 5 phút","5 giờ","Cả ngày","10 giây"], a:0},
+    {q:"Pitch nhằm?", o:["Thuyết phục người nghe","Làm rối","Khoe khoang","Che giấu"], a:0},
+    {q:"Bài học?", o:["Pitch theo cấu trúc rõ ràng","Nói lung tung","Chỉ đọc slide","Không chuẩn bị"], a:0}
+  ],
+
+  "3.8.2": [
+    {q:"Slide kể chuyện nên?", o:["Ít chữ, nhiều hình","Nhiều chữ dày đặc","Không hình","Toàn số"], a:0},
+    {q:"Nên có gì trên slide?", o:["Số liệu người dùng thật","Chữ dài","Không gì","Chỉ tên em"], a:0},
+    {q:"Mỗi slide nên?", o:["Một ý","Mười ý","Không ý nào","Toàn chữ"], a:0},
+    {q:"Slide là để?", o:["Hỗ trợ lời nói","Đọc nguyên văn","Thay em nói","Trang trí"], a:0},
+    {q:"Bộ slide nên?", o:["Ngắn gọn (≤8 trang)","100 trang","0 trang","Càng dài càng tốt"], a:0},
+    {q:"Dùng hình và số liệu thay?", o:["Đoạn văn dài","Hình ảnh","Số liệu","Tiêu đề"], a:0},
+    {q:"Slide nhiều chữ khiến?", o:["Người nghe khó theo dõi","Hấp dẫn hơn","Dễ hiểu hơn","Tốt nhất"], a:0},
+    {q:"Số liệu thật trên slide giúp?", o:["Thuyết phục hơn","Nhàm chán","Rối hơn","Không lợi ích"], a:0},
+    {q:"Nên đọc nguyên văn slide không?", o:["Không, slide chỉ hỗ trợ","Có, đọc hết","Bắt buộc","Luôn luôn"], a:0},
+    {q:"Bài học?", o:["Slide ít chữ, nhiều hình, có số liệu","Slide dày chữ","Đọc nguyên văn","Không cần slide"], a:0}
+  ],
+
+  "3.8.3": [
+    {q:"Tổng duyệt lần 1 là?", o:["Pitch thử trước lớp","Pitch chính thức","Không pitch","Bỏ pitch"], a:0},
+    {q:"Nhận góp ý theo?", o:["Tiêu chí (rõ ràng, thuyết phục, đúng giờ)","Cảm tính","Ngẫu nhiên","Không tiêu chí"], a:0},
+    {q:"Sau góp ý, nên?", o:["Lên kế hoạch chỉnh","Bỏ qua","Cãi lại","Giữ nguyên"], a:0},
+    {q:"Nên làm gì khi nhận góp ý?", o:["Ghi lại ngay","Quên","Phớt lờ","Tức giận"], a:0},
+    {q:"Pitch thử giúp?", o:["Phát hiện chỗ cần cải thiện","Che lỗi","Cho vui","Không lợi ích"], a:0},
+    {q:"Tiêu chí 'đúng giờ' nghĩa là?", o:["Pitch trong thời gian cho phép","Nói thật lâu","Nói thật nhanh","Không quan trọng"], a:0},
+    {q:"Ghi lại góp ý ngay để?", o:["Không quên khi sửa","Cho đẹp","Tốn giấy","Không lý do"], a:0},
+    {q:"Tổng duyệt lần 1 nhằm?", o:["Chuẩn bị tốt hơn cho lần thật","Kết thúc","Khoe","Bỏ cuộc"], a:0},
+    {q:"Góp ý theo tiêu chí giúp?", o:["Cụ thể, dễ cải thiện","Mơ hồ","Vô ích","Gây rối"], a:0},
+    {q:"Bài học?", o:["Pitch thử, nhận góp ý và chỉnh","Không luyện trước","Bỏ qua góp ý","Chỉ pitch một lần"], a:0}
+  ],
+
+  "3.8.4": [
+    {q:"Tổng duyệt lần 2 là?", o:["Pitch bản đã sửa","Pitch bản đầu","Không pitch","Bỏ dự án"], a:0},
+    {q:"Nên luyện thêm gì?", o:["Trả lời câu hỏi khó","Chỉ đọc slide","Không luyện","Bỏ qua"], a:0},
+    {q:"Nên làm gì với câu hỏi hay gặp?", o:["Dự đoán và chuẩn bị trả lời","Bỏ qua","Sợ hãi","Không nghĩ tới"], a:0},
+    {q:"Nếu không biết câu trả lời?", o:["Thành thật: 'Em sẽ tìm hiểu thêm'","Bịa đại","Im lặng lâu","Bỏ chạy"], a:0},
+    {q:"Thành thật khi không biết thì?", o:["Vẫn đáng tin","Mất uy tín hẳn","Là thất bại","Nên tránh"], a:0},
+    {q:"Chuẩn bị câu trả lời giúp?", o:["Tự tin khi hỏi đáp","Rối hơn","Không lợi ích","Sợ hơn"], a:0},
+    {q:"Vượt vòng duyệt của coach nghĩa là?", o:["Sẵn sàng cho Demo Day","Thất bại","Kết thúc","Bỏ cuộc"], a:0},
+    {q:"Luyện trả lời câu hỏi khó giúp?", o:["Không bị bất ngờ","Bối rối hơn","Vô ích","Làm chậm"], a:0},
+    {q:"Nên trả lời câu hỏi thế nào?", o:["Ngắn gọn, tự tin","Lan man","Né tránh","Im lặng"], a:0},
+    {q:"Bài học?", o:["Luyện pitch bản sửa và sẵn sàng hỏi đáp","Không luyện","Chỉ đọc slide","Trốn câu hỏi"], a:0}
+  ],
+
+  "3.8.5": [
+    {q:"Demo Day Level 3 trình bày trước?", o:["Phụ huynh và khách mời","Chỉ mình em","Không ai","Con mèo"], a:0},
+    {q:"Nên giữ thái độ?", o:["Bình tĩnh, tự tin","Hoảng loạn","Sợ hãi","Bỏ chạy"], a:0},
+    {q:"Nên cho xem?", o:["Demo thật","Chỉ nói suông","Không gì","Ảnh tĩnh"], a:0},
+    {q:"Nên làm gì để tránh sự cố?", o:["Đến sớm kiểm tra máy móc","Đến muộn","Không kiểm tra","Bỏ qua"], a:0},
+    {q:"Demo Day là dịp?", o:["Khoe thành quả nhiều tháng","Nghỉ ngơi","Chơi game","Không quan trọng"], a:0},
+    {q:"Nên kể thế nào?", o:["Mạch lạc","Lộn xộn","Lan man","Không kể"], a:0},
+    {q:"Kiểm tra máy móc trước giúp?", o:["Tránh trục trặc phút chót","Cho oai","Tốn thời gian","Không lý do"], a:0},
+    {q:"Trước khán giả, nên?", o:["Tự tin trình bày","Cúi gằm mặt","Nói lí nhí","Bỏ chạy"], a:0},
+    {q:"Demo thật cho khách mời thấy?", o:["Sản phẩm hoạt động","Chỉ ý tưởng","Không gì","Ảnh"], a:0},
+    {q:"Bài học?", o:["Chuẩn bị kỹ, tự tin ở Demo Day","Không chuẩn bị","Trốn tránh","Đến muộn"], a:0}
+  ],
+
+  "3.8.6": [
+    {q:"Bước cuối là?", o:["Tổng kết và định hướng","Bắt đầu lại","Bỏ hết","Không làm gì"], a:0},
+    {q:"Nên nhìn lại?", o:["6-8 tháng đã học và làm được gì","Chỉ điểm xấu","Không gì","Chỉ hôm nay"], a:0},
+    {q:"Nên hoàn thiện?", o:["Hồ sơ sản phẩm","Bài hát","Trò chơi","Không gì"], a:0},
+    {q:"Có quyết định gì ở bước này?", o:["Có học tiếp Level 4 không","Đổi trường","Nghỉ hè","Không gì"], a:0},
+    {q:"Dù học tiếp hay không, em đã?", o:["Tự tay tạo ra một sản phẩm thật","Không làm gì","Thất bại","Chỉ chơi"], a:0},
+    {q:"Hồ sơ sản phẩm giúp?", o:["Ghi lại thành quả","Trang trí","Vô ích","Che giấu"], a:0},
+    {q:"Nhìn lại hành trình giúp?", o:["Thấy mình trưởng thành","Buồn bã","Không đổi","Quên hết"], a:0},
+    {q:"Tạo ra sản phẩm thật là điều?", o:["Rất đáng tự hào","Bình thường","Đáng xấu hổ","Vô nghĩa"], a:0},
+    {q:"Định hướng nghĩa là?", o:["Quyết bước đi tiếp theo","Kết thúc mọi thứ","Không nghĩ gì","Bỏ cuộc"], a:0},
+    {q:"Bài học?", o:["Tổng kết hành trình và chọn hướng đi","Quên hết","Không tổng kết","Bỏ dở"], a:0}
+  ]
+
+});
