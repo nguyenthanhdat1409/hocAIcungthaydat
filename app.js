@@ -248,6 +248,7 @@ function enterRunner(showStars){
   document.getElementById("runner").scrollTo({top:0});
 }
 function exitRunner(){
+  if(typeof _tyClear === "function") _tyClear();
   document.getElementById("runner").classList.add("hidden");
   document.body.style.overflow = "";
   go(runnerReturn || "home");
@@ -1071,14 +1072,17 @@ function comboResult(){
 /* =========================================================
    2d) TEST GÕ PHÍM (đo WPM & độ chính xác)
    ========================================================= */
-let tyText = "", tyStart = 0, tyDone = false, tyLang = "vi";
+const TY_LIMIT = 120; // giây — gõ trong 2 phút
+let tyText = "", tyStart = 0, tyDone = false, tyLang = "vi", tyTimer = null;
+function _fmt(s){ s = Math.max(0, Math.round(s)); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+function _tyClear(){ if(tyTimer){ clearInterval(tyTimer); tyTimer = null; } }
 function startTyping(lang){
   if(!window.TYPING_TEXTS) return;
   tyLang = (lang && window.TYPING_TEXTS[lang]) ? lang : "vi";
   const info = (window.TYPING_LANGS || {})[tyLang] || {name:"", flag:"⌨️"};
   runnerReturn = "dauvao";
   tyText = rand(window.TYPING_TEXTS[tyLang]);
-  tyStart = 0; tyDone = false;
+  tyStart = 0; tyDone = false; _tyClear();
   document.getElementById("runner").classList.remove("hidden");
   document.getElementById("runnerTop").classList.add("hidden");
   document.getElementById("resultCard").classList.add("hidden");
@@ -1087,33 +1091,61 @@ function startTyping(lang){
   const chars = [...tyText].map((ch,i) => `<span data-i="${i}">${ch === " " ? "&nbsp;" : esc(ch)}</span>`).join("");
   document.getElementById("qCard").innerHTML =
     `<div class="secTitle" data-icon="⌨️">Test gõ phím · ${info.flag} ${esc(info.name)}</div>
-     <p class="muted">Gõ lại đúng câu dưới đây. Đồng hồ bắt đầu khi em gõ chữ đầu tiên.</p>
+     <p class="muted">Gõ lại đoạn văn dưới đây trong <b>2 phút</b>. Đồng hồ bắt đầu khi em gõ chữ đầu tiên; hết giờ sẽ tự chấm.</p>
      <div class="tyTarget" id="tyTarget">${chars}</div>
-     <textarea class="tyInput" id="tyInput" rows="2" placeholder="Gõ ở đây…" oninput="tyCheck()" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
-     <div class="tyStats"><span>⚡ <b id="tyWpm">0</b> WPM</span><span>🎯 <b id="tyAcc">100</b>%</span><span>⏱️ <b id="tyTime">0.0</b>s</span></div>
+     <textarea class="tyInput" id="tyInput" rows="4" placeholder="Gõ ở đây…" oninput="tyCheck()" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+     <div class="tyStats"><span>⚡ <b id="tyWpm">0</b> WPM</span><span>🎯 <b id="tyAcc">100</b>%</span><span>⏱️ <b id="tyRemain">${_fmt(TY_LIMIT)}</b></span></div>
      <div class="tyEnd" id="tyEnd"></div>
      <div class="center">
-       <button class="btn" onclick="startTyping('${tyLang}')">Câu khác 🔄</button>
+       <button class="btn" onclick="tyFinishNow()">Nộp bài ✅</button>
+       <button class="btn light" onclick="startTyping('${tyLang}')" style="margin-left:8px">Đổi đoạn 🔄</button>
        <button class="btn light" onclick="exitRunner()" style="margin-left:8px">Thoát</button>
      </div>`;
   const inp = document.getElementById("tyInput"); if(inp) inp.focus();
   document.getElementById("runner").scrollTo({top:0});
 }
-function tyCheck(){
-  const val = document.getElementById("tyInput").value;
-  if(!tyStart && val.length > 0) tyStart = Date.now();
+function _tyPaint(val){
   const spans = document.querySelectorAll("#tyTarget span");
-  let correct = 0;
   spans.forEach((s, i) => {
     s.classList.remove("ok","bad","cur");
-    if(i < val.length){ if(val[i] === tyText[i]){ s.classList.add("ok"); correct++; } else s.classList.add("bad"); }
+    if(i < val.length){ if(val[i] === tyText[i]) s.classList.add("ok"); else s.classList.add("bad"); }
     else if(i === val.length) s.classList.add("cur");
   });
-  const elapsed = tyStart ? (Date.now() - tyStart) / 1000 : 0;
+}
+function _tyStats(val, elapsed){
+  const correct = document.querySelectorAll("#tyTarget span.ok").length;
   const wpm = elapsed > 0 ? Math.round((val.length / 5) / (elapsed / 60)) : 0;
   const acc = val.length ? Math.round(correct / val.length * 100) : 100;
-  setText("tyWpm", wpm); setText("tyAcc", acc); setText("tyTime", elapsed.toFixed(1));
-  if(val.length >= tyText.length && !tyDone){ tyDone = true; tyResult(wpm, acc); }
+  setText("tyWpm", wpm); setText("tyAcc", acc);
+  const rem = document.getElementById("tyRemain"); if(rem) rem.textContent = _fmt(TY_LIMIT - elapsed);
+  return {wpm, acc, correct};
+}
+function tyCheck(){
+  if(tyDone) return;
+  const val = document.getElementById("tyInput").value;
+  if(!tyStart && val.length > 0){ tyStart = Date.now(); _tyClear(); tyTimer = setInterval(tyTick, 250); }
+  _tyPaint(val);
+  const elapsed = tyStart ? (Date.now() - tyStart) / 1000 : 0;
+  _tyStats(val, elapsed);
+  if(val.length >= tyText.length){ tyFinish(); }
+}
+function tyTick(){
+  if(tyDone){ _tyClear(); return; }
+  const val = (document.getElementById("tyInput") || {}).value || "";
+  const elapsed = tyStart ? (Date.now() - tyStart) / 1000 : 0;
+  _tyStats(val, elapsed);
+  if(elapsed >= TY_LIMIT) tyFinish();
+}
+function tyFinishNow(){ tyFinish(); }
+function tyFinish(){
+  if(tyDone) return;
+  tyDone = true; _tyClear();
+  const inp = document.getElementById("tyInput");
+  const val = (inp || {}).value || "";
+  if(inp) inp.disabled = true;
+  const elapsed = tyStart ? (Date.now() - tyStart) / 1000 : 0;
+  const st = _tyStats(val, elapsed || 0.001);
+  tyResult(st.wpm, st.acc);
 }
 function tyResult(wpm, acc){
   if(comboMode){

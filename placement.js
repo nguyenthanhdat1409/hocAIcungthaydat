@@ -61,32 +61,14 @@ window.PLACEMENT_CATS = {
 /* Câu để luyện/đo gõ phím (đo WPM & độ chính xác) — 2 loại: tiếng Việt & tiếng Anh */
 window.TYPING_TEXTS = {
   vi: [
-    "Em thích học về trí tuệ nhân tạo",
-    "Máy tính giúp em học và chơi mỗi ngày",
-    "Gõ mười ngón nhanh mà không cần nhìn phím",
-    "Trí tuệ nhân tạo đang thay đổi thế giới",
-    "Hôm nay em học lập trình rất vui",
-    "Chuột và bàn phím là bạn của em",
-    "Luyện gõ mỗi ngày một chút sẽ tiến bộ nhanh",
-    "An toàn khi dùng máy tính rất quan trọng",
-    "Bé hãy ngồi thẳng lưng khi ngồi học",
-    "Đặt câu hỏi rõ ràng để AI trả lời đúng ý",
-    "Không chia sẻ mật khẩu cho người lạ",
-    "Học lập trình giúp em tư duy logic hơn"
+    "Trí tuệ nhân tạo là khi máy tính làm được những việc tưởng chừng chỉ con người mới làm được, như nhận ra khuôn mặt, hiểu lời nói và gợi ý bài hát. Máy tính học từ rất nhiều ví dụ, càng có nhiều dữ liệu tốt thì càng làm tốt hơn. Tuy vậy, trí tuệ nhân tạo không phải lúc nào cũng đúng, nên chúng ta cần kiểm tra lại thông tin quan trọng và dùng nó một cách an toàn, có trách nhiệm.",
+    "Gõ mười ngón là một kỹ năng rất hữu ích. Khi đặt tay đúng trên hàng phím cơ sở và nhìn vào màn hình thay vì nhìn phím, em sẽ gõ nhanh hơn mà không bị mỏi. Hãy luyện tập mỗi ngày một chút, gõ chậm và chính xác trước rồi tốc độ sẽ tự tăng lên. Đừng quên ngồi thẳng lưng và cho đôi mắt nghỉ ngơi sau mỗi hai mươi phút học tập.",
+    "Khi dùng máy tính và Internet, an toàn là điều quan trọng nhất. Em không nên chia sẻ mật khẩu hay địa chỉ nhà cho người lạ, không bấm vào những đường liên kết đáng ngờ và luôn hỏi người lớn khi gặp điều khó hiểu. Dùng công nghệ một cách tử tế và cẩn thận sẽ giúp em học được nhiều điều bổ ích mà vẫn giữ được sự an toàn cho bản thân."
   ],
   en: [
-    "I love learning about artificial intelligence",
-    "A computer helps me learn and play",
-    "Typing fast with ten fingers is fun",
-    "Robots can move and follow commands",
-    "Always keep your password a secret",
-    "The mouse moves the cursor on the screen",
-    "Ask the AI a clear and simple question",
-    "Practice a little every single day",
-    "Sit up straight when you use a computer",
-    "Data helps computers learn new things",
-    "Coding helps me solve problems step by step",
-    "Be kind and safe when you go online"
+    "Artificial intelligence is when a computer can do things that we once thought only people could do, such as understanding speech and recognizing faces. Computers learn from many examples, so the more good data they see, the better they become. However, they are not always right, so we should check important facts and use them in a safe and responsible way.",
+    "Learning to type with ten fingers is a useful skill for life. When you place your hands on the home row and look at the screen instead of the keys, you can type faster without getting tired. Practice a little every day, and start slowly and correctly before you try to go fast. Remember to sit up straight and rest your eyes after every twenty minutes of work.",
+    "When you use a computer and the Internet, staying safe is very important. Do not share your password or home address with strangers, never click on strange links, and always ask an adult when something looks confusing. Using technology in a kind and careful way helps you learn many wonderful things while keeping yourself safe and happy every day."
   ]
 };
 window.TYPING_LANGS = { vi: {name:"Tiếng Việt", flag:"🇻🇳"}, en: {name:"Tiếng Anh", flag:"🇬🇧"} };

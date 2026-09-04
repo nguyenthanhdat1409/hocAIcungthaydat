@@ -1601,3 +1601,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 
 /* Bỏ dải gradient trên thẻ chọn tuổi (nhìn thừa) */
 .dvAge::before{display:none}
+
+/* Bỏ dải gradient ::before trên card trong runner (qCard/resultCard) cho gọn */
+#qCard::before,#resultCard::before{display:none}
