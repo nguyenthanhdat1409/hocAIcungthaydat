@@ -1292,6 +1292,7 @@ function renderExHub(){
     Object.keys(window.ROLEPLAY).forEach(k => {
       const r = window.ROLEPLAY[k];
       html += `<button class="exModCard rpCard" onclick="startRolePlay('${k}')">
+        <span class="rpThumb">${rpArt(k)}</span>
         <span class="emCode">${r.emoji || "🎭"} NHẬP VAI</span>
         <span class="emName">${esc(r.title.replace(/^\S+\s/, ""))}</span>
         <span class="emMeta">${esc(r.tag || "")}</span></button>`;
@@ -1450,6 +1451,37 @@ function exResult(){
    Dữ liệu ở roleplay.js (window.ROLEPLAY)
    ========================================================= */
 let rpData = null, rpKey = "", rpScene = -1, rpScore = 0, rpMax = 0, rpLocked = false;
+/* Tranh minh hoạ SVG theo kịch bản (offline) */
+function rpArt(key){
+  const C = {phientoa:"#7C3AED", tranhbien:"#0EA5E9", toasoan:"#F97316"}[key] || "#7C3AED";
+  const g = 'stroke="#1E1B4B" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"';
+  let scene = "";
+  if(key === "phientoa"){
+    scene = `<g ${g}>
+      <line x1="200" y1="54" x2="200" y2="138"/><rect x="174" y="138" width="52" height="12" rx="4" fill="#fff"/>
+      <line x1="138" y1="72" x2="262" y2="72"/><circle cx="200" cy="60" r="8" fill="#FACC15"/>
+      <path d="M138 72 l-18 28 h36 z" fill="#fff"/><path d="M262 72 l-18 28 h36 z" fill="#fff"/>
+      <line x1="120" y1="72" x2="138" y2="72"/><line x1="262" y1="72" x2="280" y2="72"/></g>
+      <g ${g}><rect x="298" y="92" width="50" height="18" rx="6" fill="#fff" transform="rotate(35 323 101)"/><line x1="306" y1="118" x2="330" y2="140"/></g>`;
+  } else if(key === "tranhbien"){
+    scene = `<g ${g}>
+      <path d="M64 52 h94 a12 12 0 0 1 12 12 v34 a12 12 0 0 1 -12 12 h-60 l-24 20 v-20 h-10 a12 12 0 0 1 -12 -12 v-34 a12 12 0 0 1 12 -12 z" fill="#4ADE80"/>
+      <path d="M336 52 h-94 a12 12 0 0 0 -12 12 v34 a12 12 0 0 0 12 12 h60 l24 20 v-20 h10 a12 12 0 0 0 12 -12 v-34 a12 12 0 0 0 -12 -12 z" fill="#F87171"/></g>
+      <circle cx="200" cy="92" r="22" fill="#FACC15" ${g}/><text x="200" y="101" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="22" fill="#1E1B4B">VS</text>`;
+  } else {
+    scene = `<g ${g}>
+      <rect x="118" y="44" width="164" height="108" rx="8" fill="#fff"/>
+      <rect x="132" y="58" width="136" height="20" rx="3" fill="${C}"/>
+      <g fill="#CBD5E1"><rect x="132" y="88" width="62" height="8" rx="2"/><rect x="132" y="104" width="62" height="8" rx="2"/><rect x="132" y="120" width="62" height="8" rx="2"/><rect x="132" y="136" width="44" height="8" rx="2"/></g>
+      <rect x="204" y="88" width="64" height="48" rx="4" fill="#FDE68A"/></g>
+      <g><circle cx="300" cy="118" r="20" fill="none" stroke="#fff" stroke-width="6"/><line x1="314" y1="132" x2="332" y2="150" stroke="#fff" stroke-width="7" stroke-linecap="round"/></g>`;
+  }
+  return `<svg class="rpArtSvg" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs><linearGradient id="rpbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${C}"/><stop offset="1" stop-color="#1E1B4B" stop-opacity=".6"/></linearGradient></defs>
+    <rect width="400" height="180" fill="url(#rpbg)"/>
+    <circle cx="44" cy="32" r="46" fill="#fff" opacity=".08"/><circle cx="362" cy="162" r="60" fill="#fff" opacity=".08"/>
+    <circle cx="330" cy="30" r="8" fill="#fff" opacity=".18"/>${scene}</svg>`;
+}
 function startRolePlay(key){
   rpData = window.ROLEPLAY && window.ROLEPLAY[key]; if(!rpData) return;
   rpKey = key; rpScene = -1; rpScore = 0;
@@ -1467,9 +1499,8 @@ function rpIntro(){
   document.getElementById("counter").textContent = "Nhập vai";
   document.getElementById("bar").style.width = "0%";
   document.getElementById("qCard").innerHTML =
-    `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">🎭 ${esc(rpData.tag || "Nhập vai")}</span>
-     <div class="rpTitle">${esc(rpData.title)}</div>
-     <div class="rpNarr">${esc(rpData.intro)}</div>
+    `<div class="rpBanner">${rpArt(rpKey)}<div class="rpBannerCap"><span class="rpTag">🎭 ${esc(rpData.tag || "Nhập vai")}</span><span class="rpBannerTitle">${esc(rpData.title)}</span></div></div>
+     <div class="rpScene"><div class="rpAvatar">${rpData.emoji || "🎭"}</div><div class="rpNarr">${esc(rpData.intro)}</div></div>
      <div class="rpRole">🎬 ${esc(rpData.role)}</div>
      <div class="center"><button class="btn" onclick="rpNext()">Bắt đầu ▶</button></div>`;
   document.getElementById("runner").scrollTo({top:0});
@@ -1480,9 +1511,10 @@ function rpStage(){
   const st = rpData.stages[rpScene], n = rpData.stages.length;
   document.getElementById("counter").textContent = "Cảnh " + (rpScene+1) + "/" + n;
   document.getElementById("bar").style.width = (rpScene / n * 100) + "%";
-  let h = `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">🎭 Cảnh ${rpScene+1}</span>
-     <div class="rpNarr">${esc(st.text)}</div><div class="rpChoices">`;
-  st.choices.forEach((c,i) => { h += `<button class="rpChoice" onclick="rpChoose(${i},this)">${esc(c.label)}</button>`; });
+  let h = `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">🎭 Cảnh ${rpScene+1}/${n}</span>
+     <div class="rpScene"><div class="rpAvatar">${rpData.emoji || "🎭"}</div><div class="rpNarr">${esc(st.text)}</div></div>
+     <div class="rpChoices">`;
+  st.choices.forEach((c,i) => { h += `<button class="rpChoice" onclick="rpChoose(${i},this)"><span class="rpKey">${KEYS[i]}</span><span>${esc(c.label)}</span></button>`; });
   h += `</div><div class="rpReply" id="rpReply"></div><div class="center"><button class="btn next hidden" id="btnNext" onclick="rpNext()">Tiếp ➜</button></div>`;
   document.getElementById("qCard").innerHTML = h;
   document.getElementById("runner").scrollTo({top:0});
@@ -1506,8 +1538,8 @@ function rpResult(){
   const tier = pct >= 85 ? "Nhà tư duy phản biện xuất sắc! 🏆" : pct >= 60 ? "Lập luận tốt! 😎" : pct >= 40 ? "Khá ổn, luyện thêm nhé 💪" : "Hãy cân nhắc kỹ hơn 📖";
   if(pct >= 50){ sfx.win(); burst(18); }
   document.getElementById("resultCard").innerHTML = `
-    <div class="hostMini" style="margin:0 auto;width:66px;height:66px;font-size:36px">${rpData.emoji || "🎭"}</div>
-    <h2 style="margin-top:10px">${esc(rpData.title)}</h2>
+    <div class="rpBanner rpBannerSm">${rpArt(rpKey)}</div>
+    <h2 style="margin-top:12px">${esc(rpData.title)}</h2>
     <div class="plTier">Tư duy phản biện: <b>${rpScore}/${rpMax}</b> (${pct}%) — ${tier}</div>
     <div class="plRec"><div class="plRecHead">💡 Bài học rút ra</div><p>${esc(rpData.lesson)}</p></div>
     <div class="center">
