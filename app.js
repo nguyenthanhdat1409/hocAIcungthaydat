@@ -150,20 +150,20 @@ function go(id){
 /* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
 const ASSET_VER = "25";
 let _curDataPromise = null;
+function loadScript(src){
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = src; s.async = false;      // giữ thứ tự thực thi, nhưng tải SONG SONG
+    s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
 function loadCurriculumData(){
   if(_curDataPromise) return _curDataPromise;
-  _curDataPromise = new Promise((resolve, reject) => {
-    const files = ["curriculum.js", "lessons_content.js", "lesson_quiz.js"];
-    let i = 0;
-    (function next(){
-      if(i >= files.length){ resolve(); return; }
-      const s = document.createElement("script");
-      s.src = files[i] + "?v=" + ASSET_VER;
-      s.onload = () => { i++; next(); };
-      s.onerror = reject;
-      document.head.appendChild(s);
-    })();
-  });
+  // Tải 3 file cùng lúc → thời gian ≈ file lớn nhất, thay vì cộng dồn tuần tự.
+  const files = ["curriculum.js", "lessons_content.js", "lesson_quiz.js"];
+  _curDataPromise = Promise.all(files.map(f => loadScript(f + "?v=" + ASSET_VER)))
+    .catch(err => { _curDataPromise = null; throw err; });   // cho phép thử lại nếu lỗi
   return _curDataPromise;
 }
 function showCurriculum(){
@@ -581,7 +581,10 @@ function renderCurriculum(){
 
   /* Thanh công cụ: tìm kiếm */
   html += `<div class="curTools">
-      <div class="curSearch"><span>🔎</span><input id="curSearchInput" type="search" placeholder="Tìm bài học theo tên hoặc nội dung…" oninput="onCurSearch(this.value)" value="${esc(curSearch)}"></div>
+      <div class="curSearch"><span>🔎</span><input id="curSearchInput" type="search" placeholder="Tìm bài học theo tên hoặc nội dung…" oninput="onCurSearch(this.value)" value="${esc(curSearch)}">
+        <button class="curClear${curSearch?"":" hidden"}" id="curClear" onclick="clearCurSearch()" aria-label="Xoá tìm kiếm" title="Xoá">✕</button>
+      </div>
+      <div class="curCount hidden" id="curCount" aria-live="polite"></div>
     </div>`;
 
   /* Thanh nhảy tới level */
@@ -764,11 +767,13 @@ function onCurSearch(v){
 function applyCurSearch(){
   const term = curSearch.toLowerCase();
   const rows = document.querySelectorAll(".lsRow");
+  let hits = 0;
   rows.forEach(r => {
     const [li,mi,lsi] = r.dataset.ls.split("-").map(Number);
     const ls = _lessonMap[li][mi][lsi];
     const hay = (ls.name + " " + ls.content + " " + (ls.challenge||"")).toLowerCase();
     const hit = !term || hay.indexOf(term) > -1;
+    if(hit && term) hits++;
     r.classList.toggle("hidden", !hit);
     // tô đậm
     r.querySelector(".lsName").innerHTML = hi(ls.name, term);
@@ -785,6 +790,26 @@ function applyCurSearch(){
     const visible = sec.querySelectorAll(".modCard:not(.hidden)").length;
     sec.classList.toggle("dim", term && visible === 0);
   });
+  // nút xoá + dòng đếm kết quả
+  const clr = document.getElementById("curClear");
+  if(clr) clr.classList.toggle("hidden", !term);
+  const cnt = document.getElementById("curCount");
+  if(cnt){
+    if(!term){ cnt.classList.add("hidden"); cnt.textContent = ""; }
+    else {
+      cnt.classList.remove("hidden");
+      cnt.classList.toggle("empty", hits === 0);
+      cnt.textContent = hits === 0
+        ? `😕 Không tìm thấy bài nào cho “${curSearch}”. Thử từ khoá khác nhé.`
+        : `🔎 Tìm thấy ${hits} bài cho “${curSearch}”.`;
+    }
+  }
+}
+function clearCurSearch(){
+  curSearch = "";
+  const inp = document.getElementById("curSearchInput");
+  if(inp){ inp.value = ""; inp.focus(); }
+  applyCurSearch();
 }
 
 /* =========================================================
@@ -1565,4 +1590,36 @@ document.addEventListener("DOMContentLoaded", () => {
     if(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ""))) return;
     loadCurriculumData().catch(() => {});
   });
+  setupPWA();
 });
+
+/* ---------- PWA: đăng ký service worker + nút cài đặt ---------- */
+let _deferredPrompt = null;
+function setupPWA(){
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+  // Trình duyệt báo "có thể cài" → hiện nút cài
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    _deferredPrompt = e;
+    const b = document.getElementById("installBtn");
+    if(b) b.classList.remove("hidden");
+  });
+  // Đã cài xong → ẩn nút
+  window.addEventListener("appinstalled", () => {
+    _deferredPrompt = null;
+    const b = document.getElementById("installBtn");
+    if(b) b.classList.add("hidden");
+  });
+}
+async function pwaInstall(){
+  const b = document.getElementById("installBtn");
+  if(!_deferredPrompt){ if(b) b.classList.add("hidden"); return; }
+  _deferredPrompt.prompt();
+  try{ await _deferredPrompt.userChoice; }catch{}
+  _deferredPrompt = null;
+  if(b) b.classList.add("hidden");
+}

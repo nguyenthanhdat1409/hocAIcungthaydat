@@ -5,9 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Học AI Vui 🤖</title>
 <meta name="description" content="Khởi đầu học AI cho mọi người — bài học trực quan, vui nhộn, dễ hiểu.">
+
+<!-- PWA: cài ra màn hình chính & học offline -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#7C3AED">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Học AI Vui">
+<meta name="mobile-web-app-capable" content="yes">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=33">
+<link rel="stylesheet" href="styles.css?v=34">
 </head>
 <body>
 
@@ -174,6 +186,9 @@
 <script defer src="placement.js?v=30"></script>
 <script defer src="exercises.js?v=32"></script>
 <script defer src="roleplay.js?v=32"></script>
-<script defer src="app.js?v=33"></script>
+<!-- Nút cài ứng dụng (ẩn; hiện khi trình duyệt cho phép cài) -->
+<button id="installBtn" class="installBtn hidden" onclick="pwaInstall()">📲 Cài ứng dụng</button>
+
+<script defer src="app.js?v=34"></script>
 </body>
 </html>

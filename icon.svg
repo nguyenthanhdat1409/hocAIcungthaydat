@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Học AI Vui">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.28" cy="0.24" r="0.6">
+      <stop offset="0" stop-color="#A78BFA" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#A78BFA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#glow)"/>
+  <!-- ăng-ten -->
+  <rect x="250" y="96" width="12" height="56" rx="6" fill="#1E1B4B"/>
+  <circle cx="256" cy="90" r="23" fill="#FACC15"/>
+  <!-- đầu robot -->
+  <rect x="102" y="154" width="308" height="266" rx="56" fill="#7C3AED"/>
+  <rect x="112" y="164" width="288" height="246" rx="50" fill="#fff"/>
+  <!-- màn hình mặt -->
+  <rect x="141" y="200" width="230" height="190" rx="40" fill="#1E1B4B"/>
+  <!-- mắt -->
+  <circle cx="209" cy="279" r="27" fill="#06B6D4"/>
+  <circle cx="303" cy="279" r="27" fill="#06B6D4"/>
+  <circle cx="200" cy="270" r="9" fill="#fff"/>
+  <circle cx="294" cy="270" r="9" fill="#fff"/>
+  <!-- miệng cười -->
+  <path d="M186 312 a72 72 0 0 0 140 0" fill="none" stroke="#06B6D4" stroke-width="15" stroke-linecap="round"/>
+  <!-- má hồng -->
+  <circle cx="174" cy="325" r="14" fill="#EC4899" opacity="0.75"/>
+  <circle cx="338" cy="325" r="14" fill="#EC4899" opacity="0.75"/>
+</svg>
