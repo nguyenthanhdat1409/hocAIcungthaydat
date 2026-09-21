@@ -1317,7 +1317,7 @@ function renderExHub(){
     Object.keys(window.ROLEPLAY).forEach(k => {
       const r = window.ROLEPLAY[k];
       html += `<button class="exModCard rpCard" onclick="startRolePlay('${k}')">
-        <span class="rpThumb">${rpArt(k)}</span>
+        ${rpThumbHtml(k)}
         <span class="emCode">${r.emoji || "🎭"} NHẬP VAI</span>
         <span class="emName">${esc(r.title.replace(/^\S+\s/, ""))}</span>
         <span class="emMeta">${esc(r.tag || "")}</span></button>`;
@@ -1499,6 +1499,17 @@ function rpImgFail(el, em){ const p = el.parentElement; if(p){ p.classList.remov
 function rpIconInner(em){
   const img = RP_IMG[rpKey];
   return img ? `<img src="${img}" alt="" loading="lazy" decoding="async" onerror="rpImgFail(this,'${em}')">` : em;
+}
+/* Thumbnail thẻ chọn game ở hub Bài tập: ảnh 3D trên nền gradient (fallback emoji) */
+function rpThumbHtml(k){
+  const r = window.ROLEPLAY[k] || {};
+  const em = r.emoji || "🎭";
+  const t = RP_THEME[k] || {g1:"#7C3AED", g2:"#EC4899"};
+  const img = RP_IMG[k];
+  const inner = img
+    ? `<img src="${img}" alt="" loading="lazy" decoding="async" onerror="rpImgFail(this,'${em}')">`
+    : `<span class="rpThumbEmoji">${em}</span>`;
+  return `<span class="rpThumb" style="--h1:${t.g1};--h2:${t.g2}">${inner}</span>`;
 }
 /* Tên game bỏ emoji ở đầu (vì đã có icon 3D lớn ở hero) */
 function rpHeadingName(){ return (rpData && rpData.title || "").replace(/^[^\p{L}\d]+/u, "").trim(); }

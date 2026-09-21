@@ -1770,7 +1770,15 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 .rpChoice.rgood .rpKey{background:#22C55E}
 .rpChoice.rok .rpKey{background:#F59E0B}
 .rpChoice.rbad .rpKey{background:#EF4444}
-.rpThumb{display:block;height:80px;border-radius:12px;overflow:hidden;margin-bottom:8px}
+.rpThumb{position:relative;display:flex;align-items:center;justify-content:center;
+  height:158px;border-radius:16px;overflow:hidden;margin-bottom:10px;font-size:64px;
+  background:linear-gradient(135deg,var(--h1,#7C3AED),var(--h2,#EC4899))}
+.rpThumb::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -20%,rgba(255,255,255,.3),transparent 60%)}
+.rpThumb::after{content:"";position:absolute;right:-26px;top:-22px;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.14)}
+.rpThumb img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;transform:scale(1.05);
+  filter:drop-shadow(0 8px 12px rgba(20,10,50,.3));transition:transform .18s}
+.rpThumb .rpThumbEmoji{position:relative;z-index:1;filter:drop-shadow(0 4px 8px rgba(20,10,50,.3))}
+.rpCard:hover:not(:disabled) .rpThumb img{transform:scale(1.11)}
 .rpThumb .rpArtSvg{width:100%;height:100%}
 
 /* =========================================================
