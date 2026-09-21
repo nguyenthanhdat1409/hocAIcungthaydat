@@ -9,6 +9,13 @@ window.LESSON_NOTES = {
   "1.1.1": `
     <p>Máy tính là một <b>người bạn giúp việc</b>: em có thể học bài, vẽ tranh, xem phim và chơi trò chơi trên đó. Muốn dùng giỏi, trước hết mình làm quen các <b>bộ phận</b> của nó nhé.</p>
     <div class="secTitle" data-icon="🧩">Các bộ phận chính</div>
+    <div class="partGrid">
+      <figure class="partCard"><img src="images/manHinh.jpg" alt="Màn hình" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>🖥️ Màn hình</b></figure>
+      <figure class="partCard"><img src="images/thanMayCPU.jpg" alt="Thân máy (CPU)" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>📦 Thân máy</b></figure>
+      <figure class="partCard"><img src="images/banPhim.jpg" alt="Bàn phím" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>⌨️ Bàn phím</b></figure>
+      <figure class="partCard"><img src="images/chuotMayTinh.jpg" alt="Chuột máy tính" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>🖱️ Chuột</b></figure>
+      <figure class="partCard"><img src="images/loaMayTinh.jpg" alt="Loa máy tính" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>🔊 Loa</b></figure>
+    </div>
     <ul>
       <li>🖥️ <b>Màn hình:</b> nơi hiện hình ảnh, giống “khuôn mặt” của máy tính.</li>
       <li>📦 <b>Thân máy (CPU):</b> “bộ não” xử lý mọi việc bên trong.</li>
@@ -17,6 +24,7 @@ window.LESSON_NOTES = {
       <li>🔊 <b>Loa:</b> để nghe âm thanh.</li>
     </ul>
     <div class="secTitle" data-icon="🔌">Bật và tắt đúng cách</div>
+    <figure class="inlineFig right"><img src="images/shutDown.png" alt="Tắt máy đúng cách" loading="lazy" decoding="async" onerror="this.closest('.inlineFig').style.display='none'"><figcaption>Luôn “Tắt máy” đúng cách nhé!</figcaption></figure>
     <p><b>Bật:</b> nhấn nút nguồn (thường có ký hiệu ⏻) trên thân máy, rồi chờ máy khởi động.<br>
     <b>Tắt:</b> chọn nút <b>Bắt đầu → Tắt máy (Shut down)</b>. <b>Không</b> rút điện đột ngột vì có thể làm hỏng máy hoặc mất bài.</p>
     <div class="secTitle" data-icon="🖱️">Chuột và bàn phím làm gì?</div>
