@@ -351,6 +351,19 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .tipBox::before{content:"💡 "; font-size:18px}
 .tipBox b{color:#6D28D9; font-weight:800}
 
+/* Ảnh minh hoạ trong bài học: lưới bộ phận + hình lẻ */
+.partGrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(116px,1fr)); gap:12px; margin:14px 0}
+.partCard{margin:0; background:var(--surface-soft,#F6F3FF); border:1px solid var(--line,#ECE6FB); border-radius:var(--r-md,18px);
+  padding:10px 10px 12px; text-align:center; box-shadow:var(--sh-sm,0 3px 10px rgba(36,26,84,.10)); transition:transform .15s, box-shadow .15s}
+.partCard:hover{transform:translateY(-3px); box-shadow:var(--sh-md,0 10px 26px rgba(36,26,84,.14))}
+.partCard img{width:100%; height:92px; object-fit:contain; background:#fff; border-radius:10px; display:block}
+.partCard b{display:block; margin-top:8px; font-family:var(--font-display); font-weight:700; font-size:13.5px; color:var(--ink)}
+.inlineFig{margin:6px 0 12px; text-align:center}
+.inlineFig img{max-width:100%; border-radius:var(--r-md,18px); box-shadow:var(--sh-sm,0 3px 10px rgba(36,26,84,.10))}
+.inlineFig figcaption{margin-top:6px; font-size:12.5px; color:var(--muted,#6B6494); font-weight:600}
+.inlineFig.right{float:right; width:180px; margin:0 0 10px 16px}
+@media(max-width:520px){ .inlineFig.right{float:none; width:auto; margin:6px 0 12px} }
+
 /* Alpha grid */
 .alphaGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(52px,1fr)); gap:10px; margin:14px 0}
 .alphaGrid span{background:linear-gradient(135deg,#FEF9C3,#FEF3C7); border:2px solid var(--yel); border-radius:14px; text-align:center; padding:12px 0;

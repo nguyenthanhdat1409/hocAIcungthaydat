@@ -148,7 +148,7 @@ function go(id){
 }
 
 /* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
-const ASSET_VER = "25";
+const ASSET_VER = "26";
 let _curDataPromise = null;
 function loadScript(src){
   return new Promise((resolve, reject) => {
