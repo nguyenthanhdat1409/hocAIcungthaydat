@@ -1630,7 +1630,8 @@ function rpResult(){
   document.getElementById("resultCard").innerHTML = `
     <div class="rpResultIcon${RP_IMG[rpKey] ? " hasImg" : ""}" style="--h1:${t.g1};--h2:${t.g2}">${rpIconInner(rpData.emoji || "🎭")}</div>
     <h2 style="margin-top:8px">${esc(rpHeadingName())}</h2>
-    <div class="plTier">Tư duy phản biện: <b>${rpScore}/${rpMax}</b> (${pct}%) — ${tier}</div>
+    <div class="plTier">Điểm tư duy: <b>${rpScore}/${rpMax}</b> điểm · ${pct}% — ${tier}</div>
+    <div class="plNote">Mỗi cảnh tối đa 2 điểm (${rpData.stages.length} cảnh × 2đ). Chọn đáp án cân nhắc kỹ nhất để được 2 điểm nhé!</div>
     <div class="plRec"><div class="plRecHead">💡 Bài học rút ra</div><p>${esc(rpData.lesson)}</p></div>
     <div class="center">
       <button class="btn" onclick="startRolePlay('${rpKey}')">Chơi lại 🔄</button>

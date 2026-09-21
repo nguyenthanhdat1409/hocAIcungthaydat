@@ -1484,7 +1484,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 .ageBtn.on{background:var(--vio);color:#fff;border-color:var(--vio);box-shadow:0 6px 14px -4px var(--vio)}
 
 /* Kết quả gợi ý */
-.plTier{font-weight:700;color:#475569;margin:6px 0 14px;font-size:14.5px}
+.plTier{font-weight:700;color:#475569;margin:6px 0 6px;font-size:14.5px}
+.plNote{color:#64748B;font-size:12.5px;margin:0 auto 14px;max-width:460px;line-height:1.5}
 .plRec{background:linear-gradient(135deg,#EFF6FF,#F5F3FF);border:2px solid #C7D2FE;border-radius:18px;
   padding:16px 18px;text-align:left;margin:0 auto 8px;max-width:520px}
 .plRecHead{font-family:var(--font-display);font-weight:800;color:var(--vio);font-size:15px}
