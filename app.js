@@ -1484,6 +1484,22 @@ const RP_THEME = {
   toasoan:   {g1:"#FB7A2B", g2:"#EC4899"},
 };
 function rpTheme(){ return RP_THEME[rpKey] || {g1:"#7C3AED", g2:"#EC4899"}; }
+/* Ảnh 3D cho hero + icon kết quả (thiếu ảnh nào tự fallback về emoji) */
+const RP_IMG = {
+  phientoa:  "images/game-phientoa.png",
+  tranhbien: "images/game-tranhbien.png",
+  toasoan:   "images/game-toasoan.png",
+};
+/* Nhân vật hiện bên lời kể lúc chơi (bổ sung dần khi có thêm ảnh) */
+const RP_AVATAR = {
+  phientoa: "images/char-tham-phan.png",
+};
+/* Ảnh lỗi → thay bằng emoji, không vỡ layout */
+function rpImgFail(el, em){ const p = el.parentElement; if(p){ p.classList.remove("hasImg"); p.textContent = em; } }
+function rpIconInner(em){
+  const img = RP_IMG[rpKey];
+  return img ? `<img src="${img}" alt="" loading="lazy" decoding="async" onerror="rpImgFail(this,'${em}')">` : em;
+}
 /* Tên game bỏ emoji ở đầu (vì đã có icon 3D lớn ở hero) */
 function rpHeadingName(){ return (rpData && rpData.title || "").replace(/^[^\p{L}\d]+/u, "").trim(); }
 /* Hero: icon 3D tròn lớn + badge kính mờ + tiêu đề + hình khối bay */
@@ -1492,7 +1508,7 @@ function rpHero(){
   return `<div class="rpHero" style="--h1:${t.g1};--h2:${t.g2}">
       <span class="rpBlob b1"></span><span class="rpBlob b2"></span><span class="rpBlob b3"></span>
       <span class="rpSpark s1">✨</span><span class="rpSpark s2">⭐</span><span class="rpSpark s3">💫</span>
-      <div class="rpHeroIcon">${rpData.emoji || "🎭"}</div>
+      <div class="rpHeroIcon${RP_IMG[rpKey] ? " hasImg" : ""}">${rpIconInner(rpData.emoji || "🎭")}</div>
       <span class="rpCat">🎭 ${esc(rpData.tag || "Nhập vai")}</span>
       <h2 class="rpHeroTitle">${esc(rpHeadingName())}</h2>
     </div>`;
@@ -1568,8 +1584,13 @@ function rpStage(){
   const st = rpData.stages[rpScene], n = rpData.stages.length;
   document.getElementById("counter").textContent = "Cảnh " + (rpScene+1) + "/" + n;
   document.getElementById("bar").style.width = (rpScene / n * 100) + "%";
+  const av = RP_AVATAR[rpKey];
+  const em = rpData.emoji || "🎭";
+  const avatar = av
+    ? `<div class="rpAvatar hasImg"><img src="${av}" alt="" loading="lazy" decoding="async" onerror="rpImgFail(this,'${em}')"></div>`
+    : `<div class="rpAvatar">${em}</div>`;
   let h = `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">🎭 Cảnh ${rpScene+1}/${n}</span>
-     <div class="rpScene"><div class="rpAvatar">${rpData.emoji || "🎭"}</div><div class="rpNarr">${esc(st.text)}</div></div>
+     <div class="rpScene">${avatar}<div class="rpNarr">${esc(st.text)}</div></div>
      <div class="rpChoices">`;
   st.choices.forEach((c,i) => { h += `<button class="rpChoice" onclick="rpChoose(${i},this)"><span class="rpKey">${KEYS[i]}</span><span>${esc(c.label)}</span></button>`; });
   h += `</div><div class="rpReply" id="rpReply"></div><div class="center"><button class="btn next hidden" id="btnNext" onclick="rpNext()">Tiếp ➜</button></div>`;
@@ -1596,7 +1617,7 @@ function rpResult(){
   if(pct >= 50){ sfx.win(); burst(18); }
   const t = rpTheme();
   document.getElementById("resultCard").innerHTML = `
-    <div class="rpResultIcon" style="--h1:${t.g1};--h2:${t.g2}">${rpData.emoji || "🎭"}</div>
+    <div class="rpResultIcon${RP_IMG[rpKey] ? " hasImg" : ""}" style="--h1:${t.g1};--h2:${t.g2}">${rpIconInner(rpData.emoji || "🎭")}</div>
     <h2 style="margin-top:8px">${esc(rpHeadingName())}</h2>
     <div class="plTier">Tư duy phản biện: <b>${rpScore}/${rpMax}</b> (${pct}%) — ${tier}</div>
     <div class="plRec"><div class="plRecHead">💡 Bài học rút ra</div><p>${esc(rpData.lesson)}</p></div>

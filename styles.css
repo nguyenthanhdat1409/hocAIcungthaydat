@@ -1761,6 +1761,12 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 @keyframes rpFloat{50%{transform:translateY(-6px)}}
 @keyframes rpBadgeIn{from{opacity:0; transform:translateX(-16px)}to{opacity:1; transform:none}}
 @media (prefers-reduced-motion:reduce){ .rpHeroIcon,.rpSpark,.rpResultIcon{animation:none} }
+
+/* Ảnh 3D trong vòng tròn hero / kết quả / avatar (fallback emoji khi thiếu) */
+.rpHeroIcon.hasImg, .rpResultIcon.hasImg{overflow:hidden}
+.rpHeroIcon.hasImg img, .rpResultIcon.hasImg img{width:100%; height:100%; object-fit:contain; display:block; transform:scale(1.08)}
+.rpAvatar.hasImg{padding:0; overflow:hidden; background:#fff}
+.rpAvatar.hasImg img{width:100%; height:100%; object-fit:cover; display:block}
 .rpChoice.rgood .rpKey{background:#22C55E}
 .rpChoice.rok .rpKey{background:#F59E0B}
 .rpChoice.rbad .rpKey{background:#EF4444}
