@@ -1476,7 +1476,28 @@ function exResult(){
    Dữ liệu ở roleplay.js (window.ROLEPLAY)
    ========================================================= */
 let rpData = null, rpKey = "", rpScene = -1, rpScore = 0, rpMax = 0, rpLocked = false;
-/* Tranh minh hoạ SVG theo kịch bản (offline) */
+
+/* Theme màu hero theo game (gradient tím→hồng / chàm→lơ / cam→hồng) */
+const RP_THEME = {
+  phientoa:  {g1:"#7C3AED", g2:"#EC4899"},
+  tranhbien: {g1:"#6366F1", g2:"#22C7E0"},
+  toasoan:   {g1:"#FB7A2B", g2:"#EC4899"},
+};
+function rpTheme(){ return RP_THEME[rpKey] || {g1:"#7C3AED", g2:"#EC4899"}; }
+/* Tên game bỏ emoji ở đầu (vì đã có icon 3D lớn ở hero) */
+function rpHeadingName(){ return (rpData && rpData.title || "").replace(/^[^\p{L}\d]+/u, "").trim(); }
+/* Hero: icon 3D tròn lớn + badge kính mờ + tiêu đề + hình khối bay */
+function rpHero(){
+  const t = rpTheme();
+  return `<div class="rpHero" style="--h1:${t.g1};--h2:${t.g2}">
+      <span class="rpBlob b1"></span><span class="rpBlob b2"></span><span class="rpBlob b3"></span>
+      <span class="rpSpark s1">✨</span><span class="rpSpark s2">⭐</span><span class="rpSpark s3">💫</span>
+      <div class="rpHeroIcon">${rpData.emoji || "🎭"}</div>
+      <span class="rpCat">🎭 ${esc(rpData.tag || "Nhập vai")}</span>
+      <h2 class="rpHeroTitle">${esc(rpHeadingName())}</h2>
+    </div>`;
+}
+/* Tranh minh hoạ SVG theo kịch bản (offline) — dùng cho thẻ chọn game ở hub Bài tập */
 function rpArt(key){
   const C = {phientoa:"#7C3AED", tranhbien:"#0EA5E9", toasoan:"#F97316"}[key] || "#7C3AED";
   const g = 'stroke="#1E1B4B" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"';
@@ -1524,10 +1545,21 @@ function rpIntro(){
   document.getElementById("counter").textContent = "Nhập vai";
   document.getElementById("bar").style.width = "0%";
   document.getElementById("qCard").innerHTML =
-    `<div class="rpBanner">${rpArt(rpKey)}<div class="rpBannerCap"><span class="rpTag">🎭 ${esc(rpData.tag || "Nhập vai")}</span><span class="rpBannerTitle">${esc(rpData.title)}</span></div></div>
-     <div class="rpScene"><div class="rpAvatar">${rpData.emoji || "🎭"}</div><div class="rpNarr">${esc(rpData.intro)}</div></div>
-     <div class="rpRole">🎬 ${esc(rpData.role)}</div>
-     <div class="center"><button class="btn" onclick="rpNext()">Bắt đầu ▶</button></div>`;
+    `<div class="rpIntro">
+      ${rpHero()}
+      <div class="rpStoryCard">
+        <div class="rpCardHead" data-ic="📖">Câu chuyện</div>
+        <p>${esc(rpData.intro)}</p>
+      </div>
+      <div class="rpRoleCard">
+        <div class="rpRoleAva">🎬</div>
+        <div class="rpRoleMain">
+          <div class="rpRoleLabel">Vai của em</div>
+          <div class="rpRoleText">${esc(rpData.role)}</div>
+        </div>
+      </div>
+      <button class="btn rpStartBtn" onclick="rpNext()">Bắt đầu phiêu lưu ▶</button>
+    </div>`;
   document.getElementById("runner").scrollTo({top:0});
 }
 function rpNext(){ rpScene++; if(rpScene < rpData.stages.length) rpStage(); else rpResult(); }
@@ -1562,9 +1594,10 @@ function rpResult(){
   const pct = rpMax ? Math.round(rpScore / rpMax * 100) : 0;
   const tier = pct >= 85 ? "Nhà tư duy phản biện xuất sắc! 🏆" : pct >= 60 ? "Lập luận tốt! 😎" : pct >= 40 ? "Khá ổn, luyện thêm nhé 💪" : "Hãy cân nhắc kỹ hơn 📖";
   if(pct >= 50){ sfx.win(); burst(18); }
+  const t = rpTheme();
   document.getElementById("resultCard").innerHTML = `
-    <div class="rpBanner rpBannerSm">${rpArt(rpKey)}</div>
-    <h2 style="margin-top:12px">${esc(rpData.title)}</h2>
+    <div class="rpResultIcon" style="--h1:${t.g1};--h2:${t.g2}">${rpData.emoji || "🎭"}</div>
+    <h2 style="margin-top:8px">${esc(rpHeadingName())}</h2>
     <div class="plTier">Tư duy phản biện: <b>${rpScore}/${rpMax}</b> (${pct}%) — ${tier}</div>
     <div class="plRec"><div class="plRecHead">💡 Bài học rút ra</div><p>${esc(rpData.lesson)}</p></div>
     <div class="center">
