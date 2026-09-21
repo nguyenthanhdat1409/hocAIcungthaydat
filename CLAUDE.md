@@ -15,7 +15,7 @@ Bộ khung này tách 3 file: **`index.html`** (cấu trúc), **`styles.css`** (
 ## Quy tắc kỹ thuật
 - Nội dung nằm ở 4 khối DATA đầu file **`app.js`**: `FEATURES`, `TOPICS`, `LESSONS`, `BANK`. Thêm bài học / câu hỏi thì sửa ở đây.
 - Giữ nguyên phần ENGINE (điều hướng, quiz, modal) trừ khi có yêu cầu rõ.
-- Dùng **design tokens** trong `:root` để đồng bộ giao diện: bảng màu (`--vio/--pink/--cyan/--yel/--ink`…), bo góc (`--r-sm/md/lg/xl`), bóng mềm (`--sh-sm/md/lg`), gradient (`--grad-brand/--grad-cta`). Font: **Fredoka** (display) + **Be Vietnam Pro** (body). Nền "AI vũ trụ" (tím-chàm sâu + quầng sáng) vẽ ở `body::before` — sửa nền ở đó, KHÔNG ở `body{background}` (đã bị ghi đè). Muốn đổi tông toàn site: sửa token, đừng hard-code hex rải rác.
+- Giữ nguyên bảng màu và font đang dùng (biến CSS trong `:root`, font Baloo 2 + Be Vietnam Pro) để đồng bộ giao diện.
 - Trong nội dung bài học (`body`) dùng các lớp có sẵn: `.secTitle` (kèm `data-icon`), `.tipBox`, `<p>`, `<ul>`. **Tránh `.langBox`** (đang gắn nhãn "English hint" của dự án cũ).
 - Web phải chạy tốt trên điện thoại (đã có `viewport` responsive).
 - Không thêm thư viện ngoài / link CDN mới nếu không cần thiết. Site chạy tĩnh, không cần server.
