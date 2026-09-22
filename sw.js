@@ -5,7 +5,7 @@
    - Google Fonts: cache-first (SWR).
    Đổi CACHE_VER mỗi khi cần buộc làm mới toàn bộ cache.
    ========================================================= */
-const CACHE_VER = "v1";
+const CACHE_VER = "v2";
 const CACHE = "hocaivui-" + CACHE_VER;
 
 /* App shell — tiền nạp để chạy được offline ngay lần đầu. */
@@ -69,13 +69,33 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Cùng origin (js/css/png/svg/jpg/webmanifest) → stale-while-revalidate.
+  // Ảnh cùng origin → NETWORK-FIRST: online luôn lấy ảnh mới (tránh kẹt bản cũ khi
+  // cập nhật ảnh mà giữ nguyên tên file); offline mới dùng bản đã cache.
+  if (url.origin === self.location.origin && /\.(png|jpe?g|webp|gif|svg)$/i.test(url.pathname)) {
+    e.respondWith(networkFirst(req));
+    return;
+  }
+
+  // Cùng origin còn lại (js/css/webmanifest — đã version bằng ?v) → stale-while-revalidate.
   if (url.origin === self.location.origin) {
     e.respondWith(staleWhileRevalidate(req));
     return;
   }
   // Khác origin còn lại: để trình duyệt tự xử lý.
 });
+
+function networkFirst(req) {
+  return caches.open(CACHE).then((cache) =>
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200 && (res.type === "basic" || res.type === "cors")) {
+          cache.put(req, res.clone()).catch(() => {});
+        }
+        return res;
+      })
+      .catch(() => cache.match(req))
+  );
+}
 
 function staleWhileRevalidate(req) {
   return caches.open(CACHE).then((cache) =>
