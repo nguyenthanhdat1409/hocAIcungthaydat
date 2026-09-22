@@ -1482,6 +1482,8 @@ const RP_THEME = {
   phientoa:  {g1:"#7C3AED", g2:"#EC4899"},
   tranhbien: {g1:"#6366F1", g2:"#22C7E0"},
   toasoan:   {g1:"#FB7A2B", g2:"#EC4899"},
+  baovemat:  {g1:"#10B981", g2:"#06B6D4"},
+  thienvi:   {g1:"#F59E0B", g2:"#F43F5E"},
 };
 function rpTheme(){ return RP_THEME[rpKey] || {g1:"#7C3AED", g2:"#EC4899"}; }
 /* Ảnh 3D cho hero + icon kết quả (thiếu ảnh nào tự fallback về emoji) */
