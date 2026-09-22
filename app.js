@@ -644,8 +644,8 @@ function observeReveal(){
 
 /* Ảnh minh hoạ cấp MODULE & cấp LEVEL (hiện có: Level 1) */
 const MOD_IMG = {
-  "1.1":"images/mod-1.1.png", "1.2":"images/mod-1.2.png", "1.3":"images/mod-1.3.jpg",
-  "1.4":"images/mod-1.4.jpg", "1.5":"images/mod-1.5.jpg", "1.6":"images/mod-1.6.jpg",
+  "1.1":"images/mod-1.1.png", "1.2":"images/mod-1.2.png", "1.3":"images/mod-1.3.png",
+  "1.4":"images/mod-1.4.png", "1.5":"images/mod-1.5.png", "1.6":"images/mod-1.6.jpg",
   "1.7":"images/mod-1.7.jpg", "1.8":"images/mod-1.8.jpg",
   "2.1":"images/mod-2.1.png",
 };
