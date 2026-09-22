@@ -18,7 +18,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Muốn bật máy tính, em làm gì?", o:["Nhấn nút nguồn","Lắc con chuột","Hô 'mở ra'","Rút dây điện"], a:0},
     {q:"'Nhấp đúp' chuột thường dùng để?", o:["Mở một mục","Xoá vĩnh viễn","Tắt máy","Đổi màu màn hình"], a:0},
     {q:"Phím nào tạo khoảng trắng giữa các chữ?", o:["Phím cách (Space)","Phím Enter","Phím Shift","Phím Esc"], a:0},
-    {q:"Khi chưa chắc cách dùng máy, em nên?", o:["Hỏi thầy cô hoặc ba mẹ","Bấm lung tung thử","Tắt máy ngay","Giấu không cho ai biết"], a:0}
+    {q:"Khi chưa chắc cách dùng máy, em nên?", o:["Hỏi thầy cô hoặc ba mẹ","Bấm lung tung thử","Tắt máy ngay","Giấu không cho ai biết"], a:0},
+    {q:"Nhấp đúp chuột (2 lần nhanh) thường dùng để làm gì?", o:["Mở một mục","Xoá vĩnh viễn","Tắt màn hình","Tăng âm lượng"], a:0},
+    {q:"Cách TẮT MÁY đúng là gì?", o:["Chọn Bắt đầu → Tắt máy (Shut down)","Rút điện đột ngột","Đập vào thân máy","Cứ để vậy không tắt"], a:0}
   ],
 
   "1.1.2": [
@@ -31,7 +33,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"'Kéo thả' nghĩa là?", o:["Giữ nút trái, di chuyển rồi thả","Bấm hai lần thật nhanh","Rút điện ra","Gõ phím Enter"], a:0},
     {q:"Xếp 3 cửa sổ cạnh nhau có lợi gì?", o:["Vừa xem hướng dẫn vừa làm bài","Làm máy chạy nhanh hơn","Tắt máy dễ hơn","Tăng âm lượng"], a:0},
     {q:"Thu nhỏ cửa sổ có làm mất ứng dụng không?", o:["Không, mở lại được","Có, mất hẳn","Có, phải cài lại","Tuỳ ngày"], a:0},
-    {q:"Biểu tượng ứng dụng là gì?", o:["Hình nhỏ để mở ứng dụng","Một loại virus","Nút tắt máy","Một loại chuột"], a:0}
+    {q:"Biểu tượng ứng dụng là gì?", o:["Hình nhỏ để mở ứng dụng","Một loại virus","Nút tắt máy","Một loại chuột"], a:0},
+    {q:"Nút ➖ (thu nhỏ) trên cửa sổ dùng để làm gì?", o:["Giấu cửa sổ xuống thanh dưới, mở lại được","Đóng hẳn ứng dụng","Xoá tệp","Tắt máy"], a:0},
+    {q:"Muốn di chuyển một cửa sổ sang chỗ khác, em kéo ở đâu?", o:["Thanh tiêu đề trên cùng cửa sổ","Nút đóng ✕","Bàn phím","Loa"], a:0}
   ],
 
   "1.1.3": [
@@ -44,7 +48,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Muốn tạo thư mục mới, em thường?", o:["Nhấp phải → New → Folder","Rút điện","Gõ Enter 3 lần","Tắt màn hình"], a:0},
     {q:"Sắp xếp file gọn gàng giúp gì?", o:["Mai mốt tìm lại nhanh hơn","Tốn nhiều điện hơn","Máy hỏng nhanh hơn","Không giúp gì"], a:0},
     {q:"'Cây thư mục Góc học tập có 3 ngăn' nghĩa là?", o:["Một thư mục chứa 3 thư mục con","3 máy tính","3 con chuột","3 màn hình"], a:0},
-    {q:"Tệp và thư mục khác nhau thế nào?", o:["Tệp là 'món đồ', thư mục là 'cái hộp' chứa tệp","Chúng giống hệt nhau","Thư mục nằm trong tệp","Tệp để tắt máy"], a:0}
+    {q:"Tệp và thư mục khác nhau thế nào?", o:["Tệp là 'món đồ', thư mục là 'cái hộp' chứa tệp","Chúng giống hệt nhau","Thư mục nằm trong tệp","Tệp để tắt máy"], a:0},
+    {q:"Nên đặt tên tệp/thư mục thế nào cho dễ tìm?", o:["Có ý nghĩa, nhìn là biết nội dung","Càng khó nhớ càng tốt","Toàn số ngẫu nhiên như abc123","Để trống"], a:0},
+    {q:"Để LƯU bài đang làm, em chọn?", o:["File → Save (Lưu) rồi chọn thư mục","Rút điện cho nhanh","Nhấp phải → Delete","Tắt máy ngay"], a:0}
   ],
 
   "1.1.4": [
@@ -57,7 +63,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Khi gặp điều đáng lo trên màn hình, em nên?", o:["Báo thầy cô hoặc ba mẹ","Giữ bí mật một mình","Làm theo ngay","Tắt đèn phòng"], a:0},
     {q:"Nhìn màn hình quá lâu không nghỉ sẽ?", o:["Mỏi và hại mắt","Giúp mắt sáng hơn","Không sao cả","Làm mắt to ra"], a:0},
     {q:"Có nên tự tải phần mềm lạ về máy?", o:["Không, nên hỏi người lớn","Có, tải càng nhiều càng tốt","Có, nếu miễn phí","Có, nếu bạn bảo"], a:0},
-    {q:"Dùng máy an toàn giúp em?", o:["Khỏe mạnh và tránh rắc rối","Chơi game giỏi hơn","Máy chạy nhanh hơn","Hết tốn điện"], a:0}
+    {q:"Dùng máy an toàn giúp em?", o:["Khỏe mạnh và tránh rắc rối","Chơi game giỏi hơn","Máy chạy nhanh hơn","Hết tốn điện"], a:0},
+    {q:"Quy tắc 20–20–20 (mỗi 20 phút nhìn xa 20 giây) bảo vệ bộ phận nào?", o:["Đôi mắt","Bàn phím","Ổ cứng","Con chuột"], a:0},
+    {q:"Thấy quảng cáo “trúng thưởng” tự bật lên, em nên?", o:["Không bấm vào; báo người lớn nếu nghi ngờ","Bấm ngay để nhận quà","Điền thông tin cá nhân vào","Tải phần mềm nó đề nghị"], a:0}
   ],
 
   "1.2.1": [
