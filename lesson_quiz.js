@@ -1478,7 +1478,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Điều gì làm nên sản phẩm?", o:["Giải một vấn đề thật","Trông đẹp là đủ","Nhiều tính năng vô ích","Đắt tiền"], a:0},
     {q:"Kể sản phẩm em dùng hằng ngày giúp?", o:["Hiểu sản phẩm giải vấn đề gì","Khoe khoang","Tốn thời gian","Không gì"], a:0},
     {q:"Sản phẩm chỉ mình em thích thì?", o:["Chưa chắc hữu ích cho người khác","Chắc chắn thành công","Là tốt nhất","Bán chạy"], a:0},
-    {q:"Bài học?", o:["Sản phẩm giải quyết vấn đề cho người dùng","Sản phẩm để đẹp","Không cần người dùng","Càng phức tạp càng tốt"], a:0}
+    {q:"Bài học?", o:["Sản phẩm giải quyết vấn đề cho người dùng","Sản phẩm để đẹp","Không cần người dùng","Càng phức tạp càng tốt"], a:0},
+    {q:"Một sản phẩm tốt là gì?", o:["Thứ giải quyết vấn đề cho người khác","Thứ chỉ mình em thích","Món đồ đắt tiền","Thứ có nhiều màu"], a:0},
+    {q:"Một sản phẩm thường bắt đầu từ?", o:["Một nhu cầu có thật","Sự ngẫu nhiên","Màu sắc đẹp","Giá bán cao"], a:0}
   ],
 
   "3.1.2": [
@@ -1491,7 +1493,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Vấn đề tốt là vấn đề?", o:["Có thật, ai đó đang gặp","Tưởng tượng","Không ai gặp","Không giải được"], a:0},
     {q:"Quan sát giúp em?", o:["Tìm ra vấn đề đáng giải","Bỏ lỡ cơ hội","Không thấy gì","Mất thời gian"], a:0},
     {q:"Nên ghi bao nhiêu vấn đề?", o:["Càng nhiều càng tốt (ví dụ 10)","Đúng 1","Không ghi","Không quan trọng"], a:0},
-    {q:"Bài học?", o:["Ý tưởng đến từ quan sát khó khăn thật","Ngồi nghĩ vu vơ","Chép mạng","Đợi may mắn"], a:0}
+    {q:"Bài học?", o:["Ý tưởng đến từ quan sát khó khăn thật","Ngồi nghĩ vu vơ","Chép mạng","Đợi may mắn"], a:0},
+    {q:"'Săn vấn đề' nghĩa là gì?", o:["Quan sát khó khăn của người quanh em","Đi săn thú","Chơi game","Đi mua đồ"], a:0},
+    {q:"'Sổ săn vấn đề' dùng để làm gì?", o:["Ghi lại mọi khó khăn em thấy","Ghi điểm số","Vẽ tranh","Chép bài"], a:0}
   ],
 
   "3.1.3": [
@@ -1504,7 +1508,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Từ 10 ý tưởng nên lọc còn?", o:["3 ý có lý do rõ ràng","Giữ hết 10","Bỏ hết","Chỉ 1 ngẫu nhiên"], a:0},
     {q:"Ý tưởng 'có thật' nghĩa là?", o:["Giải vấn đề thật sự tồn tại","Tưởng tượng","Không ai cần","Vô lý"], a:0},
     {q:"Lọc ý tưởng giúp?", o:["Tập trung vào ý đáng làm","Bỏ lỡ ý hay","Rối hơn","Không đổi"], a:0},
-    {q:"Bài học?", o:["Nghĩ rộng rồi lọc theo tiêu chí","Chọn bừa","Không lọc","Giữ tất cả"], a:0}
+    {q:"Bài học?", o:["Nghĩ rộng rồi lọc theo tiêu chí","Chọn bừa","Không lọc","Giữ tất cả"], a:0},
+    {q:"Lọc ý tưởng dựa trên 3 câu hỏi nào?", o:["Có thật không? Làm nổi không? Em có thích không?","Đắt không? Đẹp không? Lạ không?","Ai? Ở đâu? Khi nào?","To? Nặng? Xa?"], a:0},
+    {q:"Nên làm gì TRƯỚC khi lọc ý tưởng?", o:["Brainstorm thật rộng, chưa vội chê","Chọn ngay ý đầu tiên","Bỏ hết ý tưởng","Chép của người khác"], a:0}
   ],
 
   "3.1.4": [
@@ -1517,7 +1523,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Bản cam kết dài khoảng?", o:["1 trang","100 trang","Không viết","1 dòng"], a:0},
     {q:"Sau khi chốt đề tài, ta?", o:["Bắt đầu tìm hiểu người dùng","Nộp bài luôn","Bỏ dở","Chọn lại"], a:0},
     {q:"Vì sao cần nêu 'vì sao chọn'?", o:["Để rõ động cơ và giữ hướng","Cho dài","Không lý do","Để khoe"], a:0},
-    {q:"Bài học?", o:["Chốt đề tài rõ ràng để theo đuổi","Không cần chốt","Đổi liên tục","Chọn bừa"], a:0}
+    {q:"Bài học?", o:["Chốt đề tài rõ ràng để theo đuổi","Không cần chốt","Đổi liên tục","Chọn bừa"], a:0},
+    {q:"Khi chốt hướng đi, nên viết rõ điều gì?", o:["Vấn đề là gì, ai gặp, vì sao em chọn","Chỉ tên em","Màu yêu thích","Giá bán"], a:0},
+    {q:"Nên chọn vấn đề để theo đuổi thế nào?", o:["Vấn đề em thật sự quan tâm","Vấn đề khó nhất","Vấn đề của người khác","Vấn đề không liên quan"], a:0}
   ],
 
   "3.2.1": [
@@ -1530,7 +1538,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Người dùng là?", o:["Người sẽ dùng sản phẩm","Chính em","Máy tính","Không ai"], a:0},
     {q:"Vì sao cần lắng nghe người dùng?", o:["Để làm đúng thứ họ cần","Cho lịch sự","Không lý do","Để khoe"], a:0},
     {q:"Bài học của module này?", o:["Hỏi người thật thay vì chỉ đoán","Đoán là đủ","Không cần hỏi ai","Tự quyết hết"], a:0},
-    {q:"Kết quả khi hỏi thật thường?", o:["Bất ngờ, khác điều mình nghĩ","Y hệt điều mình đoán","Vô nghĩa","Không có"], a:0}
+    {q:"Kết quả khi hỏi thật thường?", o:["Bất ngờ, khác điều mình nghĩ","Y hệt điều mình đoán","Vô nghĩa","Không có"], a:0},
+    {q:"Vì sao phải hỏi người dùng thật?", o:["Điều em nghĩ họ cần thường khác điều họ thật sự cần","Vì cho vui","Để khoe","Không cần hỏi"], a:0},
+    {q:"Nhiều sản phẩm thất bại vì?", o:["Người làm chỉ đoán, không hỏi người thật","Vì quá đẹp","Vì quá rẻ","Vì có màu xanh"], a:0}
   ],
 
   "3.2.2": [
@@ -1543,7 +1553,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Chuyển câu hỏi mớm thành mở là?", o:["Kỹ năng phỏng vấn tốt","Vô ích","Làm rối","Không cần"], a:0},
     {q:"Sau câu trả lời hay, nên hỏi?", o:["Vì sao vậy?","Thôi đủ rồi","Không hỏi thêm","Đổi chủ đề"], a:0},
     {q:"Câu hỏi mở thường bắt đầu bằng?", o:["Như thế nào, vì sao, kể...","Đúng không, phải không","Có... không","Được chứ"], a:0},
-    {q:"Bài học?", o:["Hỏi mở, không mớm để hiểu thật","Hỏi mớm cho nhanh","Chỉ hỏi có/không","Không cần hỏi"], a:0}
+    {q:"Bài học?", o:["Hỏi mở, không mớm để hiểu thật","Hỏi mớm cho nhanh","Chỉ hỏi có/không","Không cần hỏi"], a:0},
+    {q:"Câu hỏi nào cho NHIỀU thông tin hơn?", o:["Câu hỏi mở ('Bạn thường gặp khó gì khi…?')","Câu hỏi mớm ('tiện đúng không?')","Câu chỉ trả lời có/không","Không hỏi gì"], a:0},
+    {q:"Nên hỏi người dùng về điều gì?", o:["Trải nghiệm thật đã xảy ra","Phỏng đoán tương lai","Điều em muốn nghe","Chuyện không liên quan"], a:0}
   ],
 
   "3.2.3": [
@@ -1556,7 +1568,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Ghi ý chính thay vì từng chữ vì?", o:["Kịp theo cuộc trò chuyện","Cho đẹp","Tốn giấy","Không lý do"], a:0},
     {q:"Phỏng vấn 1 bạn 10 phút để?", o:["Luyện kỹ năng thu thập ý chính","Làm phiền bạn","Cho vui","Không gì"], a:0},
     {q:"Kỹ năng phỏng vấn giúp?", o:["Hiểu người dùng sâu hơn","Không lợi ích","Rối hơn","Mất bạn"], a:0},
-    {q:"Bài học?", o:["Luyện lắng nghe và hỏi để phỏng vấn tốt","Nói nhiều là giỏi","Không cần luyện","Chép câu trả lời"], a:0}
+    {q:"Bài học?", o:["Luyện lắng nghe và hỏi để phỏng vấn tốt","Nói nhiều là giỏi","Không cần luyện","Chép câu trả lời"], a:0},
+    {q:"Khi phỏng vấn, nên ghi chép thế nào?", o:["Ghi nhanh ý chính","Chép từng chữ một","Không ghi gì","Ghi lại sau vài ngày"], a:0},
+    {q:"Sau một câu trả lời hay, nên hỏi tiếp gì?", o:["'Vì sao vậy?' để hiểu sâu hơn","'Xong chưa?'","Không hỏi thêm","Đổi chủ đề"], a:0}
   ],
 
   "3.2.4": [
@@ -1569,7 +1583,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Phỏng vấn người ngoài lớp giúp?", o:["Có góc nhìn thật về vấn đề","Không lợi ích","Rối hơn","Mất thời gian"], a:0},
     {q:"Nên hỏi về?", o:["Trải nghiệm thật của họ","Chuyện không liên quan","Đời tư riêng nhạy cảm","Bí mật"], a:0},
     {q:"Thái độ khi phỏng vấn?", o:["Lịch sự, tôn trọng","Vội vàng","Ngắt lời","Coi thường"], a:0},
-    {q:"Bài học?", o:["Thu thập thông tin thật từ người dùng","Tự bịa","Chỉ đoán","Không cần"], a:0}
+    {q:"Bài học?", o:["Thu thập thông tin thật từ người dùng","Tự bịa","Chỉ đoán","Không cần"], a:0},
+    {q:"Trước khi ghi chép lúc phỏng vấn, em nên?", o:["Xin phép, và cảm ơn sau khi phỏng vấn","Ghi lén","Không cần xin phép","Quay phim không hỏi"], a:0},
+    {q:"Cuộc phỏng vấn số 1 nên hỏi về?", o:["Đúng vấn đề em đã chọn","Chuyện phiếm","Điểm số của họ","Bí mật cá nhân"], a:0}
   ],
 
   "3.2.5": [
@@ -1582,7 +1598,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Nếu chỉ một người nói, có thể?", o:["Chưa chắc là nhu cầu chung","Chắc chắn phổ biến","Bỏ qua vấn đề","Kết luận ngay"], a:0},
     {q:"Ghi chú điểm chung giúp?", o:["Tìm ra vấn đề đáng giải","Rối hơn","Không lợi ích","Mất dữ liệu"], a:0},
     {q:"Thêm phỏng vấn giúp?", o:["Hiểu vấn đề chắc chắn hơn","Kém tin hơn","Không đổi","Nhầm lẫn"], a:0},
-    {q:"Bài học?", o:["Tìm điểm lặp lại qua nhiều cuộc phỏng vấn","Một cuộc là đủ","Không cần chú ý","Tự đoán"], a:0}
+    {q:"Bài học?", o:["Tìm điểm lặp lại qua nhiều cuộc phỏng vấn","Một cuộc là đủ","Không cần chú ý","Tự đoán"], a:0},
+    {q:"Khi nhiều người cùng nói một khó khăn, đó là?", o:["Tín hiệu mạnh đáng để giải quyết","Chuyện tình cờ","Điều nên bỏ qua","Lỗi phỏng vấn"], a:0},
+    {q:"Phỏng vấn thêm 2–3 người để làm gì?", o:["Thấy điều gì lặp lại giữa các cuộc","Cho vui","Tốn thời gian","Không vì lý do gì"], a:0}
   ],
 
   "3.2.6": [
@@ -1595,7 +1613,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"'1 trang insight' ghi?", o:["Điều bất ngờ đáng giải quyết","Toàn bộ phỏng vấn","Màu sắc","Giờ giấc"], a:0},
     {q:"Từ 3 cuộc phỏng vấn tìm ra?", o:["1 insight đáng giá","10 sản phẩm","Không gì","Nhiều tiền"], a:0},
     {q:"Insight giúp bước tiếp theo?", o:["Nghĩ ra giải pháp đúng hướng","Bỏ cuộc","Lạc đề","Không đổi"], a:0},
-    {q:"Bài học?", o:["Rút insight từ lắng nghe người dùng","Tự nghĩ ra","Chép của bạn","Đoán bừa"], a:0}
+    {q:"Bài học?", o:["Rút insight từ lắng nghe người dùng","Tự nghĩ ra","Chép của bạn","Đoán bừa"], a:0},
+    {q:"'Insight' là gì?", o:["Một điều bất ngờ, sâu sắc rút ra từ phỏng vấn","Điều ai cũng đã biết","Một con số","Tên sản phẩm"], a:0},
+    {q:"Một insight tốt khiến em?", o:["Muốn thốt lên 'à, thì ra là vậy!'","Buồn ngủ","Muốn bỏ cuộc","Quên hết"], a:0}
   ],
 
   "3.3.1": [
@@ -1608,7 +1628,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Giải pháp lớn ngay từ đầu thường?", o:["Khó làm, khó thử","Tốt nhất","Nhanh nhất","An toàn nhất"], a:0},
     {q:"Vì sao chọn giải pháp nhỏ trước?", o:["Thử nhanh, học nhanh","Cho oai","Tốn thời gian","Không lý do"], a:0},
     {q:"Có nên nghĩ nhiều cách trước khi chọn?", o:["Có, để có lựa chọn tốt","Không, chọn ngay cách đầu","Không nghĩ gì","Chép của bạn"], a:0},
-    {q:"Bài học?", o:["Chọn giải pháp nhỏ, hữu ích và bảo vệ được","Chọn cái to nhất","Không chọn","Làm hết"], a:0}
+    {q:"Bài học?", o:["Chọn giải pháp nhỏ, hữu ích và bảo vệ được","Chọn cái to nhất","Không chọn","Làm hết"], a:0},
+    {q:"Từ insight, nên chọn giải pháp nào?", o:["Cách nhỏ nhất mà vẫn hữu ích","Cách phức tạp nhất","Cách đắt nhất","Cách của người khác"], a:0},
+    {q:"Khi chọn giải pháp, nên tập làm gì?", o:["Bảo vệ lựa chọn: 'Em chọn cách này vì…'","Giấu lý do","Không giải thích","Chọn đại"], a:0}
   ],
 
   "3.3.2": [
@@ -1621,7 +1643,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Vì sao làm MVP trước?", o:["Thử nhanh, học từ người dùng","Cho oai","Tốn công vô ích","Không lý do"], a:0},
     {q:"Tính năng 'cho vui' nên?", o:["Để sau","Làm trước tiên","Là quan trọng nhất","Không bao giờ bỏ"], a:0},
     {q:"MVP 'nhỏ mà chạy được' nghĩa là?", o:["Ít tính năng nhưng dùng được","Nhiều tính năng nhưng lỗi","Đẹp mà không chạy","Không có gì"], a:0},
-    {q:"Bài học?", o:["Bắt đầu nhỏ với phần cốt lõi","Làm thật to ngay","Thêm mọi tính năng","Không làm gì"], a:0}
+    {q:"Bài học?", o:["Bắt đầu nhỏ với phần cốt lõi","Làm thật to ngay","Thêm mọi tính năng","Không làm gì"], a:0},
+    {q:"MVP là gì?", o:["Phiên bản nhỏ nhất chạy được, giải quyết vấn đề cốt lõi","Phiên bản đầy đủ mọi tính năng","Một bản vẽ tay","Một trò chơi"], a:0},
+    {q:"Làm MVP nên?", o:["Cắt tính năng 'cho vui', giữ phần cốt lõi","Thêm thật nhiều tính năng","Bỏ phần quan trọng","Làm thật to"], a:0}
   ],
 
   "3.3.3": [
@@ -1634,7 +1658,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Nên có bao nhiêu màn hình trong wireframe?", o:["Vài màn hình chính (3-5)","100 màn hình","0 màn hình","Chỉ 1 nút"], a:0},
     {q:"Wireframe là bước?", o:["Trước khi làm thật","Sau khi ra mắt","Không cần","Cuối cùng"], a:0},
     {q:"Sửa wireframe so với sửa sản phẩm thật?", o:["Rẻ và nhanh hơn","Đắt hơn","Y hệt","Không sửa được"], a:0},
-    {q:"Bài học?", o:["Phác trên giấy trước, làm thật sau","Làm thật ngay","Không cần phác","Vẽ càng đẹp càng tốt"], a:0}
+    {q:"Bài học?", o:["Phác trên giấy trước, làm thật sau","Làm thật ngay","Không cần phác","Vẽ càng đẹp càng tốt"], a:0},
+    {q:"Wireframe là gì?", o:["Bản phác giấy các màn hình trước khi làm thật","Một loại dây điện","Code hoàn chỉnh","Một trò chơi"], a:0},
+    {q:"Vì sao nên vẽ tay wireframe?", o:["Nhanh và dễ sửa hơn làm rồi mới đổi","Cho đẹp","Cho tốn kém","Cho khó sửa"], a:0}
   ],
 
   "3.3.4": [
@@ -1647,7 +1673,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"'Wireframe bản 2' là?", o:["Bản đã sửa theo góp ý","Bản đầu tiên","Sản phẩm cuối","Không có gì"], a:0},
     {q:"Nếu người xem không hiểu wireframe?", o:["Cần chỉnh cho rõ hơn","Họ dốt","Bỏ mặc","Không sao"], a:0},
     {q:"Danh sách thay đổi giúp?", o:["Biết đã cải thiện gì","Trang trí","Tốn giấy","Không gì"], a:0},
-    {q:"Bài học?", o:["Hỏi ý người dùng sớm và sửa","Tự quyết hết","Không hỏi ai","Làm xong mới hỏi"], a:0}
+    {q:"Bài học?", o:["Hỏi ý người dùng sớm và sửa","Tự quyết hết","Không hỏi ai","Làm xong mới hỏi"], a:0},
+    {q:"Cho người dùng duyệt wireframe để làm gì?", o:["Sửa sớm trước khi tốn công làm thật","Khoe bản vẽ","Cho vui","Không vì lý do gì"], a:0},
+    {q:"Sửa trên giấy so với sửa trên sản phẩm thật?", o:["Rẻ và nhanh hơn","Đắt hơn","Chậm hơn","Khó hơn"], a:0}
   ],
 
   "3.4.1": [
@@ -1660,7 +1688,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Ý tưởng lập trình trong Python và Scratch?", o:["Giống nhau về cơ bản","Hoàn toàn khác","Không liên quan","Ngược nhau"], a:0},
     {q:"Chương trình chào hỏi có tên và tuổi dùng?", o:["Biến và print","Chỉ vẽ","Chỉ âm thanh","Không gì"], a:0},
     {q:"Viết code trong Python bằng?", o:["Gõ chữ (dòng lệnh)","Kéo thả khối","Vẽ tay","Nói"], a:0},
-    {q:"Bài học?", o:["Làm quen in, biến, phép tính trong Python","Học thuộc lòng","Bỏ Scratch","Không cần hiểu"], a:0}
+    {q:"Bài học?", o:["Làm quen in, biến, phép tính trong Python","Học thuộc lòng","Bỏ Scratch","Không cần hiểu"], a:0},
+    {q:"Trong Python, lệnh print(...) dùng để?", o:["In ra màn hình","Tắt máy","Xoá tệp","Vẽ hình"], a:0},
+    {q:"Python so với Scratch thì?", o:["Thay khối kéo–thả bằng chữ, ý tưởng vẫn thế","Hoàn toàn khác nhau","Không liên quan","Khó gấp trăm lần"], a:0}
   ],
 
   "3.4.2": [
@@ -1673,7 +1703,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Chương trình phân loại điểm ra lời khen dùng?", o:["if/else","Chỉ print","Chỉ biến","Vòng lặp vô hạn"], a:0},
     {q:"Điều kiện sai thì chạy?", o:["Nhánh else","Nhánh if","Cả hai","Không nhánh nào"], a:0},
     {q:"if/else giúp chương trình?", o:["Biết chọn lựa theo tình huống","Đơn điệu","Chậm hơn","Hỏng"], a:0},
-    {q:"Bài học?", o:["Chuyển if/else từ Scratch sang Python","Bỏ điều kiện","Không cần thụt lề","Viết tuỳ ý"], a:0}
+    {q:"Bài học?", o:["Chuyển if/else từ Scratch sang Python","Bỏ điều kiện","Không cần thụt lề","Viết tuỳ ý"], a:0},
+    {q:"if/else trong Python giống gì ở Scratch?", o:["Khối 'Nếu… thì…'","Vòng lặp","Nhân vật","Sân khấu"], a:0},
+    {q:"Python dùng gì để biết câu lệnh thuộc nhánh nào?", o:["Thụt lề (khoảng trắng đầu dòng)","Màu chữ","Dấu chấm","Số dòng"], a:0}
   ],
 
   "3.4.3": [
@@ -1686,7 +1718,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"while cần chú ý gì?", o:["Điều kiện phải có lúc sai để dừng","Không cần điều kiện","Luôn đúng","Không quan trọng"], a:0},
     {q:"Vòng lặp trong Python và Scratch?", o:["Cùng ý tưởng lặp lại","Khác hoàn toàn","Không liên quan","Ngược nhau"], a:0},
     {q:"Lặp 5 lần in 'Xin chào' sẽ?", o:["In 'Xin chào' 5 lần","In 1 lần","Không in","Báo lỗi"], a:0},
-    {q:"Bài học?", o:["Dùng for/while để lặp","Không dùng vòng lặp","Chép tay 100 lần","Bỏ lặp"], a:0}
+    {q:"Bài học?", o:["Dùng for/while để lặp","Không dùng vòng lặp","Chép tay 100 lần","Bỏ lặp"], a:0},
+    {q:"Vòng lặp 'for' trong Python dùng để?", o:["Lặp qua từng phần tử của một danh sách","Tắt máy","Vẽ hình","In đúng một lần"], a:0},
+    {q:"Vòng lặp 'while' lặp khi nào?", o:["Chừng nào điều kiện còn đúng","Chỉ đúng 1 lần","Mãi mãi không dừng được","Không bao giờ"], a:0}
   ],
 
   "3.4.4": [
@@ -1699,7 +1733,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Tìm kiếm trong danh sách giúp?", o:["Biết một mục có trong đó không","Xoá danh sách","In tất cả","Không gì"], a:0},
     {q:"Chuỗi 'Xin chao' gồm?", o:["Các ký tự ghép lại","Các số","Một hình","Một màu"], a:0},
     {q:"Danh sách giúp quản lý?", o:["Nhiều dữ liệu gọn gàng","Một dữ liệu","Không gì","Chỉ số 0"], a:0},
-    {q:"Bài học?", o:["Dùng danh sách và chuỗi để lưu, tìm","Không cần danh sách","Chỉ dùng biến đơn","Bỏ dữ liệu"], a:0}
+    {q:"Bài học?", o:["Dùng danh sách và chuỗi để lưu, tìm","Không cần danh sách","Chỉ dùng biến đơn","Bỏ dữ liệu"], a:0},
+    {q:"Danh sách (list) trong Python dùng để?", o:["Lưu nhiều thứ; có thể thêm, đếm, tìm kiếm","Lưu đúng 1 số","Tắt máy","Vẽ tranh"], a:0},
+    {q:"Chuỗi (string) là gì?", o:["Một dãy ký tự","Một con số duy nhất","Một hình ảnh","Một âm thanh"], a:0}
   ],
 
   "3.4.5": [
@@ -1712,7 +1748,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Truyền tham số nghĩa là?", o:["Đưa dữ liệu vào cho hàm dùng","Xoá hàm","Đổi tên hàm","In hàm"], a:0},
     {q:"Hàm được 'gọi' nghĩa là?", o:["Chạy hàm khi cần","Xoá hàm","Vẽ hàm","Tắt hàm"], a:0},
     {q:"Lợi ích lớn của hàm?", o:["Tránh lặp lại code","Tốn công hơn","Không lợi ích","Làm rối"], a:0},
-    {q:"Bài học?", o:["Dùng hàm để tái sử dụng code","Chép code nhiều lần","Không dùng hàm","Bỏ code lặp"], a:0}
+    {q:"Bài học?", o:["Dùng hàm để tái sử dụng code","Chép code nhiều lần","Không dùng hàm","Bỏ code lặp"], a:0},
+    {q:"Hàm (function) giúp ích gì?", o:["Gói code lại để dùng nhiều lần","Tắt máy","Xoá dữ liệu","Làm chậm máy"], a:0},
+    {q:"Khi nào nên gói code thành hàm?", o:["Khi một đoạn code lặp lại nhiều lần","Khi chỉ dùng 1 lần","Không bao giờ","Khi code rất ngắn"], a:0}
   ],
 
   "3.4.6": [
@@ -1725,7 +1763,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Bắt lỗi trong code AI cho thấy?", o:["Cần kiểm tra code AI","AI hoàn hảo","Không cần đọc","Tin AI 100%"], a:0},
     {q:"Hiểu code rồi mới?", o:["Dùng","Xoá","Bỏ","In ra giấy"], a:0},
     {q:"AI là gì với việc lập trình?", o:["Trợ lý viết code","Người thay em hoàn toàn","Kẻ phá","Không liên quan"], a:0},
-    {q:"Bài học?", o:["Đọc hiểu và kiểm code AI viết","Chép mù quáng","Tin tuyệt đối","Không đọc"], a:0}
+    {q:"Bài học?", o:["Đọc hiểu và kiểm code AI viết","Chép mù quáng","Tin tuyệt đối","Không đọc"], a:0},
+    {q:"Với code do AI viết, em nên làm gì?", o:["Đọc hiểu, chạy thử và tìm chỗ sai","Chạy ngay không đọc","Tin tuyệt đối","Xoá đi"], a:0},
+    {q:"Vì sao không nên chạy code lạ mà không hiểu?", o:["AI không phải lúc nào cũng đúng; hiểu rồi mới dùng","Vì code luôn đúng","Vì cho vui","Vì máy nhanh"], a:0}
   ],
 
   "3.4.7": [
@@ -1738,7 +1778,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Hiểu vì sao code chạy đúng giúp?", o:["Em giỏi hơn, không chỉ 'cho nó chạy'","Không lợi ích","Rối hơn","Mất thời gian"], a:0},
     {q:"Làm code AI chạy đúng theo 2 con đường nghĩa là?", o:["Cả nhờ AI và tự sửa","Chỉ nhờ AI","Chỉ đoán","Không sửa"], a:0},
     {q:"Người quyết định code cuối là?", o:["Em","AI","Máy in","Con chuột"], a:0},
-    {q:"Bài học?", o:["Biết sửa và cải tiến code (có AI hỗ trợ)","Chỉ chờ AI","Không sửa","Bỏ code"], a:0}
+    {q:"Bài học?", o:["Biết sửa và cải tiến code (có AI hỗ trợ)","Chỉ chờ AI","Không sửa","Bỏ code"], a:0},
+    {q:"Khi code AI viết bị sai, em có thể?", o:["Nhờ AI sửa (mô tả lỗi rõ) hoặc tự sửa tay","Chỉ biết bỏ đi","Không sửa được","Đổ lỗi cho máy"], a:0},
+    {q:"So sánh hai cách sửa code giúp em?", o:["Hiểu vì sao code chạy đúng","Tốn thời gian vô ích","Không học được gì","Làm hỏng code"], a:0}
   ],
 
   "3.4.8": [
@@ -1751,7 +1793,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Mini game giúp em?", o:["Vận dụng tổng hợp kiến thức Python","Quên bài","Chỉ chơi","Không học gì"], a:0},
     {q:"Oẳn tù tì với máy cần?", o:["if/else để so kết quả","Chỉ print","Chỉ biến","Vòng lặp vô hạn"], a:0},
     {q:"Hoàn thành mini game giúp em?", o:["Tự tin với Python","Sợ lập trình","Quên hết","Không đổi"], a:0},
-    {q:"Bài học?", o:["Ghép mọi kiến thức vào 1 sản phẩm nhỏ","Học rời rạc","Không thực hành","Chỉ lý thuyết"], a:0}
+    {q:"Bài học?", o:["Ghép mọi kiến thức vào 1 sản phẩm nhỏ","Học rời rạc","Không thực hành","Chỉ lý thuyết"], a:0},
+    {q:"Mini game console dùng những kiến thức nào?", o:["Biến, if/else, vòng lặp và hàm","Chỉ hình ảnh 3D","Chỉ âm thanh","Không dùng gì"], a:0},
+    {q:"Nên làm phần nào của game trước?", o:["Phần chơi được, thêm điểm/lời nhắn sau","Trang trí trước","Phần khó nhất trước","Làm hết rồi mới thử"], a:0}
   ]
 
 });
@@ -1769,7 +1813,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"No-code phù hợp khi?", o:["Muốn làm nhanh, đơn giản","Cần cực kỳ linh hoạt","Không làm gì","Chỉ để khoe"], a:0},
     {q:"Nên có gì trước khi làm?", o:["Kế hoạch công cụ cho MVP","Không cần kế hoạch","Chép của bạn","Đợi may mắn"], a:0},
     {q:"Chọn công cụ 'oách nhất' mà không hợp thì?", o:["Có thể khó dùng, phản tác dụng","Luôn tốt nhất","Nhanh nhất","An toàn"], a:0},
-    {q:"Bài học?", o:["Chọn công cụ phù hợp với sản phẩm và mình","Càng phức tạp càng tốt","Không cần chọn","Chọn ngẫu nhiên"], a:0}
+    {q:"Bài học?", o:["Chọn công cụ phù hợp với sản phẩm và mình","Càng phức tạp càng tốt","Không cần chọn","Chọn ngẫu nhiên"], a:0},
+    {q:"Ba cách xây MVP thường gặp là?", o:["Vibe coding, no-code, code tay","Vẽ, hát, múa","Đọc, viết, xoá","Mua, bán, đổi"], a:0},
+    {q:"Nên chọn công cụ làm sản phẩm thế nào?", o:["Hợp với sản phẩm và sức của em","Chọn cái 'oách nhất'","Cái đắt nhất","Cái bạn đang dùng"], a:0}
   ],
 
   "3.5.2": [
@@ -1782,7 +1828,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Chưa cần gì ở bước dựng khung?", o:["Đầy đủ tính năng","Màn hình chính","Dự án","Khung cơ bản"], a:0},
     {q:"Khung là?", o:["Nền để thêm tính năng sau","Sản phẩm cuối","Đồ trang trí","Không quan trọng"], a:0},
     {q:"Vì sao có khung sớm là tốt?", o:["Có nền để phát triển tiếp","Cho oai","Tốn công","Không lý do"], a:0},
-    {q:"Bài học?", o:["Dựng khung chạy được trước tiên","Trang trí trước","Làm tính năng khó trước","Ra mắt ngay"], a:0}
+    {q:"Bài học?", o:["Dựng khung chạy được trước tiên","Trang trí trước","Làm tính năng khó trước","Ra mắt ngay"], a:0},
+    {q:"Nên dựng gì TRƯỚC khi làm đầy đủ tính năng?", o:["Khung sản phẩm / màn hình chính mở lên được","Tất cả tính năng cùng lúc","Phần trang trí","Video quảng cáo"], a:0},
+    {q:"Có khung chạy được sớm giúp gì?", o:["Thấy tiến độ và giữ động lực","Tốn thời gian","Không có ích","Làm rối"], a:0}
   ],
 
   "3.5.3": [
@@ -1795,7 +1843,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Tính năng 1 'demo được' nghĩa là?", o:["Cho người khác xem chạy thật","Chỉ ý tưởng","Không hoạt động","Trên giấy"], a:0},
     {q:"Đẹp nên làm khi nào?", o:["Sau khi lõi chạy","Trước lõi","Không bao giờ","Thay lõi"], a:0},
     {q:"Ưu tiên tính năng cốt lõi giúp?", o:["Sản phẩm giải đúng vấn đề","Rối hơn","Chậm hơn","Thất bại"], a:0},
-    {q:"Bài học?", o:["Làm phần quan trọng nhất chạy trước","Trang trí trước","Làm phần phụ trước","Không ưu tiên"], a:0}
+    {q:"Bài học?", o:["Làm phần quan trọng nhất chạy trước","Trang trí trước","Làm phần phụ trước","Không ưu tiên"], a:0},
+    {q:"Tính năng cốt lõi số 1 là gì?", o:["Phần giải quyết đúng vấn đề chính","Phần trang trí","Phần cho vui","Phần ít dùng"], a:0},
+    {q:"Nếu tính năng lõi không chạy thì?", o:["Các thứ khác không cứu được sản phẩm","Vẫn ổn","Không sao cả","Tự sửa được"], a:0}
   ],
 
   "3.5.4": [
@@ -1808,7 +1858,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Nếu luồng bị gãy?", o:["Người dùng sẽ bị kẹt","Không sao","Tốt hơn","Nhanh hơn"], a:0},
     {q:"Tính năng 2 nên?", o:["Bổ trợ cho tính năng 1","Thay thế tính năng 1","Vô dụng","Không liên quan"], a:0},
     {q:"Thử như người dùng thật giúp?", o:["Thấy trải nghiệm thực tế","Cho vui","Không lợi ích","Làm chậm"], a:0},
-    {q:"Bài học?", o:["Ghép các phần thành luồng mượt","Để rời rạc","Bỏ kết nối","Không thử"], a:0}
+    {q:"Bài học?", o:["Ghép các phần thành luồng mượt","Để rời rạc","Bỏ kết nối","Không thử"], a:0},
+    {q:"Sau khi làm 2 tính năng cốt lõi, cần làm gì?", o:["Kết nối chúng, đảm bảo luồng liền mạch","Bỏ bớt một cái","Không cần nối","Làm thêm 10 cái"], a:0},
+    {q:"Cách phát hiện chỗ 'gãy' trong luồng dùng?", o:["Đi hết một lượt như người dùng thật","Không thử gì","Hỏi máy","Đoán bừa"], a:0}
   ],
 
   "3.5.5": [
@@ -1821,7 +1873,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Vì sao dùng nội dung thật?", o:["Gần với người dùng thật hơn","Cho khó","Tốn công vô ích","Không lý do"], a:0},
     {q:"Dữ liệu thật lộ ra?", o:["Vấn đề mà dữ liệu giả giấu","Không gì","Điểm mạnh giả","Màu sắc"], a:0},
     {q:"Nên thử sản phẩm với?", o:["Nội dung thật, cả trường hợp khó","Chỉ dữ liệu hoàn hảo","Không dữ liệu","Dữ liệu giả mãi"], a:0},
-    {q:"Bài học?", o:["Đưa nội dung thật vào để kiểm nghiệm","Giữ dữ liệu giả","Không cần dữ liệu","Tránh trường hợp khó"], a:0}
+    {q:"Bài học?", o:["Đưa nội dung thật vào để kiểm nghiệm","Giữ dữ liệu giả","Không cần dữ liệu","Tránh trường hợp khó"], a:0},
+    {q:"Vì sao nên thay dữ liệu giả bằng dữ liệu thật?", o:["Thấy sản phẩm gần thực tế, lộ vấn đề mà dữ liệu giả che mất","Cho đẹp","Cho vui","Không cần thiết"], a:0},
+    {q:"Nên nhập loại dữ liệu nào để kiểm tra?", o:["Vài trường hợp 'khó'","Chỉ trường hợp dễ","Không nhập gì","Dữ liệu trùng nhau"], a:0}
   ],
 
   "3.5.6": [
@@ -1834,7 +1888,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Mô tả lỗi mơ hồ khiến AI?", o:["Khó giúp đúng","Giúp tốt hơn","Không ảnh hưởng","Hoàn hảo"], a:0},
     {q:"Vì sao kiểm tra bản sửa của AI?", o:["Vì AI có thể sửa chưa đúng","AI luôn đúng","Cho vui","Không lý do"], a:0},
     {q:"Ghi nhật ký lỗi giúp?", o:["Học từ lỗi, không lặp lại","Tốn giấy","Không lợi ích","Che lỗi"], a:0},
-    {q:"Bài học?", o:["Mô tả lỗi tốt và kiểm bản sửa","Giao hết cho AI","Không ghi gì","Che lỗi"], a:0}
+    {q:"Bài học?", o:["Mô tả lỗi tốt và kiểm bản sửa","Giao hết cho AI","Không ghi gì","Che lỗi"], a:0},
+    {q:"Mô tả lỗi cho AI hiệu quả gồm?", o:["Làm gì → mong đợi gì → thực tế ra sao","Chỉ nói 'lỗi rồi'","Không mô tả","Khen AI"], a:0},
+    {q:"Sau khi AI đưa bản sửa, em nên?", o:["Kiểm tra lại bản sửa","Chạy ngay không xem","Tin tuyệt đối","Xoá đi"], a:0}
   ],
 
   "3.5.7": [
@@ -1847,7 +1903,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Bố cục rõ ràng giúp?", o:["Người dùng dễ thao tác","Rối hơn","Chậm hơn","Không lợi ích"], a:0},
     {q:"'MVP bản dùng thử được' nghĩa là?", o:["Đủ đẹp và chạy để người thử","Chỉ đẹp","Chỉ ý tưởng","Không chạy"], a:0},
     {q:"Trang trí quá đà gây?", o:["Rối mắt, khó dùng","Đẹp và tiện","Nhanh hơn","Không sao"], a:0},
-    {q:"Bài học?", o:["Ưu tiên dễ dùng, đẹp vừa phải","Đẹp bằng mọi giá","Bỏ qua giao diện","Càng phức tạp càng hay"], a:0}
+    {q:"Bài học?", o:["Ưu tiên dễ dùng, đẹp vừa phải","Đẹp bằng mọi giá","Bỏ qua giao diện","Càng phức tạp càng hay"], a:0},
+    {q:"'Làm đẹp vừa đủ' nghĩa là gì?", o:["Dễ dùng quan trọng hơn hào nhoáng","Càng nhiều hiệu ứng càng tốt","Trang trí thật rối","Bỏ qua bố cục"], a:0},
+    {q:"Người dùng cần điều gì hơn?", o:["Dễ hiểu, dễ bấm","Nhiều hiệu ứng","Màu chói","Nhạc nền to"], a:0}
   ],
 
   "3.5.8": [
@@ -1860,7 +1918,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Vì sao thử trước khi ra mắt?", o:["Giảm lỗi khi người thật dùng","Cho oai","Không lý do","Tốn công"], a:0},
     {q:"Lỗi nghiêm trọng là lỗi?", o:["Khiến không dùng tiếp được","Chỉ về màu","Không ai thấy","Rất nhỏ"], a:0},
     {q:"Bạn bè dùng thử giúp?", o:["Thấy lỗi mình bỏ sót","Không lợi ích","Rối hơn","Che lỗi"], a:0},
-    {q:"Bài học?", o:["Duyệt chéo và sửa lỗi trước khi ra mắt","Ra mắt ngay","Không thử","Giấu lỗi"], a:0}
+    {q:"Bài học?", o:["Duyệt chéo và sửa lỗi trước khi ra mắt","Ra mắt ngay","Không thử","Giấu lỗi"], a:0},
+    {q:"'Tổng duyệt nội bộ' là gì?", o:["Cả lớp dùng thử chéo, ghi lỗi lần cuối","Tự khen mình","Không cho ai xem","Ra mắt luôn"], a:0},
+    {q:"Nên ưu tiên sửa lỗi nào?", o:["Lỗi khiến người dùng không dùng tiếp được","Lỗi nhỏ nhất","Lỗi màu sắc","Không sửa gì"], a:0}
   ],
 
   "3.6.1": [
@@ -1873,7 +1933,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Quan sát 'gì' khi test?", o:["Họ kẹt ở đâu, nói gì","Màu tường","Thời tiết","Giờ giấc"], a:0},
     {q:"Test là để?", o:["Tìm chỗ sản phẩm cần sửa","Chê người dùng","Khoe","Cho vui"], a:0},
     {q:"Kịch bản 1 trang nghĩa là?", o:["Kế hoạch test ngắn gọn","Sản phẩm","Một bức tranh","Không gì"], a:0},
-    {q:"Bài học?", o:["Chuẩn bị kịch bản trước khi test","Test bừa","Không chuẩn bị","Test người dùng"], a:0}
+    {q:"Bài học?", o:["Chuẩn bị kịch bản trước khi test","Test bừa","Không chuẩn bị","Test người dùng"], a:0},
+    {q:"Khi test, cần nhớ em đang test cái gì?", o:["Test sản phẩm, không phải test người dùng","Test trí nhớ người dùng","Test tốc độ đọc","Test máy tính"], a:0},
+    {q:"Kịch bản test nên xác định gì?", o:["Nhờ họ làm việc gì + em quan sát điều gì","Chỉ số điểm","Màu áo họ","Tuổi họ"], a:0}
   ],
 
   "3.6.2": [
@@ -1886,7 +1948,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Nhắc người dùng liên tục sẽ?", o:["Không thấy được vấn đề thật","Giúp test tốt hơn","Không sao","Bắt buộc"], a:0},
     {q:"Nên có mấy người test?", o:["2 người","0 người","Cả trường","Chỉ mình em"], a:0},
     {q:"Biên bản test 1 ghi?", o:["Họ kẹt ở đâu, nói gì","Màu sắc","Thời tiết","Không gì"], a:0},
-    {q:"Bài học?", o:["Quan sát yên lặng để thấy vấn đề thật","Nhắc liên tục","Làm hộ","Không quan sát"], a:0}
+    {q:"Bài học?", o:["Quan sát yên lặng để thấy vấn đề thật","Nhắc liên tục","Làm hộ","Không quan sát"], a:0},
+    {q:"Trong buổi test, em nên làm gì?", o:["Quan sát yên lặng, không nhắc","Nhắc liên tục","Làm hộ họ","Giải thích mọi bước"], a:0},
+    {q:"Chỗ người dùng lúng túng chính là?", o:["Chỗ sản phẩm cần cải thiện","Lỗi của họ","Điều không quan trọng","Chỗ đẹp nhất"], a:0}
   ],
 
   "3.6.3": [
@@ -1899,7 +1963,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Phân tích lỗi giúp?", o:["Biết sửa gì trước","Rối hơn","Không lợi ích","Che lỗi"], a:0},
     {q:"Gom lỗi theo mức giúp?", o:["Ưu tiên đúng","Lộn xộn","Bỏ sót","Không tác dụng"], a:0},
     {q:"Sửa đợt 1 nhằm?", o:["Khắc phục lỗi lớn từ test","Trang trí","Xoá tính năng","Ra mắt"], a:0},
-    {q:"Bài học?", o:["Ưu tiên sửa lỗi quan trọng trước","Sửa lỗi nhỏ trước","Sửa hết cùng lúc","Không sửa"], a:0}
+    {q:"Bài học?", o:["Ưu tiên sửa lỗi quan trọng trước","Sửa lỗi nhỏ trước","Sửa hết cùng lúc","Không sửa"], a:0},
+    {q:"Khi phân tích lỗi, nên làm gì?", o:["Chia theo nặng–nhẹ, sửa cái quan trọng nhất trước","Sửa hết cùng lúc","Bỏ qua tất cả","Chỉ sửa lỗi nhỏ"], a:0},
+    {q:"Lỗi nào cần ưu tiên sửa?", o:["Lỗi khiến người dùng không tiếp tục được","Lỗi màu","Lỗi chính tả nhỏ","Không lỗi nào"], a:0}
   ],
 
   "3.6.4": [
@@ -1912,7 +1978,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Test bản đã sửa giúp?", o:["Kiểm tra hiệu quả sửa lỗi","Che lỗi","Không lợi ích","Làm chậm"], a:0},
     {q:"Biên bản test 2 gồm?", o:["So sánh với lần 1","Chỉ màu sắc","Chỉ tên","Không gì"], a:0},
     {q:"Có thể phát sinh lỗi mới sau khi sửa không?", o:["Có, cần kiểm","Không bao giờ","Không quan trọng","Không kiểm"], a:0},
-    {q:"Bài học?", o:["Test lại với người mới sau khi sửa","Không test lại","Chỉ tự đánh giá","Ra mắt ngay"], a:0}
+    {q:"Bài học?", o:["Test lại với người mới sau khi sửa","Không test lại","Chỉ tự đánh giá","Ra mắt ngay"], a:0},
+    {q:"Buổi test số 2 nên làm gì?", o:["Cho người mới thử bản đã sửa","Cho đúng người cũ thử lại","Không test nữa","Bỏ qua"], a:0},
+    {q:"Vì sao nên test với người mới?", o:["Có góc nhìn tươi, không quen sản phẩm","Cho vui","Tốn thời gian","Không lý do"], a:0}
   ],
 
   "3.6.5": [
@@ -1925,7 +1993,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Phản hồi giúp?", o:["Biết cần tinh chỉnh gì","Không lợi ích","Rối hơn","Che lỗi"], a:0},
     {q:"Sau sửa đợt 2, sản phẩm?", o:["Sẵn sàng cho đánh giá","Chưa chạy","Hỏng","Không đổi"], a:0},
     {q:"Nhiều vòng thử-sửa cho thấy?", o:["Cải tiến là quá trình liên tục","Chỉ làm một lần","Không cần cải tiến","Vô ích"], a:0},
-    {q:"Bài học?", o:["Tinh chỉnh dần để sản phẩm ổn định","Bỏ qua phản hồi","Làm một lần","Không sửa"], a:0}
+    {q:"Bài học?", o:["Tinh chỉnh dần để sản phẩm ổn định","Bỏ qua phản hồi","Làm một lần","Không sửa"], a:0},
+    {q:"Sản phẩm tốt lên nhờ điều gì?", o:["Nhiều vòng thử – sửa","Làm một lần là xong","Không sửa gì","May mắn"], a:0},
+    {q:"Sau khi sửa đợt 2, em có được?", o:["Một bản ổn định hơn (1.1)","Bản tệ hơn","Không đổi gì","Bản chưa chạy"], a:0}
   ],
 
   "3.6.6": [
@@ -1938,7 +2008,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Lời chê giúp em?", o:["Biết chỗ cần cải thiện","Buồn vô ích","Bỏ cuộc","Không gì"], a:0},
     {q:"Nên tránh phản ứng nào?", o:["Tự ái, cãi lại","Lắng nghe","Cảm ơn","Ghi nhận"], a:0},
     {q:"Phản hồi thẳng thắn giúp sản phẩm?", o:["Tốt hơn thật sự","Tệ đi","Không đổi","Biến mất"], a:0},
-    {q:"Bài học?", o:["Đón nhận phản hồi để cải thiện","Chỉ nghe lời khen","Phớt lờ chê","Bỏ cuộc khi bị chê"], a:0}
+    {q:"Bài học?", o:["Đón nhận phản hồi để cải thiện","Chỉ nghe lời khen","Phớt lờ chê","Bỏ cuộc khi bị chê"], a:0},
+    {q:"Cho người dùng chấm điểm để làm gì?", o:["Nhận phản hồi thẳng thắn","Khoe điểm cao","Cho vui","Không vì sao"], a:0},
+    {q:"Phản hồi thật (dù khó nghe) thì?", o:["Quý hơn lời khen xã giao","Nên bỏ qua","Nên tránh vì làm buồn","Vô ích"], a:0}
   ],
 
   "3.7.1": [
@@ -1951,7 +2023,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Tagline tốt nên?", o:["Ngắn, rõ lợi ích","Dài dòng","Mơ hồ","Toàn thuật ngữ"], a:0},
     {q:"'Sản phẩm này giúp ai làm gì' trả lời?", o:["Giá trị của sản phẩm","Màu sắc","Giá tiền","Ngày ra mắt"], a:0},
     {q:"Bình chọn tên trong lớp giúp?", o:["Chọn tên nhiều người thấy hợp","Gây tranh cãi","Vô ích","Không gì"], a:0},
-    {q:"Bài học?", o:["Đặt tên dễ nhớ + câu giới thiệu rõ","Tên càng dài càng tốt","Không cần tên","Giấu sản phẩm"], a:0}
+    {q:"Bài học?", o:["Đặt tên dễ nhớ + câu giới thiệu rõ","Tên càng dài càng tốt","Không cần tên","Giấu sản phẩm"], a:0},
+    {q:"Sản phẩm cần gì để người khác dễ nhớ?", o:["Tên dễ nhớ + câu 'giúp ai làm được gì'","Giá thật cao","Nhiều màu","Logo phức tạp"], a:0},
+    {q:"Cách chọn tên tốt là?", o:["Thử vài tên, hỏi bạn tên nào dễ nhớ","Chọn tên dài nhất","Chọn tên khó đọc","Không cần tên"], a:0}
   ],
 
   "3.7.2": [
@@ -1964,7 +2038,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Nêu vấn đề để?", o:["Người xem thấy sản phẩm cần thiết","Cho dài","Không lý do","Che giấu"], a:0},
     {q:"Liệt kê tính năng khô khan thì?", o:["Kém hấp dẫn hơn nêu lợi ích","Tốt nhất","Hấp dẫn nhất","Bắt buộc"], a:0},
     {q:"Trang giới thiệu là?", o:["Cách đưa sản phẩm đến người khác","Đồ trang trí","Vô dụng","Bí mật"], a:0},
-    {q:"Bài học?", o:["Giới thiệu rõ vấn đề - giải pháp, đặt lợi ích lên đầu","Chỉ khoe tính năng","Không cần trang giới thiệu","Giấu sản phẩm"], a:0}
+    {q:"Bài học?", o:["Giới thiệu rõ vấn đề - giải pháp, đặt lợi ích lên đầu","Chỉ khoe tính năng","Không cần trang giới thiệu","Giấu sản phẩm"], a:0},
+    {q:"Trang giới thiệu nên nêu gì?", o:["Vấn đề → giải pháp → ảnh chụp sản phẩm","Chỉ tên em","Danh sách bạn bè","Số điện thoại"], a:0},
+    {q:"Nên đặt gì lên đầu trang giới thiệu?", o:["Lợi ích cho người dùng","Danh sách tính năng khô khan","Giá bán","Lời cảm ơn dài"], a:0}
   ],
 
   "3.7.3": [
@@ -1977,7 +2053,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Video demo cho thấy?", o:["Sản phẩm chạy thật","Chỉ ý tưởng","Không gì","Một bức ảnh"], a:0},
     {q:"Vì sao chỉ 60 giây?", o:["Ngắn gọn, giữ sự chú ý","Cho khó","Không lý do","Để dài hơn"], a:0},
     {q:"Nên quay gì?", o:["Vấn đề, thao tác chính, kết quả","Chỉ logo","Chỉ chữ chạy","Không gì"], a:0},
-    {q:"Bài học?", o:["Làm video demo ngắn, súc tích, có kịch bản","Quay thật dài","Không kịch bản","Bỏ demo"], a:0}
+    {q:"Bài học?", o:["Làm video demo ngắn, súc tích, có kịch bản","Quay thật dài","Không kịch bản","Bỏ demo"], a:0},
+    {q:"Video demo 60 giây nên có gì?", o:["Vấn đề, thao tác chính, kết quả","Chỉ nhạc nền","Cảnh quay dài lan man","Không có nội dung"], a:0},
+    {q:"Vì sao nên viết kịch bản trước khi quay?", o:["Để 60 giây không bị lan man","Cho khó hơn","Cho dài hơn","Không cần thiết"], a:0}
   ],
 
   "3.7.4": [
@@ -1990,7 +2068,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Đưa sản phẩm ra ngoài giúp?", o:["Nhận phản hồi thật","Che giấu","Không lợi ích","Làm chậm"], a:0},
     {q:"Gửi cho người không liên quan thì?", o:["Ít giá trị phản hồi","Tốt nhất","Bắt buộc","Không sao"], a:0},
     {q:"Ra mắt là?", o:["Bước đưa sản phẩm đến thế giới","Bước cuối vô nghĩa","Không cần","Chỉ để nộp"], a:0},
-    {q:"Bài học?", o:["Đưa sản phẩm đến đúng người dùng","Giữ cho riêng mình","Không ra mắt","Gửi bừa"], a:0}
+    {q:"Bài học?", o:["Đưa sản phẩm đến đúng người dùng","Giữ cho riêng mình","Không ra mắt","Gửi bừa"], a:0},
+    {q:"Nên đưa sản phẩm cho ai dùng thử?", o:["5–10 người đúng nhóm gặp vấn đề","Không cho ai","Chỉ mình em","Người không liên quan"], a:0},
+    {q:"Sản phẩm có ý nghĩa khi nào?", o:["Khi có người dùng thật","Khi để trong máy","Khi có nhiều màu","Khi đắt tiền"], a:0}
   ],
 
   "3.7.5": [
@@ -2003,7 +2083,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Bảng theo dõi tuần đầu ghi?", o:["Số liệu sử dụng","Nhật ký cá nhân","Bài hát","Không gì"], a:0},
     {q:"Ai dùng nhiều phần nào cho biết?", o:["Phần nào hữu ích/hấp dẫn","Màu yêu thích","Giờ học","Không gì"], a:0},
     {q:"Vì sao theo dõi tuần đầu?", o:["Nắm phản ứng thực tế sớm","Cho oai","Tốn công","Không lý do"], a:0},
-    {q:"Bài học?", o:["Quan sát số liệu để cải thiện","Bỏ qua số liệu","Chỉ đoán","Không theo dõi"], a:0}
+    {q:"Bài học?", o:["Quan sát số liệu để cải thiện","Bỏ qua số liệu","Chỉ đoán","Không theo dõi"], a:0},
+    {q:"Theo dõi tuần đầu để biết điều gì?", o:["Ai dùng, dùng phần nào, bỏ ở đâu","Màu áo người dùng","Thời tiết","Điểm số của lớp"], a:0},
+    {q:"Cần gì để bắt đầu theo dõi?", o:["Một bảng theo dõi đơn giản","Phần mềm đắt tiền","Không cần gì","Máy chủ lớn"], a:0}
   ],
 
   "3.7.6": [
@@ -2016,7 +2098,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"'Làm khác nếu được làm lại' giúp?", o:["Cải thiện lần sau","Buồn bã","Không gì","Bỏ cuộc"], a:0},
     {q:"Nhìn lại giúp em?", o:["Trưởng thành hơn","Kém đi","Không đổi","Quên hết"], a:0},
     {q:"Điều hiệu quả nên?", o:["Giữ lại và phát huy","Bỏ đi","Che giấu","Quên"], a:0},
-    {q:"Bài học?", o:["Rút kinh nghiệm sau mỗi lần ra mắt","Không cần rút","Chỉ ăn mừng","Bỏ qua"], a:0}
+    {q:"Bài học?", o:["Rút kinh nghiệm sau mỗi lần ra mắt","Không cần rút","Chỉ ăn mừng","Bỏ qua"], a:0},
+    {q:"Rút bài học sau ra mắt gồm những gì?", o:["Điều gì hiệu quả, điều gì sẽ làm khác","Chỉ ăn mừng","Quên hết","Đổ lỗi cho người khác"], a:0},
+    {q:"Mỗi lần ra mắt được xem là?", o:["Một lần học — thất bại nhỏ cũng quý","Một lần thất bại hoàn toàn","Vô nghĩa","Chỉ để khoe"], a:0}
   ],
 
   "3.8.1": [
@@ -2029,7 +2113,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"'Bước tiếp theo' cho thấy?", o:["Kế hoạch tương lai","Kết thúc","Màu sắc","Không gì"], a:0},
     {q:"Dàn ý pitch dài?", o:["Khoảng 5 phút","5 giờ","Cả ngày","10 giây"], a:0},
     {q:"Pitch nhằm?", o:["Thuyết phục người nghe","Làm rối","Khoe khoang","Che giấu"], a:0},
-    {q:"Bài học?", o:["Pitch theo cấu trúc rõ ràng","Nói lung tung","Chỉ đọc slide","Không chuẩn bị"], a:0}
+    {q:"Bài học?", o:["Pitch theo cấu trúc rõ ràng","Nói lung tung","Chỉ đọc slide","Không chuẩn bị"], a:0},
+    {q:"Cấu trúc một bài pitch là?", o:["Vấn đề → Giải pháp → Demo → Phản hồi → Bước tiếp","Chào → Tạm biệt","Chỉ đọc slide","Kể chuyện cười"], a:0},
+    {q:"Nên mở đầu pitch thế nào?", o:["Một câu chuyện/tình huống cho thấy vấn đề là thật","Đọc thông số kỹ thuật","Xin lỗi khán giả","Im lặng"], a:0}
   ],
 
   "3.8.2": [
@@ -2042,7 +2128,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Slide nhiều chữ khiến?", o:["Người nghe khó theo dõi","Hấp dẫn hơn","Dễ hiểu hơn","Tốt nhất"], a:0},
     {q:"Số liệu thật trên slide giúp?", o:["Thuyết phục hơn","Nhàm chán","Rối hơn","Không lợi ích"], a:0},
     {q:"Nên đọc nguyên văn slide không?", o:["Không, slide chỉ hỗ trợ","Có, đọc hết","Bắt buộc","Luôn luôn"], a:0},
-    {q:"Bài học?", o:["Slide ít chữ, nhiều hình, có số liệu","Slide dày chữ","Đọc nguyên văn","Không cần slide"], a:0}
+    {q:"Bài học?", o:["Slide ít chữ, nhiều hình, có số liệu","Slide dày chữ","Đọc nguyên văn","Không cần slide"], a:0},
+    {q:"Slide kể chuyện nên như thế nào?", o:["Ít chữ, nhiều hình, có số liệu thật","Nhiều đoạn văn dài","Toàn chữ nhỏ","Trống trơn"], a:0},
+    {q:"Slide dùng để làm gì?", o:["Hỗ trợ lời nói, không đọc nguyên văn","Đọc y nguyên","Thay hẳn người nói","Chỉ trang trí"], a:0}
   ],
 
   "3.8.3": [
@@ -2055,7 +2143,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Ghi lại góp ý ngay để?", o:["Không quên khi sửa","Cho đẹp","Tốn giấy","Không lý do"], a:0},
     {q:"Tổng duyệt lần 1 nhằm?", o:["Chuẩn bị tốt hơn cho lần thật","Kết thúc","Khoe","Bỏ cuộc"], a:0},
     {q:"Góp ý theo tiêu chí giúp?", o:["Cụ thể, dễ cải thiện","Mơ hồ","Vô ích","Gây rối"], a:0},
-    {q:"Bài học?", o:["Pitch thử, nhận góp ý và chỉnh","Không luyện trước","Bỏ qua góp ý","Chỉ pitch một lần"], a:0}
+    {q:"Bài học?", o:["Pitch thử, nhận góp ý và chỉnh","Không luyện trước","Bỏ qua góp ý","Chỉ pitch một lần"], a:0},
+    {q:"'Tổng duyệt lần 1' là gì?", o:["Pitch thử trước lớp, nhận góp ý theo tiêu chí","Ra mắt luôn","Không cần luyện","Chỉ xem slide"], a:0},
+    {q:"Nên làm gì với góp ý nhận được?", o:["Ghi lại ngay để không quên khi sửa","Bỏ qua","Cãi lại","Giận dỗi"], a:0}
   ],
 
   "3.8.4": [
@@ -2068,7 +2158,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Vượt vòng duyệt của coach nghĩa là?", o:["Sẵn sàng cho Demo Day","Thất bại","Kết thúc","Bỏ cuộc"], a:0},
     {q:"Luyện trả lời câu hỏi khó giúp?", o:["Không bị bất ngờ","Bối rối hơn","Vô ích","Làm chậm"], a:0},
     {q:"Nên trả lời câu hỏi thế nào?", o:["Ngắn gọn, tự tin","Lan man","Né tránh","Im lặng"], a:0},
-    {q:"Bài học?", o:["Luyện pitch bản sửa và sẵn sàng hỏi đáp","Không luyện","Chỉ đọc slide","Trốn câu hỏi"], a:0}
+    {q:"Bài học?", o:["Luyện pitch bản sửa và sẵn sàng hỏi đáp","Không luyện","Chỉ đọc slide","Trốn câu hỏi"], a:0},
+    {q:"Tổng duyệt lần 2 tập trung vào?", o:["Pitch bản đã sửa + luyện trả lời câu hỏi khó","Làm slide mới hoàn toàn","Nghỉ ngơi","Đổi đề tài"], a:0},
+    {q:"Không biết câu trả lời thì nên?", o:["Thành thật: 'Em sẽ tìm hiểu thêm'","Bịa đại một câu","Im lặng bỏ đi","Đổ lỗi"], a:0}
   ],
 
   "3.8.5": [
@@ -2081,7 +2173,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Kiểm tra máy móc trước giúp?", o:["Tránh trục trặc phút chót","Cho oai","Tốn thời gian","Không lý do"], a:0},
     {q:"Trước khán giả, nên?", o:["Tự tin trình bày","Cúi gằm mặt","Nói lí nhí","Bỏ chạy"], a:0},
     {q:"Demo thật cho khách mời thấy?", o:["Sản phẩm hoạt động","Chỉ ý tưởng","Không gì","Ảnh"], a:0},
-    {q:"Bài học?", o:["Chuẩn bị kỹ, tự tin ở Demo Day","Không chuẩn bị","Trốn tránh","Đến muộn"], a:0}
+    {q:"Bài học?", o:["Chuẩn bị kỹ, tự tin ở Demo Day","Không chuẩn bị","Trốn tránh","Đến muộn"], a:0},
+    {q:"Ở Demo Day, em nên?", o:["Bình tĩnh, kể mạch lạc, cho xem demo thật","Đọc thật vội","Trốn tránh","Không chuẩn bị"], a:0},
+    {q:"Làm gì để tránh sự cố phút chót?", o:["Đến sớm kiểm tra máy móc","Đến thật muộn","Không kiểm tra gì","Tắt máy đi"], a:0}
   ],
 
   "3.8.6": [
@@ -2094,7 +2188,9 @@ Object.assign(window.LESSON_QUIZ, {
     {q:"Nhìn lại hành trình giúp?", o:["Thấy mình trưởng thành","Buồn bã","Không đổi","Quên hết"], a:0},
     {q:"Tạo ra sản phẩm thật là điều?", o:["Rất đáng tự hào","Bình thường","Đáng xấu hổ","Vô nghĩa"], a:0},
     {q:"Định hướng nghĩa là?", o:["Quyết bước đi tiếp theo","Kết thúc mọi thứ","Không nghĩ gì","Bỏ cuộc"], a:0},
-    {q:"Bài học?", o:["Tổng kết hành trình và chọn hướng đi","Quên hết","Không tổng kết","Bỏ dở"], a:0}
+    {q:"Bài học?", o:["Tổng kết hành trình và chọn hướng đi","Quên hết","Không tổng kết","Bỏ dở"], a:0},
+    {q:"Tổng kết cuối Level 3 gồm những gì?", o:["Nhìn lại đã học/làm được gì, hoàn thiện hồ sơ sản phẩm","Chỉ ăn mừng","Quên hết","Xoá sản phẩm"], a:0},
+    {q:"Điều đáng tự hào nhất là gì?", o:["Em đã tự tay tạo ra một sản phẩm thật","Có nhiều điểm","Được khen","Làm xong nhanh"], a:0}
   ]
 
 });
