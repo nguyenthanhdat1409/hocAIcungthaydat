@@ -1340,7 +1340,8 @@ function renderExHub(){
     html += `<div class="exLevel"><h3 class="exLevelH rpHead">🎭 Nhập vai &amp; Tranh biện <span>đạo đức AI · tư duy phản biện · 10–15 tuổi</span></h3><div class="exGrid">`;
     Object.keys(window.ROLEPLAY).forEach(k => {
       const r = window.ROLEPLAY[k];
-      html += `<button class="exModCard rpCard" onclick="startRolePlay('${k}')">
+      const lc = (RP_THEME[k] || {}).g1 || "#7C3AED";
+      html += `<button class="exModCard rpCard" style="--lc:${lc}" onclick="startRolePlay('${k}')">
         ${rpThumbHtml(k)}
         <span class="emCode">${r.emoji || "🎭"} NHẬP VAI</span>
         <span class="emName">${esc(r.title.replace(/^\S+\s/, ""))}</span>
@@ -1515,11 +1516,20 @@ const RP_IMG = {
   phientoa:  "images/game-phientoa.png",
   tranhbien: "images/game-tranhbien.png",
   toasoan:   "images/game-toasoan.png",
+  baovemat:  "images/game-baovemat.png",
+  thienvi:   "images/game-thienvi.png",
 };
-/* Nhân vật hiện bên lời kể lúc chơi (bổ sung dần khi có thêm ảnh) */
+/* Nhân vật hiện bên lời kể lúc chơi */
 const RP_AVATAR = {
-  phientoa: "images/char-tham-phan.png",
+  phientoa:  "images/char-tham-phan.png",
+  tranhbien: "images/char-tranhbien.png",
+  toasoan:   "images/char-toasoan.png",
+  baovemat:  "images/char-baovemat.png",
+  thienvi:   "images/char-thienvi.png",
 };
+/* Ảnh có sẵn vòng tròn nền (baovemat/thienvi) → lấp đầy khung; nhân vật trong suốt → hiện trọn */
+const RP_COVER = new Set(["baovemat", "thienvi"]);
+function rpFit(k){ return RP_COVER.has(k) ? " cover" : ""; }
 /* Ảnh lỗi → thay bằng emoji, không vỡ layout */
 function rpImgFail(el, em){ const p = el.parentElement; if(p){ p.classList.remove("hasImg"); p.textContent = em; } }
 function rpIconInner(em){
@@ -1535,7 +1545,7 @@ function rpThumbHtml(k){
   const inner = img
     ? `<img src="${img}" alt="" loading="lazy" decoding="async" onerror="rpImgFail(this,'${em}')">`
     : `<span class="rpThumbEmoji">${em}</span>`;
-  return `<span class="rpThumb" style="--h1:${t.g1};--h2:${t.g2}">${inner}</span>`;
+  return `<span class="rpThumb${rpFit(k)}" style="--h1:${t.g1};--h2:${t.g2}">${inner}</span>`;
 }
 /* Tên game bỏ emoji ở đầu (vì đã có icon 3D lớn ở hero) */
 function rpHeadingName(){ return (rpData && rpData.title || "").replace(/^[^\p{L}\d]+/u, "").trim(); }
@@ -1545,7 +1555,7 @@ function rpHero(){
   return `<div class="rpHero" style="--h1:${t.g1};--h2:${t.g2}">
       <span class="rpBlob b1"></span><span class="rpBlob b2"></span><span class="rpBlob b3"></span>
       <span class="rpSpark s1">✨</span><span class="rpSpark s2">⭐</span><span class="rpSpark s3">💫</span>
-      <div class="rpHeroIcon${RP_IMG[rpKey] ? " hasImg" : ""}">${rpIconInner(rpData.emoji || "🎭")}</div>
+      <div class="rpHeroIcon${RP_IMG[rpKey] ? " hasImg" + rpFit(rpKey) : ""}">${rpIconInner(rpData.emoji || "🎭")}</div>
       <span class="rpCat">🎭 ${esc(rpData.tag || "Nhập vai")}</span>
       <h2 class="rpHeroTitle">${esc(rpHeadingName())}</h2>
     </div>`;
@@ -1654,7 +1664,7 @@ function rpResult(){
   if(pct >= 50){ sfx.win(); burst(18); }
   const t = rpTheme();
   document.getElementById("resultCard").innerHTML = `
-    <div class="rpResultIcon${RP_IMG[rpKey] ? " hasImg" : ""}" style="--h1:${t.g1};--h2:${t.g2}">${rpIconInner(rpData.emoji || "🎭")}</div>
+    <div class="rpResultIcon${RP_IMG[rpKey] ? " hasImg" + rpFit(rpKey) : ""}" style="--h1:${t.g1};--h2:${t.g2}">${rpIconInner(rpData.emoji || "🎭")}</div>
     <h2 style="margin-top:8px">${esc(rpHeadingName())}</h2>
     <div class="plTier">Điểm tư duy: <b>${rpScore}/${rpMax}</b> điểm · ${pct}% — ${tier}</div>
     <div class="plNote">Mỗi cảnh tối đa 2 điểm (${rpData.stages.length} cảnh × 2đ). Chọn đáp án cân nhắc kỹ nhất để được 2 điểm nhé!</div>

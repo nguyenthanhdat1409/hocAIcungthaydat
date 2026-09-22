@@ -1659,7 +1659,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
    ========================================================= */
 .rpHead{background:linear-gradient(135deg,#4C1D95,#7C3AED)!important}
 .rpHead span{font-family:var(--font-body);font-weight:500;font-size:12px;opacity:.9;display:block;margin-top:2px}
-.rpCard{border-left-color:#7C3AED}
+.rpCard{border-left-color:var(--lc,#7C3AED); --lc:#7C3AED}
 .rpCard .emCode{color:#7C3AED}
 
 .rpTitle{font-family:var(--font-display);font-weight:800;font-size:22px;color:var(--ink);margin:8px 0 10px;line-height:1.2}
@@ -1766,6 +1766,9 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 /* Ảnh 3D trong vòng tròn hero / kết quả / avatar (fallback emoji khi thiếu) */
 .rpHeroIcon.hasImg, .rpResultIcon.hasImg{overflow:hidden}
 .rpHeroIcon.hasImg img, .rpResultIcon.hasImg img{width:100%; height:100%; object-fit:contain; display:block; transform:scale(1.08)}
+/* Ảnh JPG có nền + vòng tròn sẵn: lấp đầy khung tròn */
+.rpHeroIcon.cover img, .rpResultIcon.cover img{object-fit:cover; transform:none}
+.rpThumb.cover img{object-fit:cover; transform:scale(1)}
 /* Avatar hình trong cảnh chơi: chân dung to, hiện trọn nhân vật */
 .rpScene .rpAvatar.hasImg{width:112px; height:112px; border-radius:22px; padding:0; overflow:hidden;
   background:linear-gradient(135deg,#EDE9FE,#FCE9F6); border:2px solid rgba(124,58,237,.18);
