@@ -642,6 +642,15 @@ function observeReveal(){
   targets.forEach(t => { t.classList.add("reveal"); _revObserver.observe(t); });
 }
 
+/* Ảnh minh hoạ cấp MODULE & cấp LEVEL (hiện có: Level 1) */
+const MOD_IMG = {
+  "1.1":"images/mod-1.1.png", "1.2":"images/mod-1.2.png", "1.3":"images/mod-1.3.jpg",
+  "1.4":"images/mod-1.4.jpg", "1.5":"images/mod-1.5.jpg", "1.6":"images/mod-1.6.jpg",
+  "1.7":"images/mod-1.7.jpg", "1.8":"images/mod-1.8.jpg",
+  "2.1":"images/mod-2.1.png",
+};
+const LEVEL_HERO = { 0:"images/hero-level-1.png" };
+
 function renderLevel(lv, li){
   const c = LEVEL_COLORS[li], soft = LEVEL_SOFT[li];
   const nLessons = lv.modules.reduce((s,m)=>s+m.lessons.length, 0);
@@ -654,6 +663,9 @@ function renderLevel(lv, li){
         <div class="lvMeta">🗓️ ${esc(lv.duration)} · 📘 ${lv.sessions} buổi · 📚 ${nLessons} bài · 🧩 ${lv.modules.length} module</div>
       </div>
     </div>`;
+  if(LEVEL_HERO[li]){
+    h += `<div class="lvHero"><img src="${LEVEL_HERO[li]}" alt="" loading="lazy" decoding="async" onerror="this.closest('.lvHero').remove()"></div>`;
+  }
   if(lv.graduation_criteria){
     h += `<div class="gradBox">🎯 ${esc(lv.graduation_criteria)}</div>`;
   }
@@ -673,6 +685,9 @@ function renderModule(m, li, mi){
     </button>
     <div class="modBody">`;
 
+  if(MOD_IMG[m.code]){
+    h += `<div class="modBanner"><img src="${MOD_IMG[m.code]}" alt="" loading="lazy" decoding="async" onerror="this.closest('.modBanner').remove()"></div>`;
+  }
   h += `<div class="lsList">`;
   m.lessons.forEach((ls, lsi) => {
     const em = lessonEmoji(ls, li);
@@ -1354,7 +1369,11 @@ function renderExHub(){
     lv.modules.forEach(m => {
       const total = exCount(m.code, m);
       const hasOther = !!(window.EXERCISES && window.EXERCISES[m.code]);
-      html += `<button class="exModCard" onclick="startExercise('${m.code}')" ${total ? "" : "disabled"}>
+      const thumb = MOD_IMG[m.code]
+        ? `<span class="emThumb" style="--lc:${LEVEL_COLORS[li]}"><img src="${MOD_IMG[m.code]}" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>`
+        : "";
+      html += `<button class="exModCard${thumb ? " hasThumb" : ""}" onclick="startExercise('${m.code}')" ${total ? "" : "disabled"}>
+        ${thumb}
         <span class="emCode">MODULE ${esc(m.code)}</span>
         <span class="emName">${esc(m.name)}</span>
         <span class="emMeta">📝 ${total} câu${hasOther ? " · nhiều dạng" : ""}</span></button>`;

@@ -337,6 +337,20 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .inlineFig.right{float:right; width:180px; margin:0 0 10px 16px}
 @media(max-width:520px){ .inlineFig.right{float:none; width:auto; margin:6px 0 12px} }
 
+/* Ảnh minh hoạ cấp LEVEL (banner lớn) & cấp MODULE (banner) — trang Bài học */
+.lvHero{margin:0 0 16px; border-radius:20px; overflow:hidden; aspect-ratio:16/6;
+  background:linear-gradient(135deg,var(--lc,#7C3AED),#EC4899); box-shadow:var(--sh-md,0 10px 26px rgba(36,26,84,.14))}
+.lvHero img{width:100%; height:100%; object-fit:cover; display:block}
+.modBanner{margin:2px 0 12px; border-radius:14px; overflow:hidden; aspect-ratio:16/6;
+  background:linear-gradient(135deg,#EDE9FE,#FCE9F6)}
+.modBanner img{width:100%; height:100%; object-fit:cover; display:block}
+/* Thumb ảnh trên thẻ module (hub Bài tập) */
+.exModCard.hasThumb{padding-top:0; overflow:hidden}
+.emThumb{display:block; height:118px; margin:0 -14px 10px; overflow:hidden;
+  background:linear-gradient(135deg,var(--lc,#7C3AED),#A855F7)}
+.emThumb img{width:100%; height:100%; object-fit:cover; display:block}
+@media(max-width:520px){ .lvHero,.modBanner{aspect-ratio:16/7} }
+
 /* Alpha grid */
 .alphaGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(52px,1fr)); gap:10px; margin:14px 0}
 .alphaGrid span{background:linear-gradient(135deg,#FEF9C3,#FEF3C7); border:2px solid var(--yel); border-radius:14px; text-align:center; padding:12px 0;
@@ -1659,7 +1673,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
    ========================================================= */
 .rpHead{background:linear-gradient(135deg,#4C1D95,#7C3AED)!important}
 .rpHead span{font-family:var(--font-body);font-weight:500;font-size:12px;opacity:.9;display:block;margin-top:2px}
-.rpCard{border-left-color:var(--lc,#7C3AED); --lc:#7C3AED}
+.rpCard{border-left-width:2px; border-left-color:#EEF2F7; --lc:#7C3AED}
 .rpCard .emCode{color:#7C3AED}
 
 .rpTitle{font-family:var(--font-display);font-weight:800;font-size:22px;color:var(--ink);margin:8px 0 10px;line-height:1.2}
