@@ -602,7 +602,7 @@ function renderCurriculum(){
   SESSION_BEAT.forEach(([name, min], i) => {
     const p = phaseOf(name);
     html += `<div class="beatBlock" style="--bbg:${p.bg};--bfg:${p.fg};animation-delay:${i*80}ms">
-        <span class="bStep">Bước ${i+1}</span>
+        <span class="bStep" data-n="${i+1}">Bước ${i+1}</span>
         <span class="bIc">${p.ic}</span>
         <span class="bName">${esc(name)}</span>
         <span class="bMin">${min} phút</span></div>`;

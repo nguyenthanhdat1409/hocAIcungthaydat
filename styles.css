@@ -1855,3 +1855,88 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 .curCount{margin-top:10px;font-family:var(--font-body);font-weight:600;font-size:14px;color:var(--vio);
   background:#F5F3FF;border:1.5px solid #E9D5FF;border-radius:12px;padding:8px 14px}
 .curCount.empty{color:#B45309;background:#FFFBEB;border-color:#FDE68A}
+
+/* =========================================================
+   REDESIGN Bài học — Hero lộ trình + Nhịp 90' (v6, sạch & hiện đại)
+   Đặt cuối file để ghi đè các bản cũ. Prefix #curriculum để chắc thắng.
+   ========================================================= */
+#curriculum .curHero{
+  text-align:center; padding:32px 22px 26px; border-radius:28px; position:relative; overflow:hidden;
+  background:linear-gradient(165deg,#ffffff 0%,#faf6ff 100%);
+  border:1px solid #EFE6FE; box-shadow:0 20px 48px -22px rgba(76,29,149,.5);
+  margin-bottom:8px;
+}
+#curriculum .curHero::before{
+  content:""; position:absolute; inset:-50% -18% auto auto; width:340px; height:340px; z-index:0;
+  background:radial-gradient(circle, rgba(236,72,153,.14), transparent 68%); pointer-events:none;
+}
+#curriculum .curHero::after{
+  content:""; position:absolute; inset:auto auto -55% -14%; width:300px; height:300px; z-index:0;
+  background:radial-gradient(circle, rgba(6,182,212,.12), transparent 68%); pointer-events:none;
+}
+#curriculum .curHero > *{ position:relative; z-index:1 }
+#curriculum .curHero .pill{
+  background:linear-gradient(135deg,#7C3AED,#EC4899); color:#fff; box-shadow:0 6px 16px -4px rgba(124,58,237,.55);
+  font-size:12.5px; letter-spacing:.3px;
+}
+#curriculum .curTitle{
+  font-family:var(--font-display); font-weight:800; font-size:clamp(24px,4.4vw,36px);
+  color:var(--ink); margin:14px auto 6px; line-height:1.16; max-width:24ch; text-wrap:balance;
+}
+#curriculum .curTagline{ color:#7C3AED; font-weight:600; font-size:15.5px; margin:0 auto 22px; max-width:46ch; text-wrap:balance }
+#curriculum .curNums{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:0 0 18px }
+#curriculum .curNums > div{
+  flex:0 1 132px; background:#fff; border:1px solid #F1EBFB; border-radius:20px; padding:18px 12px 14px;
+  box-shadow:0 12px 26px -16px rgba(124,58,237,.55); position:relative; overflow:hidden;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+#curriculum .curNums > div::before{
+  content:""; position:absolute; top:0; left:0; right:0; height:5px; background:var(--nc,#7C3AED);
+}
+#curriculum .curNums > div:nth-child(1){ --nc:#7C3AED }
+#curriculum .curNums > div:nth-child(2){ --nc:#EC4899 }
+#curriculum .curNums > div:nth-child(3){ --nc:#06B6D4 }
+#curriculum .curNums > div:hover{ transform:translateY(-4px); box-shadow:0 18px 34px -16px rgba(124,58,237,.6) }
+#curriculum .curNums b{
+  display:block; font-family:var(--font-display); font-weight:800; font-size:34px; line-height:1;
+  color:var(--nc,#7C3AED); font-variant-numeric:tabular-nums;
+}
+#curriculum .curNums span{ display:block; margin-top:5px; font-size:12.5px; font-weight:600; color:#6B6494 }
+#curriculum .curDuration{
+  display:inline-block; margin:2px 0 0; font-size:13.5px; font-weight:600; color:#5B4B8A;
+  background:#F5F0FF; border:1px solid #ECE2FF; padding:9px 18px; border-radius:999px;
+}
+
+/* Nhịp 90 phút */
+#curriculum .beatWrap{ margin:26px 0 20px }
+#curriculum .beatHead{
+  font-family:var(--font-display); font-weight:800; font-size:19px; color:#fff; margin:0 0 14px;
+  text-shadow:0 2px 6px rgba(30,27,75,.35); display:flex; align-items:center; gap:8px;
+}
+#curriculum .beatBar{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px }
+#curriculum .beatBlock{
+  position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; gap:5px;
+  padding:18px 12px 15px; border-radius:20px; min-width:0; border:none;
+  background:var(--bbg); color:var(--bfg);
+  box-shadow:0 12px 26px -16px rgba(30,27,75,.5);
+}
+#curriculum .beatBlock .bStep{
+  position:absolute; top:9px; left:9px; width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:0;
+  background:rgba(255,255,255,.85); color:inherit; font-weight:800;
+}
+#curriculum .beatBlock .bStep::after{ content:attr(data-n); font-size:11.5px; font-variant-numeric:tabular-nums }
+#curriculum .beatBlock .bIc{
+  width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:24px; background:rgba(255,255,255,.85); box-shadow:0 4px 10px -2px rgba(30,27,75,.2); margin:4px 0 2px;
+}
+#curriculum .beatBlock .bName{ font-family:var(--font-display); font-weight:800; font-size:13px; line-height:1.25 }
+#curriculum .beatBlock .bMin{
+  margin-top:2px; font-size:12px; font-weight:800; padding:3px 12px; border-radius:999px;
+  background:rgba(255,255,255,.8); color:inherit; font-variant-numeric:tabular-nums;
+}
+#curriculum .beatBlock:hover{ transform:translateY(-5px); box-shadow:0 18px 32px -14px rgba(30,27,75,.5); z-index:2 }
+@media(max-width:600px){
+  #curriculum .beatBar{ grid-template-columns:repeat(2,1fr); gap:10px }
+  #curriculum .curNums > div{ flex-basis:44% }
+}
