@@ -597,15 +597,17 @@ function renderCurriculum(){
       <p class="curDuration">⏳ ${esc(data.duration)}</p>
     </div>`;
 
-  /* Nhịp 1 buổi 90 phút */
-  html += `<div class="beatWrap"><h3 class="beatHead">⏱️ Nhịp 1 buổi học 90 phút</h3><div class="beatBar">`;
-  SESSION_BEAT.forEach(([name, min], i) => {
+  /* Nhịp 1 buổi 90 phút — dòng thời gian chia theo tỉ lệ số phút */
+  html += `<div class="beatWrap"><h3 class="beatHead">⏱️ Nhịp một buổi học · 90 phút</h3><div class="beatTL">`;
+  SESSION_BEAT.forEach(([name, min]) => {
     const p = phaseOf(name);
-    html += `<div class="beatBlock" style="--bbg:${p.bg};--bfg:${p.fg};animation-delay:${i*80}ms">
-        <span class="bStep" data-n="${i+1}">Bước ${i+1}</span>
-        <span class="bIc">${p.ic}</span>
-        <span class="bName">${esc(name)}</span>
-        <span class="bMin">${min} phút</span></div>`;
+    html += `<div class="beatSeg" style="--seg:${p.fg};flex-grow:${min}" title="${esc(name)} · ${min} phút" aria-label="${esc(name)}: ${min} phút">
+        <span class="segIc">${p.ic}</span><span class="segMin">${min}′</span></div>`;
+  });
+  html += `</div><div class="beatLegend">`;
+  SESSION_BEAT.forEach(([name, min]) => {
+    const p = phaseOf(name);
+    html += `<span class="beatLg"><i style="background:${p.fg}"></i><span class="lgName">${esc(name)}</span> <b>${min}′</b></span>`;
   });
   html += `</div></div>`;
 
