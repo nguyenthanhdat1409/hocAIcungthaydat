@@ -1969,3 +1969,17 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
   #curriculum .beatSeg .segMin{ font-size:12px }
   #curriculum .beatLg{ font-size:12.5px }
 }
+
+/* =========================================================
+   Tinh chỉnh typography & độ đọc (v8) — GIỮ NGUYÊN bảng màu
+   ========================================================= */
+/* Số canh đều (tabular) ở mọi nơi hiển thị số */
+.heroStats b, .counter, #curriculum .curNums b, #curriculum .beatSeg .segMin,
+.plTier b, .starBox, .lvMeta, .emMeta, .modCount{ font-variant-numeric:tabular-nums }
+/* Tiêu đề & đoạn dẫn: tránh gãy dòng lẻ, cân đối hơn */
+.sectionHead, .heroText h1, .quizIntro h1, #curriculum .curTitle, .curTitle{ text-wrap:balance }
+.lead, .sectionSub, .intro, #curriculum .curTagline{ text-wrap:pretty }
+/* Chữ gradient tiêu đề hero dễ đọc hơn trên nền màu */
+.heroText h1 .grad{ filter:drop-shadow(0 2px 3px rgba(30,27,75,.30)) }
+/* Chặn tràn ngang ngoài ý muốn trên mobile */
+html,body{ overflow-x:hidden }
