@@ -132,6 +132,12 @@ const sfx = {
 document.addEventListener("click", e => {
   if(e.target.closest("button, .opt, .topicChip, .lessonCard")) sfx.click();
 });
+/* Bàn phím: Enter/Space kích hoạt các phần tử div đóng vai nút (role="button") */
+document.addEventListener("keydown", e => {
+  if(e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
+  const el = e.target.closest('[role="button"]');
+  if(el && !el.matches("button, a")){ e.preventDefault(); el.click(); }
+});
 
 /* Pháo hoa emoji */
 function burst(n){
@@ -691,7 +697,7 @@ function renderModule(m, li, mi){
   h += `<div class="lsList">`;
   m.lessons.forEach((ls, lsi) => {
     const em = lessonEmoji(ls, li);
-    h += `<div class="lsRow" data-ls="${li}-${mi}-${lsi}" onclick="openPlan(${li},${mi},${lsi})">
+    h += `<div class="lsRow" role="button" tabindex="0" data-ls="${li}-${mi}-${lsi}" onclick="openPlan(${li},${mi},${lsi})">
         <span class="lsEmoji">${em}</span>
         <span class="lsMain">
           <span class="lsName">${esc(ls.name)}</span>

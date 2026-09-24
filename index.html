@@ -19,7 +19,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=54">
+<link rel="stylesheet" href="styles.css?v=55">
 </head>
 <body>
 
@@ -113,7 +113,7 @@
     <div class="dvOr"><span>hoặc làm riêng từng phần</span></div>
 
     <div class="testGrid">
-      <div class="testCard" style="--tc:#7C3AED" onclick="startPlacement()">
+      <div class="testCard" role="button" tabindex="0" style="--tc:#7C3AED" onclick="startPlacement()">
         <div class="tcIco">🧠</div>
         <h3>Kiến thức AI</h3>
         <p>20 câu thích ứng: đúng thì khó hơn. Về AI, prompt, an toàn…</p>
@@ -128,7 +128,7 @@
           <button class="tcBtn" onclick="soloTyping('en')">🇬🇧 Tiếng Anh</button>
         </div>
       </div>
-      <div class="testCard" style="--tc:#22C55E" onclick="soloThinking()">
+      <div class="testCard" role="button" tabindex="0" style="--tc:#22C55E" onclick="soloThinking()">
         <div class="tcIco">🧩</div>
         <h3>Tư duy</h3>
         <p>8 câu đố logic: tìm quy luật, sắp thứ tự, phân nhóm…</p>
@@ -189,6 +189,6 @@
 <!-- Nút cài ứng dụng (ẩn; hiện khi trình duyệt cho phép cài) -->
 <button id="installBtn" class="installBtn hidden" onclick="pwaInstall()">📲 Cài ứng dụng</button>
 
-<script defer src="app.js?v=54"></script>
+<script defer src="app.js?v=55"></script>
 </body>
 </html>
