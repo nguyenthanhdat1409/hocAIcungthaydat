@@ -338,8 +338,7 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 @media(max-width:520px){ .inlineFig.right{float:none; width:auto; margin:6px 0 12px} }
 
 /* Ảnh minh hoạ cấp LEVEL (banner lớn) & cấp MODULE (banner) — trang Bài học */
-.lvHero{margin:0 0 16px; border-radius:20px; overflow:hidden; aspect-ratio:16/7;
-  background:linear-gradient(135deg,var(--lc,#7C3AED),#EC4899); box-shadow:var(--sh-md,0 10px 26px rgba(36,26,84,.14))}
+.lvHero{margin:0 0 12px; aspect-ratio:16/7; background:transparent}
 .lvHero img{width:100%; height:100%; object-fit:contain; display:block}
 .modBanner{margin:2px 0 12px; border-radius:14px; overflow:hidden; aspect-ratio:16/9;
   background:linear-gradient(135deg,#EDE9FE,#FCE9F6)}
