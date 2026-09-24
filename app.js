@@ -644,12 +644,12 @@ function observeReveal(){
 
 /* Ảnh minh hoạ cấp MODULE & cấp LEVEL (hiện có: Level 1) */
 const MOD_IMG = {
-  "1.1":"images/mod-1.1.png", "1.2":"images/mod-1.2.png", "1.3":"images/mod-1.3.png",
-  "1.4":"images/mod-1.4.png", "1.5":"images/mod-1.5.png", "1.6":"images/mod-1.6.jpg",
-  "1.7":"images/mod-1.7.jpg", "1.8":"images/mod-1.8.jpg",
-  "2.1":"images/mod-2.1.png",
+  "1.1":"images/mod-1.1.webp", "1.2":"images/mod-1.2.webp", "1.3":"images/mod-1.3.webp",
+  "1.4":"images/mod-1.4.webp", "1.5":"images/mod-1.5.webp", "1.6":"images/mod-1.6.webp",
+  "1.7":"images/mod-1.7.webp", "1.8":"images/mod-1.8.webp",
+  "2.1":"images/mod-2.1.webp", "2.2":"images/mod-2.2.webp", "2.3":"images/mod-2.3.webp", "2.4":"images/mod-2.4.webp",
 };
-const LEVEL_HERO = { 0:"images/hero-level-1.png" };
+const LEVEL_HERO = { 0:"images/hero-level-1.webp", 1:"images/hero-level-2.webp" };
 
 function renderLevel(lv, li){
   const c = LEVEL_COLORS[li], soft = LEVEL_SOFT[li];
@@ -664,7 +664,7 @@ function renderLevel(lv, li){
       </div>
     </div>`;
   if(LEVEL_HERO[li]){
-    h += `<div class="lvHero"><img src="${LEVEL_HERO[li]}" alt="" loading="lazy" decoding="async" onerror="this.closest('.lvHero').remove()"></div>`;
+    h += `<div class="lvHero"><img src="${LEVEL_HERO[li]}" alt="" loading="eager" fetchpriority="high" decoding="async" onerror="this.closest('.lvHero').remove()"></div>`;
   }
   if(lv.graduation_criteria){
     h += `<div class="gradBox">🎯 ${esc(lv.graduation_criteria)}</div>`;
@@ -1370,7 +1370,7 @@ function renderExHub(){
       const total = exCount(m.code, m);
       const hasOther = !!(window.EXERCISES && window.EXERCISES[m.code]);
       const thumb = MOD_IMG[m.code]
-        ? `<span class="emThumb" style="--lc:${LEVEL_COLORS[li]}"><img src="${MOD_IMG[m.code]}" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>`
+        ? `<span class="emThumb" style="--lc:${LEVEL_COLORS[li]}"><img src="${MOD_IMG[m.code]}" alt="" loading="eager" fetchpriority="high" decoding="async" onerror="this.closest('.emThumb').remove()"></span>`
         : "";
       html += `<button class="exModCard${thumb ? " hasThumb" : ""}" onclick="startExercise('${m.code}')" ${total ? "" : "disabled"}>
         ${thumb}
@@ -1532,19 +1532,19 @@ const RP_THEME = {
 function rpTheme(){ return RP_THEME[rpKey] || {g1:"#7C3AED", g2:"#EC4899"}; }
 /* Ảnh 3D cho hero + icon kết quả (thiếu ảnh nào tự fallback về emoji) */
 const RP_IMG = {
-  phientoa:  "images/game-phientoa.png",
-  tranhbien: "images/game-tranhbien.png",
-  toasoan:   "images/game-toasoan.png",
-  baovemat:  "images/game-baovemat.png",
-  thienvi:   "images/game-thienvi.png",
+  phientoa:  "images/game-phientoa.webp",
+  tranhbien: "images/game-tranhbien.webp",
+  toasoan:   "images/game-toasoan.webp",
+  baovemat:  "images/game-baovemat.webp",
+  thienvi:   "images/game-thienvi.webp",
 };
 /* Nhân vật hiện bên lời kể lúc chơi */
 const RP_AVATAR = {
-  phientoa:  "images/char-tham-phan.png",
-  tranhbien: "images/char-tranhbien.png",
-  toasoan:   "images/char-toasoan.png",
-  baovemat:  "images/char-baovemat.png",
-  thienvi:   "images/char-thienvi.png",
+  phientoa:  "images/char-tham-phan.webp",
+  tranhbien: "images/char-tranhbien.webp",
+  toasoan:   "images/char-toasoan.webp",
+  baovemat:  "images/char-baovemat.webp",
+  thienvi:   "images/char-thienvi.webp",
 };
 /* Ảnh có sẵn vòng tròn nền (baovemat/thienvi) → lấp đầy khung; nhân vật trong suốt → hiện trọn */
 const RP_COVER = new Set(["baovemat", "thienvi"]);
@@ -1553,7 +1553,7 @@ function rpFit(k){ return RP_COVER.has(k) ? " cover" : ""; }
 function rpImgFail(el, em){ const p = el.parentElement; if(p){ p.classList.remove("hasImg"); p.textContent = em; } }
 function rpIconInner(em){
   const img = RP_IMG[rpKey];
-  return img ? `<img src="${img}" alt="" loading="lazy" decoding="async" onerror="rpImgFail(this,'${em}')">` : em;
+  return img ? `<img src="${img}" alt="" loading="eager" decoding="async" onerror="rpImgFail(this,'${em}')">` : em;
 }
 /* Thumbnail thẻ chọn game ở hub Bài tập: ảnh 3D trên nền gradient (fallback emoji) */
 function rpThumbHtml(k){
@@ -1562,7 +1562,7 @@ function rpThumbHtml(k){
   const t = RP_THEME[k] || {g1:"#7C3AED", g2:"#EC4899"};
   const img = RP_IMG[k];
   const inner = img
-    ? `<img src="${img}" alt="" loading="lazy" decoding="async" onerror="rpImgFail(this,'${em}')">`
+    ? `<img src="${img}" alt="" loading="eager" decoding="async" onerror="rpImgFail(this,'${em}')">`
     : `<span class="rpThumbEmoji">${em}</span>`;
   return `<span class="rpThumb${rpFit(k)}" style="--h1:${t.g1};--h2:${t.g2}">${inner}</span>`;
 }
@@ -1653,7 +1653,7 @@ function rpStage(){
   const av = RP_AVATAR[rpKey];
   const em = rpData.emoji || "🎭";
   const avatar = av
-    ? `<div class="rpAvatar hasImg"><img src="${av}" alt="" loading="lazy" decoding="async" onerror="rpImgFail(this,'${em}')"></div>`
+    ? `<div class="rpAvatar hasImg"><img src="${av}" alt="" loading="eager" decoding="async" onerror="rpImgFail(this,'${em}')"></div>`
     : `<div class="rpAvatar">${em}</div>`;
   let h = `<span class="catChip" style="background:#EDE9FE;color:#5B21B6;border:2px solid #7C3AED">🎭 Cảnh ${rpScene+1}/${n}</span>
      <div class="rpScene">${avatar}<div class="rpNarr">${esc(st.text)}</div></div>

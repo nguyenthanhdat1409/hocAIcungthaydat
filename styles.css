@@ -350,6 +350,10 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
   background:linear-gradient(135deg,var(--lc,#7C3AED),#A855F7)}
 .emThumb img{width:100%; height:100%; object-fit:contain; display:block}
 @media(max-width:520px){ .modBanner{aspect-ratio:16/10} }
+/* Hiện ảnh mượt (fade nhẹ) thay vì "nhảy" vào — nền gradient sẵn làm placeholder */
+.lvHero img,.modBanner img,.emThumb img,.rpThumb img{animation:imgFade .35s ease both}
+@keyframes imgFade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){ .lvHero img,.modBanner img,.emThumb img,.rpThumb img{animation:none} }
 
 /* Alpha grid */
 .alphaGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(52px,1fr)); gap:10px; margin:14px 0}
