@@ -5,3 +5,7 @@ package-lock.json
 
 .vscode/
 claude.exe
+
+# Cấu hình cá nhân / không di động (máy này) — không commit
+.claude/settings.local.json
+.claude/skills/
