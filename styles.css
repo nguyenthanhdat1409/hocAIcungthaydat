@@ -18,6 +18,16 @@ button, a, .btn, .opt, .rpChoice, .lsRow, .testCard, .comboCard, .exModCard, .rp
 :focus-visible{ outline:3px solid #7C3AED; outline-offset:2px; border-radius:8px }
 /* Phần tử div/span đóng vai nút → con trỏ + focus */
 [role="button"]{ cursor:pointer }
+#pages:focus{ outline:none }
+/* Skip link: ẩn cho tới khi tab tới (người dùng bàn phím) */
+.skipLink{position:fixed; top:8px; left:8px; z-index:200; transform:translateY(-150%);
+  background:#fff; color:#7C3AED; font-family:var(--font-display,sans-serif); font-weight:800; font-size:14px;
+  padding:10px 16px; border-radius:12px; box-shadow:0 8px 22px rgba(30,27,75,.3); text-decoration:none;
+  transition:transform .18s ease}
+.skipLink:focus-visible{ transform:translateY(0) }
+/* Focus rõ cho ô nhập đang dùng (tìm kiếm, gõ phím) dù đã bỏ outline mặc định */
+.curSearch input:focus-visible, .tyInput:focus-visible, textarea:focus-visible{
+  outline:3px solid #7C3AED; outline-offset:2px }
 /* Tôn trọng "giảm chuyển động" của hệ điều hành cho toàn bộ hiệu ứng */
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{
