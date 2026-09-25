@@ -595,18 +595,8 @@ function renderCurriculum(){
   const st = curriculumStats();
 
   let html = "";
-  /* Đầu trang: tên chương trình + 3 con số */
-  html += `<div class="curHero">
-      <span class="pill">🗺️ Lộ trình học</span>
-      <h2 class="curTitle">${esc(data.name)}</h2>
-      <p class="curTagline">${esc(data.tagline)}</p>
-      <div class="curNums">
-        <div><b>${st.levels}</b><span>level</span></div>
-        <div><b>${st.lessons}</b><span>bài học</span></div>
-        <div><b>${st.modules}</b><span>module</span></div>
-      </div>
-      <p class="curDuration">⏳ ${esc(data.duration)}</p>
-    </div>`;
+  /* Banner ảnh đầu trang Bài học */
+  html += `<div class="curBanner"><img src="images/bg-baihoc.webp" alt="Lộ trình AI & Tư duy lập trình cho trẻ 6–15 tuổi — Học AI cùng Thầy Đạt" loading="eager" fetchpriority="high" decoding="async"></div>`;
 
 
   /* Thanh công cụ: tìm kiếm */

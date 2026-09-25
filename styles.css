@@ -2022,3 +2022,8 @@ html,body{ overflow-x:hidden }
 .authStats > div{ flex:1; background:#F8F5FF; border:1px solid #ECE3FF; border-radius:16px; padding:14px; text-align:center }
 .authStats b{ display:block; font-family:var(--font-display); font-weight:800; font-size:26px; color:var(--vio,#7C3AED); font-variant-numeric:tabular-nums }
 .authStats span{ font-size:12px; color:#6B6494 }
+
+/* Banner ảnh đầu trang Bài học (thay hero chữ) */
+#curriculum .curBanner{ margin:0 0 18px; border-radius:24px; overflow:hidden;
+  box-shadow:0 18px 44px -20px rgba(30,27,75,.5); background:#EAF2FF; line-height:0 }
+#curriculum .curBanner img{ width:100%; height:auto; display:block }
