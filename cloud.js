@@ -62,6 +62,35 @@
   };
   Cloud.isLoggedIn = function () { return !!Cloud.user; };
 
+  /* ----- Đăng ký ----- */
+  Cloud.signUpEmail = async function (email, password, displayName, role) {
+    await Cloud.ready;
+    if (!Cloud.enabled) return { error: { message: "cloud-disabled" } };
+    return Cloud.sb.auth.signUp({
+      email: email, password: password,
+      options: { data: { display_name: displayName || email.split("@")[0], role: role || "parent" } },
+    });
+  };
+  Cloud.signUpStudent = async function (username, pin, displayName) {
+    await Cloud.ready;
+    if (!Cloud.enabled) return { error: { message: "cloud-disabled" } };
+    var u = String(username).trim().toLowerCase();
+    var email = u + (cfg.studentEmailDomain || "@hs.thaydat.local");
+    return Cloud.sb.auth.signUp({
+      email: email, password: String(pin),
+      options: { data: { username: u, display_name: displayName || username, role: "student" } },
+    });
+  };
+  /* Lấy hồ sơ (display_name, role...) của người đang đăng nhập */
+  Cloud.getProfile = async function () {
+    await Cloud.ready;
+    if (!Cloud.enabled || !Cloud.user) return null;
+    try {
+      var out = await Cloud.sb.from("profiles").select("display_name,role,username").eq("id", Cloud.user.id).maybeSingle();
+      return (out && out.data) || null;
+    } catch (e) { return null; }
+  };
+
   /* ----- Lưu dữ liệu (chỉ chạy khi đã đăng nhập) ----- */
   Cloud.saveQuizResult = async function (r) {
     await Cloud.ready;
