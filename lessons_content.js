@@ -12,7 +12,7 @@ window.LESSON_NOTES = {
     <div class="partGrid">
       <figure class="partCard"><img src="images/manHinh.jpg" alt="Màn hình" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>🖥️ Màn hình</b></figure>
       <figure class="partCard"><img src="images/thanMayCPU.jpg" alt="Thân máy (CPU)" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>📦 Thân máy</b></figure>
-      <figure class="partCard"><img src="images/banPhim.jpg" alt="Bàn phím" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>⌨️ Bàn phím</b></figure>
+      <figure class="partCard"><img src="images/banPhim.webp" alt="Bàn phím" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>⌨️ Bàn phím</b></figure>
       <figure class="partCard"><img src="images/chuotMayTinh.jpg" alt="Chuột máy tính" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>🖱️ Chuột</b></figure>
       <figure class="partCard"><img src="images/loaMayTinh.jpg" alt="Loa máy tính" loading="lazy" decoding="async" onerror="this.closest('.partCard').style.display='none'"><b>🔊 Loa</b></figure>
     </div>

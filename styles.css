@@ -25,8 +25,9 @@ button, a, .btn, .opt, .rpChoice, .lsRow, .testCard, .comboCard, .exModCard, .rp
   padding:10px 16px; border-radius:12px; box-shadow:0 8px 22px rgba(30,27,75,.3); text-decoration:none;
   transition:transform .18s ease}
 .skipLink:focus-visible{ transform:translateY(0) }
-/* Focus rõ cho ô nhập đang dùng (tìm kiếm, gõ phím) dù đã bỏ outline mặc định */
-.curSearch input:focus-visible, .tyInput:focus-visible, textarea:focus-visible{
+/* Focus rõ cho ô nhập đang dùng (gõ phím) dù đã bỏ outline mặc định.
+   Ô tìm kiếm bài học KHÔNG dùng outline ở đây — focus-ring do .curSearch:focus-within lo. */
+.tyInput:focus-visible, textarea:focus-visible{
   outline:3px solid #7C3AED; outline-offset:2px }
 /* Tôn trọng "giảm chuyển động" của hệ điều hành cho toàn bộ hiệu ứng */
 @media (prefers-reduced-motion: reduce){
@@ -1419,7 +1420,10 @@ h1,h2,h3{letter-spacing:.2px}
 .curSearch{width:100%;max-width:none;flex:none;gap:10px;padding:13px 18px;border-radius:16px;
   border:2px solid #E2E8F0;background:#fff;box-shadow:0 6px 18px rgba(30,27,75,.08);
   transition:border-color .16s, box-shadow .16s}
-.curSearch:focus-within{border-color:var(--vio);box-shadow:0 8px 24px rgba(124,58,237,.18)}
+.curSearch:focus-within{border-color:var(--vio);
+  box-shadow:0 0 0 4px rgba(124,58,237,.14), 0 10px 26px rgba(124,58,237,.12)}
+.curSearch input::placeholder{color:#94A3B8}
+.curSearch input:focus{outline:0}
 .curSearch span{font-size:18px;opacity:.7}
 .curSearch input{font-size:15px}
 
@@ -2067,6 +2071,12 @@ html,body{ overflow-x:hidden }
 #curriculum .lvSection{ display:none }
 #curriculum .lvSection.shown{ display:block; animation:fadeUp .35s ease }
 #curriculum.searching .lvSection{ display:block }
+/* Khi TÌM KIẾM: ẩn hẳn level không khớp + bỏ banner/meta trang trí (nặng, thừa) → kết quả gọn, tải nhanh */
+#curriculum.searching .lvSection.dim{ display:none }
+#curriculum.searching .lvHero,
+#curriculum.searching .lvStarBanner,
+#curriculum.searching .lvMetaBar,
+#curriculum.searching .gradBox{ display:none }
 #curriculum.searching .lvTabs{ opacity:.45; pointer-events:none }
 /* Banner sao cho Level không có ảnh (Level 4) */
 #curriculum .lvStarBanner{ margin:0 0 14px; border-radius:24px; padding:32px 22px; text-align:center; color:#fff;

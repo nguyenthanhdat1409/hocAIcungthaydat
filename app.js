@@ -178,7 +178,7 @@ function go(id){
 }
 
 /* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
-const ASSET_VER = "31";
+const ASSET_VER = "32";
 let _curDataPromise = null;
 function loadScript(src){
   return new Promise((resolve, reject) => {
@@ -729,7 +729,7 @@ function openPlan(li, mi, lsi){
 
   /* Minh hoạ: tranh SVG theo chủ đề (mặc định) + ảnh trong images/<mã>.<ext> nếu có */
   const art = window.LessonArt ? window.LessonArt.svg(ls, c) : "";
-  const photo = `<img class="lessonPhoto" alt="" loading="lazy" decoding="async" src="images/${encodeURIComponent(ls.code)}.jpg" data-code="${esc(ls.code)}" data-try="0" onerror="photoFallback(this)">`;
+  const photo = `<img class="lessonPhoto" alt="" loading="lazy" decoding="async" src="images/${encodeURIComponent(ls.code)}.webp" data-code="${esc(ls.code)}" data-try="0" onerror="photoFallback(this)">`;
 
   /* Panel cho giáo viên (ẩn, mở bằng nút ?) */
   let steps = "";
@@ -787,9 +787,9 @@ function toggleCoachPanel(btn){
     (window.requestAnimationFrame || setTimeout)(doScroll);
   }
 }
-/* Ảnh trong images/<mã bài>.<ext>: thử jpg→png→webp→jpeg; không có thì bỏ để lộ tranh SVG */
+/* Ảnh trong images/<mã bài>.<ext>: thử webp→jpg→png→jpeg; không có thì bỏ để lộ tranh SVG */
 function photoFallback(img){
-  const exts = ["jpg","png","webp","jpeg"];
+  const exts = ["webp","jpg","png","jpeg"];
   let t = (parseInt(img.dataset.try, 10) || 0) + 1;
   if(t < exts.length){ img.dataset.try = t; img.src = "images/" + encodeURIComponent(img.dataset.code) + "." + exts[t]; }
   else { img.remove(); }
@@ -804,6 +804,10 @@ function onCurSearch(v){
 }
 function applyCurSearch(){
   const term = curSearch.toLowerCase();
+  // Nếu gõ dạng mã bài (vd "2", "2.1", "2.1.3") thì khớp theo TỪNG đoạn số (prefix),
+  // để "2.1" chỉ ra các bài 2.1.x — không dính nhầm 1.2.1 / 3.2.1.
+  const isCode = /^\d+(?:\.\d+)*\.?$/.test(term);
+  const codeSegs = isCode ? term.replace(/\.$/, "").split(".") : null;
   // Khi tìm kiếm: hiện TẤT CẢ level (bỏ giới hạn tab); hết tìm thì về tab đang chọn
   const host = document.getElementById("curriculum");
   if(host) host.classList.toggle("searching", !!term);
@@ -814,7 +818,11 @@ function applyCurSearch(){
     const [li,mi,lsi] = r.dataset.ls.split("-").map(Number);
     const ls = _lessonMap[li][mi][lsi];
     const hay = (ls.name + " " + ls.content + " " + (ls.challenge||"")).toLowerCase();
-    const hit = !term || hay.indexOf(term) > -1;
+    let hit = !term || hay.indexOf(term) > -1;
+    if(!hit && isCode && ls.code){
+      const segs = String(ls.code).split(".");
+      hit = codeSegs.every((s,i) => segs[i] === s);
+    }
     if(hit && term) hits++;
     r.classList.toggle("hidden", !hit);
     // tô đậm
@@ -1373,7 +1381,7 @@ function renderExHub(){
       const total = exCount(m.code, m);
       const hasOther = !!(window.EXERCISES && window.EXERCISES[m.code]);
       const thumb = MOD_IMG[m.code]
-        ? `<span class="emThumb" style="--lc:${LEVEL_COLORS[li]}"><img src="${MOD_IMG[m.code]}" alt="" loading="eager" fetchpriority="high" decoding="async" onerror="this.closest('.emThumb').remove()"></span>`
+        ? `<span class="emThumb" style="--lc:${LEVEL_COLORS[li]}"><img src="${MOD_IMG[m.code]}" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>`
         : "";
       html += `<button class="exModCard${thumb ? " hasThumb" : ""}" onclick="startExercise('${m.code}')" ${total ? "" : "disabled"}>
         ${thumb}
@@ -1813,11 +1821,11 @@ async function _renderAccount(){
   body.innerHTML = `
     <div class="authHead"><div class="authAva">👋</div>
       <h2>Xin chào, ${esc(name)}!</h2>
-      <p class="authSub">Tiến độ dùng chung với web Tiếng Việt${cls}.</p></div>
+      <p class="authSub">Điểm môn AI (riêng, không chung Tiếng Việt)${cls}.</p></div>
     <div class="authStats">
       <div><b>${(+pg.xp||0)}</b><span>XP</span></div>
       <div><b>${(+pg.streak||0)}</b><span>ngày streak 🔥</span></div>
-      <div><b>${(pg.lessonsViewed && pg.lessonsViewed.length)||0}</b><span>bài đã học</span></div>
+      <div><b>${(pg.lessons && pg.lessons.length)||0}</b><span>bài đã học</span></div>
     </div>
     <button class="btn light" style="width:100%" onclick="authLogout()">Đăng xuất</button>`;
 }
@@ -1896,8 +1904,8 @@ async function renderHomeDash(){
   const pg = (await Cloud.getProgress()) || {};
   const name = (prof && prof.display_name) || (Cloud.user.email||"").split("@")[0];
   const xp = +pg.xp || 0, streak = +pg.streak || 0;
-  const lessons = (pg.lessonsViewed && pg.lessonsViewed.length) || 0;
-  const quizzes = +pg.totalQuizzes || 0, stars = +pg.totalStars || 0;
+  const lessons = (pg.lessons && pg.lessons.length) || 0;
+  const quizzes = +pg.total_quizzes || 0, stars = +pg.total_stars || 0;
   const level = Math.floor(xp / 100) + 1, inLvl = xp % 100;
   el.innerHTML = `
     <div class="hdTop">

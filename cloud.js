@@ -6,8 +6,8 @@
    • HS: username + PIN  -> email tổng hợp <username>@hs.thaydat.app
    • GV: email + PIN     -> signInWithPassword (tài khoản đã có sẵn)
    • Ghi APPEND vào quiz_results / activity_events (subject='ai') — an toàn.
-   • Gom XP/streak/bài đã học vào student_progress.data qua RPC ai_record
-     (nguồn chính của dashboard/trang chủ — dùng chung 2 môn).
+   • Gom XP/streak/bài đã học vào bảng RIÊNG ai_progress qua RPC ai_record
+     (nguồn chính của dashboard/trang chủ — TÁCH RIÊNG khỏi điểm Tiếng Việt).
    • Chưa cấu hình url+key => TẮT hoàn toàn, web chạy như cũ.
    ========================================================= */
 (function () {
@@ -72,13 +72,13 @@
       return (out && out.data) || null;
     } catch (e) { return null; }
   };
-  /* Đọc tiến độ dùng chung (student_progress.data) để hiển thị XP/streak */
+  /* Đọc tiến độ RIÊNG của môn AI (bảng ai_progress) */
   Cloud.getProgress = async function () {
     await Cloud.ready;
     if (!Cloud.enabled || !Cloud.user) return null;
     try {
-      var out = await Cloud.sb.from("student_progress").select("data").eq("student_id", Cloud.user.id).maybeSingle();
-      return (out && out.data && out.data.data) || {};
+      var out = await Cloud.sb.from("ai_progress").select("*").eq("student_id", Cloud.user.id).maybeSingle();
+      return (out && out.data) || {};
     } catch (e) { return null; }
   };
 
@@ -103,8 +103,8 @@
       });
     } catch (e) { console.warn("[Cloud] logEvent", e); }
   };
-  /* Gom vào student_progress.data (XP, streak, lessonsViewed, totalQuizzes,
-     quizHighScore, totalStars) — dùng chung dashboard/trang chủ 2 môn. */
+  /* Gom vào bảng ai_progress (xp, streak, lessons, total_quizzes,
+     quiz_high, total_stars) — RIÊNG môn AI, không đụng điểm Tiếng Việt. */
   Cloud.aiRecord = async function (o) {
     await Cloud.ready;
     if (!Cloud.enabled || !Cloud.user) return null;
