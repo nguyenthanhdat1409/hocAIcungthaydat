@@ -8,7 +8,7 @@
      thường bằng localStorage. Điền đủ 2 giá trị để bật đồng bộ.
    ========================================================= */
 window.SUPABASE_CONFIG = {
-  url: "",            // ⬅️ CẦN ĐIỀN: vd "https://xxxxxxxx.supabase.co" (Settings → API → Project URL)
+  url: "https://vtbdluuvpdbykfsriahl.supabase.co",   // Project URL
   anonKey: "sb_publishable_1OwjQjg0erAXLqYqqDtJ-w_FtDuKGe7",  // publishable key (an toàn cho trình duyệt)
   // Đăng nhập HS bằng username + PIN dùng email tổng hợp.
   // Phải KHỚP đuôi email mà web Tiếng Việt đang dùng (nếu có).
