@@ -601,7 +601,7 @@ function renderCurriculum(){
 
   /* Thanh công cụ: tìm kiếm */
   html += `<div class="curTools">
-      <div class="curSearch"><span>🔎</span><input id="curSearchInput" type="search" placeholder="Tìm bài học theo tên hoặc nội dung…" oninput="onCurSearch(this.value)" value="${esc(curSearch)}">
+      <div class="curSearch"><span aria-hidden="true">🔎</span><input id="curSearchInput" type="search" aria-label="Tìm bài học" enterkeyhint="search" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Tìm bài học theo tên hoặc nội dung…" oninput="onCurSearch(this.value)" value="${esc(curSearch)}">
         <button class="curClear${curSearch?"":" hidden"}" id="curClear" onclick="clearCurSearch()" aria-label="Xoá tìm kiếm" title="Xoá">✕</button>
       </div>
       <div class="curCount hidden" id="curCount" aria-live="polite"></div>

@@ -2030,7 +2030,7 @@ html,body{ overflow-x:hidden }
 /* Banner ảnh đầu trang Bài học (thay hero chữ) */
 #curriculum .curBanner{ margin:0 0 18px; border-radius:24px; overflow:hidden;
   box-shadow:0 18px 44px -20px rgba(30,27,75,.5); background:#EAF2FF; line-height:0 }
-#curriculum .curBanner img{ width:100%; height:auto; display:block }
+#curriculum .curBanner img{ width:100%; height:auto; display:block; aspect-ratio:1600/686 }
 
 /* =========================================================
    DASHBOARD XP Ở TRANG CHỦ (chỉ hiện khi đăng nhập)
