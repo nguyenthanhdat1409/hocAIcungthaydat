@@ -18,11 +18,12 @@ create index if not exists idx_events_student_subj_day on public.activity_events
 --    student_progress.data — NGUON CHINH cua dashboard & trang chu (dung chung 2 mon).
 --    Goi tu client sau khi HS xong bai/quiz (security definer -> ghi cho auth.uid()).
 create or replace function public.ai_record(
-  p_xp      int     default 0,
-  p_lesson  text    default null,   -- ma bai AI, vd 'ai:1.2.3' (them vao lessonsViewed neu chua co)
-  p_quiz    boolean default false,  -- co phai 1 luot quiz (tang totalQuizzes)
-  p_percent int     default null,   -- cap nhat quizHighScore
-  p_stars   int     default 0       -- cong vao totalStars
+  p_xp        int     default 0,     -- XP cong don (bai tap/kiem tra)
+  p_lesson    text    default null,  -- ma bai AI, vd 'ai:1.2.3'
+  p_quiz      boolean default false, -- 1 luot quiz (tang totalQuizzes)
+  p_percent   int     default null,  -- cap nhat quizHighScore
+  p_stars     int     default 0,     -- cong vao totalStars
+  p_lesson_xp int     default 0      -- XP thuong khi HOC BAI MOI (chi tinh lan dau)
 ) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
@@ -31,6 +32,7 @@ declare
   d jsonb;
   last_day text;
   st int;
+  add_xp int := greatest(coalesce(p_xp,0),0);
 begin
   insert into public.student_progress(student_id, data, updated_at)
     values (auth.uid(), '{}'::jsonb, now())
@@ -39,8 +41,14 @@ begin
   select coalesce(data, '{}'::jsonb) into d
     from public.student_progress where student_id = auth.uid();
 
+  -- bai da hoc: chi them + thuong XP khi la bai MOI
+  if p_lesson is not null and not (coalesce(d->'lessonsViewed','[]'::jsonb) ? p_lesson) then
+    d := jsonb_set(d, '{lessonsViewed}', coalesce(d->'lessonsViewed','[]'::jsonb) || to_jsonb(p_lesson));
+    add_xp := add_xp + greatest(coalesce(p_lesson_xp,0),0);
+  end if;
+
   -- XP cong don
-  d := jsonb_set(d, '{xp}', to_jsonb(coalesce((d->>'xp')::int, 0) + greatest(coalesce(p_xp,0),0)));
+  d := jsonb_set(d, '{xp}', to_jsonb(coalesce((d->>'xp')::int, 0) + add_xp));
 
   -- streak theo ngay (khoa 'lastActive' + 'streak')
   last_day := d->>'lastActive';
@@ -49,11 +57,6 @@ begin
     if last_day = yday then st := st + 1; else st := 1; end if;
     d := jsonb_set(d, '{streak}', to_jsonb(st));
     d := jsonb_set(d, '{lastActive}', to_jsonb(today));
-  end if;
-
-  -- danh sach bai da hoc
-  if p_lesson is not null and not (coalesce(d->'lessonsViewed','[]'::jsonb) ? p_lesson) then
-    d := jsonb_set(d, '{lessonsViewed}', coalesce(d->'lessonsViewed','[]'::jsonb) || to_jsonb(p_lesson));
   end if;
 
   -- thong ke quiz

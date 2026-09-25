@@ -414,7 +414,7 @@ function showResult(){
   if(window.Cloud){
     const st = (typeof star !== "undefined" ? star : null);
     Cloud.saveQuizResult({ mode:"test", score, total, percent:p, stars: st });
-    Cloud.aiRecord({ xp: Math.round(p), quiz: true, percent: p, stars: st || 0 });
+    Cloud.aiRecord({ xp: 20, quiz: true, percent: p, stars: st || 0 });
   }
 }
 
@@ -572,7 +572,7 @@ function lqPick(btn){
     // Lưu tiến độ bài học lên đám mây (nếu đã đăng nhập)
     if(window.Cloud){
       const stars = pass >= 85 ? 3 : pass >= 60 ? 2 : 1;
-      Cloud.aiRecord({ xp: Math.round(pass/5), lesson: "ai:" + quiz.dataset.code, quiz: true, percent: pass, stars: stars });
+      Cloud.aiRecord({ xp: 15, lesson: "ai:" + quiz.dataset.code, quiz: true, percent: pass, stars: stars });
     }
   }
 }
@@ -723,7 +723,7 @@ function openPlan(li, mi, lsi){
   const m = lv.modules[mi];
   const ls = m.lessons[lsi];
   const c = LEVEL_COLORS[li];
-  if(window.Cloud){ Cloud.logEvent("lesson_open", "lesson:" + ls.code); Cloud.aiRecord({ lesson: "ai:" + ls.code }); }
+  if(window.Cloud){ Cloud.logEvent("lesson_open", "lesson:" + ls.code); Cloud.aiRecord({ lesson: "ai:" + ls.code, lessonXp: 10 }); }
 
   /* Minh hoạ: tranh SVG theo chủ đề (mặc định) + ảnh trong images/<mã>.<ext> nếu có */
   const art = window.LessonArt ? window.LessonArt.svg(ls, c) : "";
@@ -1510,6 +1510,10 @@ function exResult(){
     </div>`;
   el.classList.remove("hidden");
   document.getElementById("runner").scrollTo({top:0});
+  if(window.Cloud){
+    Cloud.saveQuizResult({ mode:"practice", score:exScore, total:n, percent:pct, stars: pct>=85?3:pct>=60?2:1 });
+    Cloud.aiRecord({ xp: 15, lesson: "ai:ex:"+exModCode, quiz: true, percent: pct, stars: pct>=85?3:pct>=60?2:1 });
+  }
 }
 
 /* =========================================================
@@ -1693,7 +1697,7 @@ function rpResult(){
   if(window.Cloud){
     const rs = pct>=85?3:pct>=60?2:1;
     Cloud.saveQuizResult({ mode:"practice", score:rpScore, total:rpMax, percent:pct, stars: rs });
-    Cloud.aiRecord({ xp: Math.round(pct/5), lesson: "ai:game:"+rpKey, quiz: true, percent: pct, stars: rs });
+    Cloud.aiRecord({ xp: 15, lesson: "ai:game:"+rpKey, quiz: true, percent: pct, stars: rs });
   }
 }
 
@@ -1877,5 +1881,35 @@ async function refreshAcct(){
     b.innerHTML = "👤 Đăng nhập"; b.classList.remove("on");
   }
 }
-document.addEventListener("cloud-auth", refreshAcct);
-document.addEventListener("DOMContentLoaded", () => { setTimeout(refreshAcct, 400); });
+/* Dashboard XP ở Trang chủ — chỉ hiện khi ĐÃ ĐĂNG NHẬP */
+async function renderHomeDash(){
+  const el = document.getElementById("homeDash");
+  if(!el) return;
+  if(!window.Cloud || !Cloud.user){ el.classList.add("hidden"); el.innerHTML = ""; return; }
+  const prof = await Cloud.getProfile();
+  const pg = (await Cloud.getProgress()) || {};
+  const name = (prof && prof.display_name) || (Cloud.user.email||"").split("@")[0];
+  const xp = +pg.xp || 0, streak = +pg.streak || 0;
+  const lessons = (pg.lessonsViewed && pg.lessonsViewed.length) || 0;
+  const quizzes = +pg.totalQuizzes || 0, stars = +pg.totalStars || 0;
+  const level = Math.floor(xp / 100) + 1, inLvl = xp % 100;
+  el.innerHTML = `
+    <div class="hdTop">
+      <div class="hdHi"><span class="hdAva">🦸</span>
+        <div><div class="hdName">Chào ${esc(name)}! 👋</div>
+          <div class="hdLvl">Cấp ${level} · <b>${xp}</b> XP</div></div></div>
+      <div class="hdStreak">🔥 <b>${streak}</b><span>ngày</span></div>
+    </div>
+    <div class="hdBar"><span style="width:${inLvl}%"></span></div>
+    <div class="hdBarLbl">${inLvl}/100 XP tới Cấp ${level+1}</div>
+    <div class="hdStats">
+      <div><b>${lessons}</b><span>📚 bài đã học</span></div>
+      <div><b>${quizzes}</b><span>📝 lượt làm bài</span></div>
+      <div><b>${stars}</b><span>⭐ sao</span></div>
+    </div>`;
+  el.classList.remove("hidden");
+}
+function refreshAccountUI(){ refreshAcct(); renderHomeDash(); }
+document.addEventListener("cloud-auth", refreshAccountUI);
+document.addEventListener("cloud-progress", renderHomeDash);
+document.addEventListener("DOMContentLoaded", () => { setTimeout(refreshAccountUI, 500); });

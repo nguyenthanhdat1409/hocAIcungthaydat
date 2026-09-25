@@ -116,8 +116,12 @@
         p_quiz: !!o.quiz,
         p_percent: o.percent != null ? o.percent : null,
         p_stars: o.stars || 0,
+        p_lesson_xp: o.lessonXp || 0,
       });
-      return (out && out.data) || null;
+      var data = (out && out.data) || null;
+      // Báo cho UI cập nhật dashboard XP ngay
+      document.dispatchEvent(new CustomEvent("cloud-progress", { detail: data }));
+      return data;
     } catch (e) { console.warn("[Cloud] aiRecord", e); return null; }
   };
 })();
