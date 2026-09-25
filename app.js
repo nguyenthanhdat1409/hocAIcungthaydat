@@ -607,36 +607,39 @@ function renderCurriculum(){
       <div class="curCount hidden" id="curCount" aria-live="polite"></div>
     </div>`;
 
-  /* Thanh nhảy tới level */
-  html += `<div class="lvJump">`;
+  /* Tabs chọn Level */
+  html += `<div class="lvTabs" role="tablist">`;
   data.levels.forEach((lv, i) => {
-    const opt = lv.optional ? ` <em>(Tùy chọn)</em>` : "";
-    html += `<button class="lvChipJump" style="--lc:${LEVEL_COLORS[i]}" onclick="jumpLevel(${i})">${esc(lv.name)}${opt}</button>`;
+    const star = (i === data.levels.length - 1) ? `<span class="lvTabStar">⭐</span>` : "";
+    html += `<button class="lvTab" data-lvi="${i}" style="--lc:${LEVEL_COLORS[i]}" onclick="selectLevel(${i})" role="tab" aria-selected="false">
+        <span class="lvTabNum">${i+1}</span><span class="lvTabName">${esc(lv.name)} ${star}</span></button>`;
   });
   html += `</div>`;
 
-  /* Các level */
+  /* Các level (chỉ hiện level đang chọn) */
   html += `<div id="lvList">`;
   data.levels.forEach((lv, li) => { html += renderLevel(lv, li); });
   html += `</div>`;
 
   host.innerHTML = html;
   host.dataset.rendered = "1";
+  selectLevel(_activeLevel || 0);
   if(curSearch) applyCurSearch();
   observeReveal();
 }
-
-/* Hiệu ứng: hiện dần khi cuộn tới */
-let _revObserver = null;
-function observeReveal(){
-  const targets = document.querySelectorAll("#curriculum .lvSection, #curriculum .modCard");
-  if(!("IntersectionObserver" in window)){ targets.forEach(t => t.classList.add("in")); return; }
-  if(_revObserver) _revObserver.disconnect();
-  _revObserver = new IntersectionObserver((entries) => {
-    entries.forEach(en => { if(en.isIntersecting){ en.target.classList.add("in"); _revObserver.unobserve(en.target); } });
-  }, {rootMargin:"0px 0px -8% 0px", threshold:0.06});
-  targets.forEach(t => { t.classList.add("reveal"); _revObserver.observe(t); });
+let _activeLevel = 0;
+function selectLevel(i){
+  _activeLevel = i;
+  document.querySelectorAll("#curriculum .lvTab").forEach(t => {
+    const on = (+t.dataset.lvi === i); t.classList.toggle("on", on); t.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  document.querySelectorAll("#curriculum .lvSection").forEach(s => s.classList.toggle("shown", +s.dataset.lvi === i));
+  const tabs = document.querySelector("#curriculum .lvTabs");
+  if(tabs) tabs.scrollIntoView({ behavior:"smooth", block:"start" });
 }
+
+/* Trước đây fade khi cuộn; nay dùng tab Level nên bỏ (tránh ẩn nhầm section). */
+function observeReveal(){ /* no-op: nội dung hiển thị theo tab, có fade ở .lvSection.shown */ }
 
 /* Ảnh minh hoạ cấp MODULE & cấp LEVEL (hiện có: Level 1) */
 const MOD_IMG = {
@@ -645,23 +648,22 @@ const MOD_IMG = {
   "1.7":"images/mod-1.7.webp", "1.8":"images/mod-1.8.webp",
   "2.1":"images/mod-2.1.webp", "2.2":"images/mod-2.2.webp", "2.3":"images/mod-2.3.webp", "2.4":"images/mod-2.4.webp",
 };
-const LEVEL_HERO = { 0:"images/hero-level-1.webp", 1:"images/hero-level-2.webp" };
+const LEVEL_BANNER = { 0:"images/bg-level1.webp", 1:"images/bg-level2.webp", 2:"images/bg-level3.webp" };
 
 function renderLevel(lv, li){
   const c = LEVEL_COLORS[li], soft = LEVEL_SOFT[li];
   const nLessons = lv.modules.reduce((s,m)=>s+m.lessons.length, 0);
-  let h = `<section class="lvSection" id="lv${li}" style="--lc:${c};--lcSoft:${soft}">
-    <div class="lvHead">
-      <div class="lvBadge">${li+1}</div>
-      <div class="lvHeadTxt">
-        <div class="lvName">${esc(lv.name)}${lv.optional?` <span class="optTag">Tùy chọn</span>`:""}</div>
-        <h3 class="lvTitle">${esc(lv.title)}</h3>
-        <div class="lvMeta">🗓️ ${esc(lv.duration)} · 📘 ${lv.sessions} buổi · 📚 ${nLessons} bài · 🧩 ${lv.modules.length} module</div>
-      </div>
-    </div>`;
-  if(LEVEL_HERO[li]){
-    h += `<div class="lvHero"><img src="${LEVEL_HERO[li]}" alt="" loading="eager" fetchpriority="high" decoding="async" onerror="this.closest('.lvHero').remove()"></div>`;
+  let h = `<section class="lvSection" id="lv${li}" data-lvi="${li}" style="--lc:${c};--lcSoft:${soft}">`;
+  // Banner của level: ảnh nếu có, không thì banner gradient + sao
+  if(LEVEL_BANNER[li]){
+    h += `<div class="lvHero"><img src="${LEVEL_BANNER[li]}" alt="${esc(lv.name)} — ${esc(lv.title)}" loading="lazy" decoding="async" onerror="this.closest('.lvHero').remove()"></div>`;
+  } else {
+    h += `<div class="lvStarBanner" style="--lc:${c}">
+        <span class="lsbStars">⭐️⭐️⭐️</span>
+        <div class="lsbName">${esc(lv.name)}${lv.optional?` · Nâng cao`:``}</div>
+        <h3 class="lsbTitle">${esc(lv.title)}</h3></div>`;
   }
+  h += `<div class="lvMetaBar">🗓️ ${esc(lv.duration)} · 📘 ${lv.sessions} buổi · 📚 ${nLessons} bài · 🧩 ${lv.modules.length} module</div>`;
   if(lv.graduation_criteria){
     h += `<div class="gradBox">🎯 ${esc(lv.graduation_criteria)}</div>`;
   }
@@ -802,6 +804,10 @@ function onCurSearch(v){
 }
 function applyCurSearch(){
   const term = curSearch.toLowerCase();
+  // Khi tìm kiếm: hiện TẤT CẢ level (bỏ giới hạn tab); hết tìm thì về tab đang chọn
+  const host = document.getElementById("curriculum");
+  if(host) host.classList.toggle("searching", !!term);
+  if(!term) selectLevel(_activeLevel || 0);
   const rows = document.querySelectorAll(".lsRow");
   let hits = 0;
   rows.forEach(r => {

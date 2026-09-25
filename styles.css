@@ -2048,3 +2048,31 @@ html,body{ overflow-x:hidden }
 .hdStats > div{ flex:1; background:rgba(255,255,255,.16); border-radius:14px; padding:12px 6px; text-align:center }
 .hdStats b{ display:block; font-family:var(--font-display); font-weight:800; font-size:22px; font-variant-numeric:tabular-nums }
 .hdStats span{ font-size:11.5px; opacity:.92 }
+
+/* =========================================================
+   TAB LEVEL cho trang Bài học
+   ========================================================= */
+#curriculum .lvTabs{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 18px }
+#curriculum .lvTab{ display:flex; align-items:center; gap:8px; cursor:pointer; border:2px solid var(--lc,#7C3AED);
+  background:#fff; color:var(--lc,#7C3AED); font-family:var(--font-display); font-weight:800; font-size:14px;
+  padding:8px 15px 8px 8px; border-radius:999px; box-shadow:0 4px 0 rgba(30,27,75,.12);
+  transition:transform .1s, box-shadow .12s, background .12s, color .12s }
+#curriculum .lvTab:hover{ transform:translateY(-1px) }
+#curriculum .lvTab .lvTabNum{ width:24px; height:24px; border-radius:50%; background:var(--lc,#7C3AED); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:13px; flex:0 0 auto; font-variant-numeric:tabular-nums }
+#curriculum .lvTab.on{ background:var(--lc,#7C3AED); color:#fff; box-shadow:0 6px 0 rgba(30,27,75,.22) }
+#curriculum .lvTab.on .lvTabNum{ background:rgba(255,255,255,.3); color:#fff }
+#curriculum .lvTabStar{ filter:drop-shadow(0 1px 1px rgba(0,0,0,.2)) }
+/* Chỉ hiện level đang chọn; khi tìm kiếm thì hiện tất cả */
+#curriculum .lvSection{ display:none }
+#curriculum .lvSection.shown{ display:block; animation:fadeUp .35s ease }
+#curriculum.searching .lvSection{ display:block }
+#curriculum.searching .lvTabs{ opacity:.45; pointer-events:none }
+/* Banner sao cho Level không có ảnh (Level 4) */
+#curriculum .lvStarBanner{ margin:0 0 14px; border-radius:24px; padding:32px 22px; text-align:center; color:#fff;
+  background:linear-gradient(135deg, var(--lc,#8B5CF6), #EC4899); box-shadow:0 18px 44px -20px rgba(30,27,75,.6) }
+#curriculum .lvStarBanner .lsbStars{ display:block; font-size:36px; letter-spacing:8px; filter:drop-shadow(0 3px 6px rgba(0,0,0,.25)) }
+#curriculum .lvStarBanner .lsbName{ font-family:var(--font-display); font-weight:800; font-size:14px; opacity:.95; margin-top:10px; text-transform:uppercase; letter-spacing:1.5px }
+#curriculum .lvStarBanner .lsbTitle{ font-family:var(--font-display); font-weight:800; font-size:clamp(20px,4vw,30px); margin:4px 0 0; text-shadow:0 2px 8px rgba(0,0,0,.25); text-wrap:balance }
+/* Thanh meta gọn dưới banner (trên nền màu của trang) */
+#curriculum .lvMetaBar{ margin:0 0 14px; text-align:center; font-size:13.5px; font-weight:600; color:#fff; text-shadow:0 1px 3px rgba(30,27,75,.45) }
