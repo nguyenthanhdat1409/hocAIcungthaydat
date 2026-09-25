@@ -410,6 +410,11 @@ function showResult(){
   el.classList.remove("hidden");
   document.getElementById("runner").scrollTo({top:0});
   if(p >= 60) burst(20);
+  // Lưu lên đám mây (nếu đã đăng nhập) — an toàn, tự bỏ qua khi chưa bật/đăng nhập
+  if(window.Cloud){
+    Cloud.saveQuizResult({ mode:"test", score, total, percent:p, stars: (typeof star !== "undefined" ? star : null) });
+    Cloud.touch(Math.round(p));
+  }
 }
 
 /* =========================================================
@@ -526,7 +531,7 @@ function renderLessonQuiz(ls){
   const qs = (window.LESSON_QUIZ && window.LESSON_QUIZ[ls.code]) || [];
   if(!qs.length) return "";
   let h = `<div class="secTitle" data-icon="📝">Luyện tập (${qs.length} câu)</div>
-    <div class="lquiz" id="lquiz" data-total="${qs.length}" data-done="0" data-score="0">
+    <div class="lquiz" id="lquiz" data-code="${esc(ls.code)}" data-total="${qs.length}" data-done="0" data-score="0">
       <div class="lqBar"><span class="lqBadge" id="lqScore">Chọn đáp án để tự kiểm tra nhé!</span></div>`;
   qs.forEach((item, qi) => {
     const pairs = shuffle(item.o.map((t, i) => [t, i === item.a]));
@@ -563,6 +568,12 @@ function lqPick(btn){
     const end = document.getElementById("lqEnd");
     if(end) end.innerHTML = `<div class="lqResult">🎉 Hoàn thành: <b>${score}/${total}</b> (${pass}%) — ${tier}</div>`;
     if(pass >= 60){ try{ burst(12); }catch{} }
+    // Lưu tiến độ bài học lên đám mây (nếu đã đăng nhập)
+    if(window.Cloud){
+      const stars = pass >= 85 ? 3 : pass >= 60 ? 2 : 1;
+      Cloud.saveLessonProgress(quiz.dataset.code, stars, pass);
+      Cloud.touch(Math.round(pass / 5));  // ~XP theo kết quả
+    }
   }
 }
 
@@ -1701,6 +1712,11 @@ function rpResult(){
     </div>`;
   document.getElementById("resultCard").classList.remove("hidden");
   document.getElementById("runner").scrollTo({top:0});
+  if(window.Cloud){
+    Cloud.saveQuizResult({ mode:"practice", score:rpScore, total:rpMax, percent:pct, stars: pct>=85?3:pct>=60?2:1 });
+    Cloud.saveLessonProgress("game:"+rpKey, pct>=85?3:pct>=60?2:1, pct);
+    Cloud.touch(Math.round(pct/5));
+  }
 }
 
 /* =========================================================
