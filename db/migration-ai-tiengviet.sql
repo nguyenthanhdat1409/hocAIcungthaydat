@@ -1,11 +1,12 @@
 -- ============================================================
 --  KET HOP AI + TIENG VIET tren CUNG 1 tai khoan (Supabase)
---  Chay 1 LAN, TU TREN XUONG, trong: Supabase -> SQL Editor -> Run
---  An toan: chi THEM, khong pha du lieu cu (mac dinh subject = 'tiengviet').
---  (Chay lai nhieu lan cung khong sao - da dung IF NOT EXISTS / OR REPLACE.)
+--  Chay 1 LAN, TU TREN XUONG: Supabase -> SQL Editor -> Run
+--  DA CHINH cho khop schema that cua "hoctiengvietcungthaydat"
+--  (nguon chinh la bang student_progress.data jsonb).
+--  An toan: chi THEM/OR REPLACE, khong pha du lieu cu.
 -- ============================================================
 
--- 1) Gan "mon hoc" vao cac bang hoat dong san co
+-- 1) Gan "mon hoc" vao cac bang hoat dong san co (mac dinh 'tiengviet')
 alter table public.study_sessions  add column if not exists subject text not null default 'tiengviet';
 alter table public.activity_events add column if not exists subject text not null default 'tiengviet';
 alter table public.quiz_results    add column if not exists subject text not null default 'tiengviet';
@@ -13,71 +14,65 @@ alter table public.quiz_results    add column if not exists subject text not nul
 create index if not exists idx_quiz_student_subj_day   on public.quiz_results(student_id, subject, day);
 create index if not exists idx_events_student_subj_day on public.activity_events(student_id, subject, day);
 
--- 2) TIEN DO THEO TUNG BAI (AI co 192 bai; Tieng Viet dung chung duoc)
-create table if not exists public.lesson_progress (
-  id            bigserial primary key,
-  student_id    uuid not null references public.profiles(id) on delete cascade,
-  subject       text not null default 'ai',
-  lesson_code   text not null,
-  stars         int  not null default 0,
-  score_percent int,
-  updated_at    timestamptz not null default now(),
-  unique (student_id, subject, lesson_code)
-);
-alter table public.lesson_progress enable row level security;
-drop policy if exists "lesson_progress_own" on public.lesson_progress;
-create policy "lesson_progress_own" on public.lesson_progress for all
-  using (student_id = auth.uid() or public.is_teacher())
-  with check (student_id = auth.uid());
-
--- 3) GAMIFICATION DUNG CHUNG ca 2 mon (streak / XP / huy hieu)
-create table if not exists public.gamification (
-  student_id  uuid primary key references public.profiles(id) on delete cascade,
-  xp          int  not null default 0,
-  streak_days int  not null default 0,
-  last_active date,
-  badges      jsonb not null default '[]'::jsonb,
-  updated_at  timestamptz not null default now()
-);
-alter table public.gamification enable row level security;
-drop policy if exists "gam_own" on public.gamification;
-create policy "gam_own" on public.gamification for all
-  using (student_id = auth.uid() or public.is_teacher())
-  with check (student_id = auth.uid());
-
--- 4) RPC: cap nhat streak/XP + ghi 1 phien hoc (atomic, goi tu client)
-create or replace function public.cloud_touch(p_xp int default 0, p_subject text default 'ai', p_seconds int default 0)
-returns table(xp int, streak_days int, last_active date)
+-- 2) RPC ai_record: gom hoat dong (XP, streak, bai da hoc, quiz) vao
+--    student_progress.data — NGUON CHINH cua dashboard & trang chu (dung chung 2 mon).
+--    Goi tu client sau khi HS xong bai/quiz (security definer -> ghi cho auth.uid()).
+create or replace function public.ai_record(
+  p_xp      int     default 0,
+  p_lesson  text    default null,   -- ma bai AI, vd 'ai:1.2.3' (them vao lessonsViewed neu chua co)
+  p_quiz    boolean default false,  -- co phai 1 luot quiz (tang totalQuizzes)
+  p_percent int     default null,   -- cap nhat quizHighScore
+  p_stars   int     default 0       -- cong vao totalStars
+) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
-  today date := (now() at time zone 'Asia/Ho_Chi_Minh')::date;
-  prev  date;
+  today text := ((now() at time zone 'Asia/Ho_Chi_Minh')::date)::text;
+  yday  text := (((now() at time zone 'Asia/Ho_Chi_Minh')::date) - 1)::text;
+  d jsonb;
+  last_day text;
+  st int;
 begin
-  insert into public.gamification(student_id) values (auth.uid()) on conflict (student_id) do nothing;
-  select g.last_active into prev from public.gamification g where g.student_id = auth.uid();
+  insert into public.student_progress(student_id, data, updated_at)
+    values (auth.uid(), '{}'::jsonb, now())
+    on conflict (student_id) do nothing;
 
-  update public.gamification g set
-    xp          = g.xp + greatest(coalesce(p_xp, 0), 0),
-    streak_days = case
-                    when prev = today     then g.streak_days
-                    when prev = today - 1 then g.streak_days + 1
-                    else 1
-                  end,
-    last_active = today,
-    updated_at  = now()
-  where g.student_id = auth.uid();
+  select coalesce(data, '{}'::jsonb) into d
+    from public.student_progress where student_id = auth.uid();
 
-  insert into public.study_sessions(student_id, subject, ended_at, duration_sec)
-  values (auth.uid(), p_subject, now(), greatest(coalesce(p_seconds, 0), 0));
+  -- XP cong don
+  d := jsonb_set(d, '{xp}', to_jsonb(coalesce((d->>'xp')::int, 0) + greatest(coalesce(p_xp,0),0)));
 
-  return query
-    select g.xp, g.streak_days, g.last_active
-    from public.gamification g
-    where g.student_id = auth.uid();
+  -- streak theo ngay (khoa 'lastActive' + 'streak')
+  last_day := d->>'lastActive';
+  st := coalesce((d->>'streak')::int, 0);
+  if last_day is distinct from today then
+    if last_day = yday then st := st + 1; else st := 1; end if;
+    d := jsonb_set(d, '{streak}', to_jsonb(st));
+    d := jsonb_set(d, '{lastActive}', to_jsonb(today));
+  end if;
+
+  -- danh sach bai da hoc
+  if p_lesson is not null and not (coalesce(d->'lessonsViewed','[]'::jsonb) ? p_lesson) then
+    d := jsonb_set(d, '{lessonsViewed}', coalesce(d->'lessonsViewed','[]'::jsonb) || to_jsonb(p_lesson));
+  end if;
+
+  -- thong ke quiz
+  if p_quiz then
+    d := jsonb_set(d, '{totalQuizzes}', to_jsonb(coalesce((d->>'totalQuizzes')::int,0) + 1));
+    if p_percent is not null and p_percent > coalesce((d->>'quizHighScore')::int, 0) then
+      d := jsonb_set(d, '{quizHighScore}', to_jsonb(p_percent));
+    end if;
+  end if;
+  if coalesce(p_stars,0) > 0 then
+    d := jsonb_set(d, '{totalStars}', to_jsonb(coalesce((d->>'totalStars')::int,0) + p_stars));
+  end if;
+
+  update public.student_progress set data = d, updated_at = now() where student_id = auth.uid();
+  return d;
 end;
 $$;
 
--- 5) VIEW dashboard: tong hop theo NGAY + MON cho moi HS
+-- 3) (Tuy chon) VIEW dashboard tach theo mon
 create or replace view public.daily_summary_by_subject as
 select p.id as student_id, p.display_name, p.class_code,
        q.subject, q.day, count(*) as quizzes,
@@ -88,7 +83,8 @@ where p.role = 'student'
 group by p.id, p.display_name, p.class_code, q.subject, q.day;
 
 -- ============================================================
---  XONG. Kiem tra nhanh (tuy chon):
---    select * from public.lesson_progress limit 1;
---    select public.cloud_touch(10, 'ai', 60);   -- can dang nhap moi chay
+--  XONG. Luu y:
+--   • Neu truoc do da chay ban migration cu (tao bang gamification /
+--     lesson_progress) thi cu de yen — khong dung nua, khong sao.
+--   • KIEM TRA nhanh khi da dang nhap:  select public.ai_record(10, 'ai:1.1.1', true, 80, 2);
 -- ============================================================

@@ -412,8 +412,9 @@ function showResult(){
   if(p >= 60) burst(20);
   // Lưu lên đám mây (nếu đã đăng nhập) — an toàn, tự bỏ qua khi chưa bật/đăng nhập
   if(window.Cloud){
-    Cloud.saveQuizResult({ mode:"test", score, total, percent:p, stars: (typeof star !== "undefined" ? star : null) });
-    Cloud.touch(Math.round(p));
+    const st = (typeof star !== "undefined" ? star : null);
+    Cloud.saveQuizResult({ mode:"test", score, total, percent:p, stars: st });
+    Cloud.aiRecord({ xp: Math.round(p), quiz: true, percent: p, stars: st || 0 });
   }
 }
 
@@ -571,8 +572,7 @@ function lqPick(btn){
     // Lưu tiến độ bài học lên đám mây (nếu đã đăng nhập)
     if(window.Cloud){
       const stars = pass >= 85 ? 3 : pass >= 60 ? 2 : 1;
-      Cloud.saveLessonProgress(quiz.dataset.code, stars, pass);
-      Cloud.touch(Math.round(pass / 5));  // ~XP theo kết quả
+      Cloud.aiRecord({ xp: Math.round(pass/5), lesson: "ai:" + quiz.dataset.code, quiz: true, percent: pass, stars: stars });
     }
   }
 }
@@ -746,6 +746,7 @@ function openPlan(li, mi, lsi){
   const m = lv.modules[mi];
   const ls = m.lessons[lsi];
   const c = LEVEL_COLORS[li];
+  if(window.Cloud){ Cloud.logEvent("lesson_open", "lesson:" + ls.code); Cloud.aiRecord({ lesson: "ai:" + ls.code }); }
 
   /* Minh hoạ: tranh SVG theo chủ đề (mặc định) + ảnh trong images/<mã>.<ext> nếu có */
   const art = window.LessonArt ? window.LessonArt.svg(ls, c) : "";
@@ -1713,9 +1714,9 @@ function rpResult(){
   document.getElementById("resultCard").classList.remove("hidden");
   document.getElementById("runner").scrollTo({top:0});
   if(window.Cloud){
-    Cloud.saveQuizResult({ mode:"practice", score:rpScore, total:rpMax, percent:pct, stars: pct>=85?3:pct>=60?2:1 });
-    Cloud.saveLessonProgress("game:"+rpKey, pct>=85?3:pct>=60?2:1, pct);
-    Cloud.touch(Math.round(pct/5));
+    const rs = pct>=85?3:pct>=60?2:1;
+    Cloud.saveQuizResult({ mode:"practice", score:rpScore, total:rpMax, percent:pct, stars: rs });
+    Cloud.aiRecord({ xp: Math.round(pct/5), lesson: "ai:game:"+rpKey, quiz: true, percent: pct, stars: rs });
   }
 }
 
@@ -1769,10 +1770,10 @@ async function pwaInstall(){
 }
 
 /* =========================================================
-   ĐĂNG NHẬP / ĐĂNG KÝ (qua window.Cloud → Supabase)
+   ĐĂNG NHẬP (qua window.Cloud → Supabase). Chỉ LOGIN — tài khoản
+   tạo ở web Tiếng Việt / do Thầy cấp. HS: username+PIN, GV: email+PIN.
    ========================================================= */
-let _authMode = "login";     // 'login' | 'register'
-let _authKind = "student";   // 'student' | 'email'
+let _authKind = "student";   // 'student' | 'teacher'
 function openAuth(){
   document.getElementById("authModal").classList.remove("hidden");
   document.body.style.overflow = "hidden";
@@ -1784,65 +1785,73 @@ function closeAuth(e){
   document.body.style.overflow = "";
 }
 function setAuthKind(k){ _authKind = k; renderAuth(); }
-function setAuthMode(m){ _authMode = m; renderAuth(); }
 
-async function renderAuth(){
-  const body = document.getElementById("authBody");
-  if(!body) return;
-  const hasCloud = !!window.Cloud;
-  if(hasCloud) { try{ await Cloud.ready; }catch{} }
-
-  // Đã đăng nhập → bảng tài khoản
-  if(hasCloud && Cloud.user){
-    const prof = await Cloud.getProfile();
-    const gam = await Cloud.getGamification();
-    const name = (prof && prof.display_name) || (Cloud.user.email||"").split("@")[0];
-    body.innerHTML = `
-      <div class="authHead"><div class="authAva">👋</div>
-        <h2>Xin chào, ${esc(name)}!</h2>
-        <p class="authSub">Điểm & tiến độ của em được lưu trên tài khoản.</p></div>
-      <div class="authStats">
-        <div><b>${gam ? gam.xp : 0}</b><span>XP</span></div>
-        <div><b>${gam ? gam.streak_days : 0}</b><span>ngày streak 🔥</span></div>
-      </div>
-      <button class="btn" style="width:100%" onclick="authLogout()">Đăng xuất</button>`;
-    return;
-  }
-
-  const notice = (hasCloud && Cloud.enabled) ? "" :
-    `<div class="authNote">⚠️ Đồng bộ chưa bật — cần điền <b>url</b> + <b>anonKey</b> trong <code>supabase-config.js</code>.</div>`;
-  const isReg = _authMode === "register";
+function _authFormHTML(){
   const isStu = _authKind === "student";
-  body.innerHTML = `
-    <div class="authHead">
-      <div class="authAva">${isReg ? "✨" : "👤"}</div>
-      <h2>${isReg ? "Tạo tài khoản" : "Đăng nhập"}</h2>
-    </div>
+  const cfg = window.SUPABASE_CONFIG || {};
+  const configured = !!(cfg.url && cfg.anonKey);
+  const notice = configured ? "" :
+    `<div class="authNote">⚠️ Đồng bộ chưa bật — điền <b>url</b> + <b>anonKey</b> trong <code>supabase-config.js</code>.</div>`;
+  return `
+    <div class="authHead"><div class="authAva">👤</div><h2>Đăng nhập</h2></div>
     <div class="authTabs">
       <button class="authTab${isStu?" on":""}" onclick="setAuthKind('student')">🎒 Học sinh</button>
-      <button class="authTab${!isStu?" on":""}" onclick="setAuthKind('email')">📧 Email</button>
+      <button class="authTab${!isStu?" on":""}" onclick="setAuthKind('teacher')">👩‍🏫 Giáo viên</button>
     </div>
     ${notice}
     <div class="authForm">
-      ${isReg ? `<label class="authField"><span>Tên hiển thị</span>
-        <input id="authName" type="text" autocomplete="name" placeholder="Ví dụ: Bé An"></label>` : ""}
       ${isStu ? `
         <label class="authField"><span>Tên đăng nhập</span>
           <input id="authU" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="tên đăng nhập"></label>
         <label class="authField"><span>Mã PIN</span>
-          <input id="authP" type="password" inputmode="numeric" autocomplete="${isReg?"new-password":"current-password"}" placeholder="mã PIN"></label>
+          <input id="authP" type="password" inputmode="numeric" autocomplete="current-password" placeholder="mã PIN"></label>
       ` : `
         <label class="authField"><span>Email</span>
           <input id="authU" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="email@example.com"></label>
-        <label class="authField"><span>Mật khẩu</span>
-          <input id="authP" type="password" autocomplete="${isReg?"new-password":"current-password"}" placeholder="mật khẩu"></label>
+        <label class="authField"><span>Mã PIN</span>
+          <input id="authP" type="password" inputmode="numeric" autocomplete="current-password" placeholder="mã PIN"></label>
       `}
       <div class="authMsg" id="authMsg" aria-live="polite"></div>
-      <button class="btn" id="authSubmit" style="width:100%" onclick="authSubmit()">${isReg ? "Đăng ký" : "Đăng nhập"}</button>
-      <p class="authSwitch">${isReg
-        ? `Đã có tài khoản? <a href="#" onclick="setAuthMode('login');return false">Đăng nhập</a>`
-        : `Chưa có tài khoản? <a href="#" onclick="setAuthMode('register');return false">Đăng ký</a>`}</p>
+      <button class="btn" id="authSubmit" style="width:100%" onclick="authSubmit()">Đăng nhập</button>
+      <p class="authSwitch">Tài khoản do Thầy cấp hoặc đăng ký ở web Tiếng Việt.</p>
     </div>`;
+}
+async function _renderAccount(){
+  const body = document.getElementById("authBody");
+  if(!body || !window.Cloud || !Cloud.user) return;
+  const prof = await Cloud.getProfile();
+  const pg = (await Cloud.getProgress()) || {};
+  const name = (prof && prof.display_name) || (Cloud.user.email||"").split("@")[0];
+  const cls = prof && prof.class_code ? ` · Lớp ${esc(prof.class_code)}` : "";
+  body.innerHTML = `
+    <div class="authHead"><div class="authAva">👋</div>
+      <h2>Xin chào, ${esc(name)}!</h2>
+      <p class="authSub">Tiến độ dùng chung với web Tiếng Việt${cls}.</p></div>
+    <div class="authStats">
+      <div><b>${(+pg.xp||0)}</b><span>XP</span></div>
+      <div><b>${(+pg.streak||0)}</b><span>ngày streak 🔥</span></div>
+      <div><b>${(pg.lessonsViewed && pg.lessonsViewed.length)||0}</b><span>bài đã học</span></div>
+    </div>
+    <button class="btn light" style="width:100%" onclick="authLogout()">Đăng xuất</button>`;
+}
+function renderAuth(){
+  const body = document.getElementById("authBody");
+  if(!body) return;
+  const hasCloud = !!window.Cloud;
+  // Đã biết đăng nhập → bảng tài khoản; nếu chưa → vẽ form NGAY (không chờ CDN)
+  if(hasCloud && Cloud.user){ _renderAccount(); return; }
+  body.innerHTML = _authFormHTML();
+  // Khi Supabase sẵn sàng: nếu đã đăng nhập thì hiện tài khoản, chưa thì làm mới form (bỏ notice)
+  if(hasCloud && Cloud.ready && !renderAuth._hooked){
+    renderAuth._hooked = true;
+    Cloud.ready.then(() => {
+      renderAuth._hooked = false;
+      const b = document.getElementById("authBody");
+      if(!b || document.getElementById("authModal").classList.contains("hidden")) return;
+      if(Cloud.user) _renderAccount();
+      else if(document.getElementById("authU")) b.innerHTML = _authFormHTML();
+    });
+  }
 }
 
 function _authMsg(text, ok){
@@ -1854,26 +1863,15 @@ async function authSubmit(){
   const btn = document.getElementById("authSubmit");
   const u = (document.getElementById("authU")||{}).value || "";
   const p = (document.getElementById("authP")||{}).value || "";
-  const name = (document.getElementById("authName")||{}).value || "";
   if(!u.trim() || !p){ _authMsg("Nhập đủ thông tin nhé."); return; }
   if(btn){ btn.disabled = true; btn.textContent = "Đang xử lý…"; }
   _authMsg("");
   let res;
   try{
-    if(_authMode === "login"){
-      res = _authKind === "student" ? await Cloud.signInStudent(u, p) : await Cloud.signInEmail(u, p);
-    } else {
-      res = _authKind === "student" ? await Cloud.signUpStudent(u, p, name) : await Cloud.signUpEmail(u, p, name, "parent");
-    }
+    res = _authKind === "student" ? await Cloud.signInStudent(u, p) : await Cloud.signInEmail(u, p);
   }catch(err){ res = { error: { message: String(err) } }; }
-  if(btn){ btn.disabled = false; btn.textContent = _authMode === "register" ? "Đăng ký" : "Đăng nhập"; }
-  if(res && res.error){
-    _authMsg(_authErr(res.error.message));
-    return;
-  }
-  if(_authMode === "register" && !(res && res.data && res.data.session)){
-    _authMsg("Tạo tài khoản xong! Hãy đăng nhập.", true); _authMode = "login"; setTimeout(renderAuth, 900); return;
-  }
+  if(btn){ btn.disabled = false; btn.textContent = "Đăng nhập"; }
+  if(res && res.error){ _authMsg(_authErr(res.error.message)); return; }
   sfx.win && sfx.win();
   refreshAcct();
   renderAuth();
@@ -1881,9 +1879,8 @@ async function authSubmit(){
 }
 function _authErr(m){
   m = (m||"").toLowerCase();
-  if(m.includes("invalid login")) return "Sai tên đăng nhập/mật khẩu.";
-  if(m.includes("already registered")) return "Tài khoản đã tồn tại.";
-  if(m.includes("confirm")) return "Cần xác nhận email trước khi đăng nhập.";
+  if(m.includes("invalid login")) return "Sai tên đăng nhập / PIN.";
+  if(m.includes("confirm")) return "Tài khoản chưa xác nhận. Nhờ Thầy kiểm tra giúp.";
   if(m.includes("cloud-disabled")) return "Đồng bộ chưa được bật.";
   return "Lỗi: " + m;
 }

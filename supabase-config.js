@@ -12,5 +12,5 @@ window.SUPABASE_CONFIG = {
   anonKey: "sb_publishable_1OwjQjg0erAXLqYqqDtJ-w_FtDuKGe7",  // publishable key (an toàn cho trình duyệt)
   // Đăng nhập HS bằng username + PIN dùng email tổng hợp.
   // Phải KHỚP đuôi email mà web Tiếng Việt đang dùng (nếu có).
-  studentEmailDomain: "@hs.thaydat.local",
+  studentEmailDomain: "@hs.thaydat.app",
 };
