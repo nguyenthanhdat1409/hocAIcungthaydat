@@ -158,8 +158,8 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .lead b{color:#FEF9C3}
 .heroBtns{display:flex; gap:12px; flex-wrap:wrap}
 .heroBtns .btn{transition:transform .2s, box-shadow .2s, filter .2s}
-.heroBtns .btn:hover{transform:translateY(-3px) scale(1.07); filter:drop-shadow(0 10px 20px rgba(124,58,237,.4))}
-.heroBtns .btn:active{transform:translateY(1px) scale(1.02)}
+.heroBtns .btn:hover{transform:translateY(-4px) scale(1.12); filter:drop-shadow(0 12px 24px rgba(124,58,237,.45))}
+.heroBtns .btn:active{transform:translateY(1px) scale(1.05)}
 .heroStats{display:flex; gap:22px; margin-top:22px}
 .heroStats div{display:flex; flex-direction:column; color:#fff}
 .heroStats b{font-family:var(--font-display); font-size:30px; line-height:1}
@@ -272,11 +272,23 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .lessonCard .lGo{font-weight:800; color:var(--vio); font-size:14px}
 
 /* modal bài học */
-.modal{position:fixed; inset:0; z-index:100; background:rgba(30,27,75,.65); backdrop-filter:blur(6px);
-  display:flex; align-items:center; justify-content:center; padding:18px; animation:fadeUp .3s ease}
+/* Popup/modal: phóng to khi mở, thu nhỏ khi đóng (animate cả 2 chiều bằng class .open) */
+.modal{position:fixed; inset:0; z-index:1000; padding:18px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(20,20,40,.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  opacity:0; visibility:hidden; pointer-events:none;              /* mặc định: ẩn */
+  transition:opacity .25s ease, visibility .25s ease}
+.modal.open{opacity:1; visibility:visible; pointer-events:auto}   /* mở: hiện nền mờ */
 .modalBox{background:linear-gradient(180deg,#fff 0%,#F8FAFC 100%); border-radius:28px; max-width:680px; width:100%; max-height:88vh; overflow:hidden;
-  padding:0; position:relative; box-shadow:0 24px 80px rgba(0,0,0,.45); animation:scaleIn .35s ease;
-  display:flex; flex-direction:column}
+  padding:0; position:relative; box-shadow:0 24px 80px rgba(0,0,0,.45);
+  display:flex; flex-direction:column;
+  transform:scale(.85); opacity:0;                                /* mặc định: nhỏ + mờ */
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s ease}
+.modal.open .modalBox{transform:scale(1); opacity:1}              /* mở: nảy về kích thước thật */
+@media (prefers-reduced-motion:reduce){
+  .modal, .modal .modalBox{transition:opacity .15s ease}
+  .modalBox, .modal.open .modalBox{transform:none}
+}
 #lessonBody{overflow-y:auto; overflow-x:hidden; flex:1 1 auto; overscroll-behavior:contain;
   scrollbar-width:none; -ms-overflow-style:none}
 #lessonBody::-webkit-scrollbar{width:0; height:0; display:none}
@@ -1317,9 +1329,7 @@ h1,h2,h3{letter-spacing:.2px}
 .planPhase{font-family:var(--font-display);font-weight:700;font-size:16px;margin-bottom:3px}
 .planAct{font-size:14px;color:#334155;line-height:1.55}
 
-/* Modal mở mượt hơn */
-.modal .modalBox{animation:modalPop .32s cubic-bezier(.2,.8,.2,1)}
-@keyframes modalPop{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+/* (Hiệu ứng mở/đóng modal chuyển sang .modal.open — xem phần .modal ở trên) */
 
 /* Tôn trọng người tắt hiệu ứng */
 @media (prefers-reduced-motion: reduce){

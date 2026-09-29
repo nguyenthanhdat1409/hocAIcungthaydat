@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://esm.sh">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=73">
+<link rel="stylesheet" href="styles.css?v=74">
 </head>
 <body>
 
@@ -186,7 +186,7 @@
 </div>
 
 <!-- ===================== MODAL ĐĂNG NHẬP / ĐĂNG KÝ ===================== -->
-<div id="authModal" class="modal hidden" onclick="closeAuth(event)">
+<div id="authModal" class="modal" onclick="closeAuth(event)">
   <div class="modalBox authBox" onclick="event.stopPropagation()">
     <button class="modalClose" onclick="closeAuth()" aria-label="Đóng">✕</button>
     <div id="authBody"></div>
@@ -194,7 +194,7 @@
 </div>
 
 <!-- ===================== MODAL BÀI HỌC ===================== -->
-<div id="lessonModal" class="modal hidden" onclick="closeLesson(event)">
+<div id="lessonModal" class="modal" onclick="closeLesson(event)">
   <div class="modalBox" onclick="event.stopPropagation()">
     <button class="modalClose" onclick="closeLesson()" aria-label="Đóng">✕</button>
     <div id="lessonBody"></div>
@@ -211,6 +211,6 @@
 
 <script defer src="supabase-config.js?v=63"></script>
 <script defer src="cloud.js?v=67"></script>
-<script defer src="app.js?v=72"></script>
+<script defer src="app.js?v=73"></script>
 </body>
 </html>

@@ -232,7 +232,7 @@ function setText(id, v){ const el = document.getElementById(id); if(el) el.textC
 function closeLesson(e){
   if(e && e.target && e.target.id !== "lessonModal" && e.type === "click" && e.currentTarget.id === "lessonModal") return;
   stopReading();
-  document.getElementById("lessonModal").classList.add("hidden");
+  document.getElementById("lessonModal").classList.remove("open");
   document.body.style.overflow = "";
 }
 
@@ -770,7 +770,7 @@ function openPlan(li, mi, lsi){
          ${coach}
        </div>
      </div>`;
-  document.getElementById("lessonModal").classList.remove("hidden");
+  document.getElementById("lessonModal").classList.add("open");
   document.body.style.overflow = "hidden";
   sfx.pop();
 }
@@ -1832,13 +1832,13 @@ async function pwaInstall(){
    ========================================================= */
 let _authKind = "student";   // 'student' | 'teacher'
 function openAuth(){
-  document.getElementById("authModal").classList.remove("hidden");
+  document.getElementById("authModal").classList.add("open");
   document.body.style.overflow = "hidden";
   renderAuth();
 }
 function closeAuth(e){
   if(e && e.target && e.type === "click" && e.currentTarget && e.currentTarget.id === "authModal" && e.target.id !== "authModal") return;
-  document.getElementById("authModal").classList.add("hidden");
+  document.getElementById("authModal").classList.remove("open");
   document.body.style.overflow = "";
 }
 function setAuthKind(k){ _authKind = k; renderAuth(); }
