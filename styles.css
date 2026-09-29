@@ -285,9 +285,12 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
   transform:scale(.85); opacity:0;                                /* mặc định: nhỏ + mờ */
   transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s ease}
 .modal.open .modalBox{transform:scale(1); opacity:1}              /* mở: nảy về kích thước thật */
+/* Ngoại lệ: các hiệu ứng CHỦ Ý theo yêu cầu vẫn chạy dù máy bật "giảm chuyển động" */
 @media (prefers-reduced-motion:reduce){
-  .modal, .modal .modalBox{transition:opacity .15s ease}
-  .modalBox, .modal.open .modalBox{transform:none}
+  .pill{ animation:pillPop 2.2s ease-in-out infinite !important }
+  .heroBtns .btn{ transition:transform .2s, box-shadow .2s, filter .2s !important }
+  .modal{ transition:opacity .25s ease, visibility .25s ease !important }
+  .modal .modalBox{ transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s ease !important }
 }
 #lessonBody{overflow-y:auto; overflow-x:hidden; flex:1 1 auto; overscroll-behavior:contain;
   scrollbar-width:none; -ms-overflow-style:none}
