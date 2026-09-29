@@ -626,6 +626,7 @@ function renderCurriculum(){
   selectLevel(_activeLevel || 0);
   if(curSearch) applyCurSearch();
   observeReveal();
+  refreshLessonProgress();   // đánh dấu ✓ bài đã học (nếu đăng nhập)
 }
 let _activeLevel = 0;
 function selectLevel(i){
@@ -861,6 +862,58 @@ function clearCurSearch(){
   if(inp){ inp.value = ""; inp.focus(); }
   applyCurSearch();
 }
+
+/* =========================================================
+   Tiến độ bài học (đánh dấu ✓ + % theo module/level)
+   Nguồn: ai_progress.lessons = ["ai:1.1.1", ...] (chỉ khi đăng nhập)
+   ========================================================= */
+let _doneSet = new Set();
+async function refreshDoneSet(){
+  if(!window.Cloud || !Cloud.user){ _doneSet = new Set(); return; }
+  try{
+    const pg = (await Cloud.getProgress()) || {};
+    _doneSet = new Set((pg.lessons || []).map(x => String(x).replace(/^ai:/, "")));
+  }catch(e){ _doneSet = new Set(); }
+}
+/* Cập nhật DOM curriculum theo _doneSet (gọi sau render & khi có tiến độ mới) */
+function applyLessonProgress(){
+  const host = document.getElementById("curriculum");
+  if(!host || host.dataset.rendered !== "1") return;
+  host.classList.toggle("hasProgress", _doneSet.size > 0);
+  // từng bài
+  host.querySelectorAll(".lsRow").forEach(r => {
+    const p = r.dataset.ls.split("-").map(Number);
+    const ls = _lessonMap[p[0]] && _lessonMap[p[0]][p[1]] && _lessonMap[p[0]][p[1]][p[2]];
+    if(ls) r.classList.toggle("done", _doneSet.has(ls.code));
+  });
+  // từng module: pill ✓ x/y trên đầu
+  host.querySelectorAll(".modCard").forEach(card => {
+    const total = card.querySelectorAll(".lsRow").length;
+    const done = card.querySelectorAll(".lsRow.done").length;
+    const head = card.querySelector(".modHead");
+    if(!head) return;
+    let pill = head.querySelector(".modProg");
+    if(done > 0){
+      if(!pill){ pill = document.createElement("span"); pill.className = "modProg"; head.appendChild(pill); }
+      pill.textContent = done === total ? "✓ Hoàn thành" : `✓ ${done}/${total}`;
+      pill.classList.toggle("full", done === total);
+    } else if(pill){ pill.remove(); }
+    card.classList.toggle("modDone", done === total && total > 0);
+  });
+  // từng level: thêm "· ✓ x/y bài" vào thanh meta
+  host.querySelectorAll(".lvSection").forEach(sec => {
+    const total = sec.querySelectorAll(".lsRow").length;
+    const done = sec.querySelectorAll(".lsRow.done").length;
+    const meta = sec.querySelector(".lvMetaBar");
+    if(!meta) return;
+    let seg = meta.querySelector(".lvDone");
+    if(done > 0){
+      if(!seg){ seg = document.createElement("span"); seg.className = "lvDone"; meta.appendChild(seg); }
+      seg.textContent = ` · ✓ ${done}/${total} bài`;
+    } else if(seg){ seg.remove(); }
+  });
+}
+async function refreshLessonProgress(){ await refreshDoneSet(); applyLessonProgress(); }
 
 /* =========================================================
    2c) KIỂM TRA ĐẦU VÀO (thích ứng — gợi ý module phù hợp)
@@ -1907,6 +1960,39 @@ async function renderHomeDash(){
   const lessons = (pg.lessons && pg.lessons.length) || 0;
   const quizzes = +pg.total_quizzes || 0, stars = +pg.total_stars || 0;
   const level = Math.floor(xp / 100) + 1, inLvl = xp % 100;
+  const doneSet = new Set((pg.lessons || []).map(x => String(x).replace(/^ai:/, "")));
+
+  // Thẻ "Học tiếp": bài đầu tiên chưa học (cần dữ liệu lộ trình)
+  let nextHtml = "";
+  try{
+    await loadCurriculumData();
+    const nx = findNextLesson(doneSet);
+    if(nx){
+      nextHtml = `<button class="hdNext" onclick="openLessonByCode(${nx.li},${nx.mi},${nx.lsi})">
+          <span class="hdNextIco">▶️</span>
+          <span class="hdNextTx"><small>Học tiếp</small><b>Bài ${esc(nx.code)} · ${esc(nx.name)}</b></span>
+          <span class="hdNextGo">➜</span></button>`;
+    } else if(lessons > 0){
+      nextHtml = `<div class="hdNext done"><span class="hdNextIco">🏆</span>
+          <span class="hdNextTx"><small>Tuyệt vời!</small><b>Bạn đã học hết tất cả bài rồi 🎉</b></span></div>`;
+    }
+  }catch(e){}
+
+  // Huy hiệu theo cột mốc (sáng = đã đạt, mờ = chưa)
+  const badges = [
+    {ic:"🌱", lbl:"Bài đầu",  on: lessons >= 1},
+    {ic:"🔥", lbl:"3 ngày",   on: streak >= 3},
+    {ic:"⚡", lbl:"7 ngày",   on: streak >= 7},
+    {ic:"🥉", lbl:"100 XP",   on: xp >= 100},
+    {ic:"🥈", lbl:"300 XP",   on: xp >= 300},
+    {ic:"🥇", lbl:"600 XP",   on: xp >= 600},
+    {ic:"📚", lbl:"10 bài",   on: lessons >= 10},
+    {ic:"🎓", lbl:"50 bài",   on: lessons >= 50},
+    {ic:"💎", lbl:"1000 XP",  on: xp >= 1000},
+  ];
+  const badgeHtml = `<div class="hdBadges" aria-label="Huy hiệu">` + badges.map(b =>
+    `<span class="hdBadge${b.on ? " on" : ""}" title="${esc(b.lbl)}"><i>${b.ic}</i><em>${esc(b.lbl)}</em></span>`).join("") + `</div>`;
+
   el.innerHTML = `
     <div class="hdTop">
       <div class="hdHi"><span class="hdAva">🦸</span>
@@ -1916,14 +2002,41 @@ async function renderHomeDash(){
     </div>
     <div class="hdBar"><span style="width:${inLvl}%"></span></div>
     <div class="hdBarLbl">${inLvl}/100 XP tới Cấp ${level+1}</div>
+    ${nextHtml}
     <div class="hdStats">
       <div><b>${lessons}</b><span>📚 bài đã học</span></div>
       <div><b>${quizzes}</b><span>📝 lượt làm bài</span></div>
       <div><b>${stars}</b><span>⭐ sao</span></div>
-    </div>`;
+    </div>
+    ${badgeHtml}`;
   el.classList.remove("hidden");
 }
-function refreshAccountUI(){ refreshAcct(); renderHomeDash(); }
+/* Bài kế tiếp chưa học (theo thứ tự lộ trình) */
+function findNextLesson(doneSet){
+  const data = window.CURRICULUM && window.CURRICULUM.program;
+  if(!data) return null;
+  for(let li = 0; li < data.levels.length; li++){
+    const mods = data.levels[li].modules;
+    for(let mi = 0; mi < mods.length; mi++){
+      const lss = mods[mi].lessons;
+      for(let lsi = 0; lsi < lss.length; lsi++){
+        if(!doneSet.has(lss[lsi].code)) return { li, mi, lsi, code: lss[lsi].code, name: lss[lsi].name };
+      }
+    }
+  }
+  return null;
+}
+/* Mở 1 bài từ Trang chủ: sang Bài học, đợi render rồi mở modal */
+function openLessonByCode(li, mi, lsi){
+  go("baihoc");
+  let tries = 0;
+  (function tryOpen(){
+    if(_lessonMap.length && _lessonMap[li] && _lessonMap[li][mi] && _lessonMap[li][mi][lsi]){
+      _activeLevel = li; selectLevel(li); openPlan(li, mi, lsi);
+    } else if(tries++ < 40){ setTimeout(tryOpen, 120); }
+  })();
+}
+function refreshAccountUI(){ refreshAcct(); renderHomeDash(); refreshLessonProgress(); }
 document.addEventListener("cloud-auth", refreshAccountUI);
-document.addEventListener("cloud-progress", renderHomeDash);
+document.addEventListener("cloud-progress", () => { renderHomeDash(); refreshLessonProgress(); });
 document.addEventListener("DOMContentLoaded", () => { setTimeout(refreshAccountUI, 500); });
