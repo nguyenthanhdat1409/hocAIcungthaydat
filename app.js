@@ -900,17 +900,26 @@ function applyLessonProgress(){
     } else if(pill){ pill.remove(); }
     card.classList.toggle("modDone", done === total && total > 0);
   });
-  // từng level: thêm "· ✓ x/y bài" vào thanh meta
+  // từng level: "· ✓ x/y bài" + ruy băng khi hoàn thành 100%
   host.querySelectorAll(".lvSection").forEach(sec => {
     const total = sec.querySelectorAll(".lsRow").length;
     const done = sec.querySelectorAll(".lsRow.done").length;
+    const full = done === total && total > 0;
+    sec.classList.toggle("lvComplete", full);
     const meta = sec.querySelector(".lvMetaBar");
-    if(!meta) return;
-    let seg = meta.querySelector(".lvDone");
-    if(done > 0){
-      if(!seg){ seg = document.createElement("span"); seg.className = "lvDone"; meta.appendChild(seg); }
-      seg.textContent = ` · ✓ ${done}/${total} bài`;
-    } else if(seg){ seg.remove(); }
+    if(meta){
+      let seg = meta.querySelector(".lvDone");
+      if(done > 0){
+        if(!seg){ seg = document.createElement("span"); seg.className = "lvDone"; meta.appendChild(seg); }
+        seg.textContent = full ? ` · 🎓 Hoàn thành Level!` : ` · ✓ ${done}/${total} bài`;
+      } else if(seg){ seg.remove(); }
+    }
+    // ruy băng "Đã hoàn thành" trên banner
+    const hero = sec.querySelector(".lvHero, .lvStarBanner");
+    let rib = sec.querySelector(".lvRibbon");
+    if(full && hero){
+      if(!rib){ rib = document.createElement("div"); rib.className = "lvRibbon"; rib.textContent = "🎓 Đã hoàn thành"; hero.appendChild(rib); }
+    } else if(rib){ rib.remove(); }
   });
 }
 async function refreshLessonProgress(){ await refreshDoneSet(); applyLessonProgress(); }
@@ -1993,6 +2002,20 @@ async function renderHomeDash(){
   const badgeHtml = `<div class="hdBadges" aria-label="Huy hiệu">` + badges.map(b =>
     `<span class="hdBadge${b.on ? " on" : ""}" title="${esc(b.lbl)}"><i>${b.ic}</i><em>${esc(b.lbl)}</em></span>`).join("") + `</div>`;
 
+  // Bảng xếp hạng lớp (nếu có RPC + học sinh thuộc lớp)
+  let lbHtml = "";
+  try{
+    const lb = window.Cloud && Cloud.leaderboard ? await Cloud.leaderboard(5) : null;
+    if(lb && lb.length > 1){
+      const medal = ["🥇","🥈","🥉"];
+      lbHtml = `<div class="hdLb"><div class="hdLbHead">🏆 Bảng xếp hạng lớp</div>` +
+        lb.map((r, i) => `<div class="hdLbRow${r.is_me ? " me" : ""}">
+            <span class="hdLbRank">${medal[i] || (i+1)}</span>
+            <span class="hdLbName">${esc(r.display_name || "Bạn học")}${r.is_me ? " (bạn)" : ""}</span>
+            <span class="hdLbXp">${(+r.xp||0)} XP</span></div>`).join("") + `</div>`;
+    }
+  }catch(e){}
+
   el.innerHTML = `
     <div class="hdTop">
       <div class="hdHi"><span class="hdAva">🦸</span>
@@ -2008,7 +2031,8 @@ async function renderHomeDash(){
       <div><b>${quizzes}</b><span>📝 lượt làm bài</span></div>
       <div><b>${stars}</b><span>⭐ sao</span></div>
     </div>
-    ${badgeHtml}`;
+    ${badgeHtml}
+    ${lbHtml}`;
   el.classList.remove("hidden");
 }
 /* Bài kế tiếp chưa học (theo thứ tự lộ trình) */

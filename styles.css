@@ -1187,6 +1187,11 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .modProg.full{color:#fff;background:#22C55E}
 .modCard.modDone .modTitle b{color:#16A34A}
 .lvDone{font-weight:800}
+/* Ruy băng hoàn thành Level */
+.lvHero, .lvStarBanner{position:relative}
+.lvRibbon{position:absolute; top:12px; right:12px; z-index:3; background:linear-gradient(135deg,#22C55E,#16A34A);
+  color:#fff; font-weight:800; font-size:13px; padding:7px 15px; border-radius:999px;
+  box-shadow:0 8px 20px -4px rgba(22,163,74,.6); animation:pillPop 2.2s ease-in-out infinite}
 
 /* Card PROJECT & Tổng kết cho bé */
 .projCard{margin-top:12px;background:#FFFBEB;border:2px solid #FCD34D;border-radius:14px;
@@ -2095,6 +2100,14 @@ html,body{ overflow-x:hidden }
 .hdBadge.on{ opacity:1; filter:none; background:rgba(255,255,255,.2) }
 .hdBadge i{ font-size:22px; font-style:normal; line-height:1 }
 .hdBadge em{ font-size:10px; font-style:normal; font-weight:700; opacity:.95; text-align:center }
+/* Bảng xếp hạng lớp */
+.hdLb{ margin-top:14px; background:rgba(255,255,255,.12); border-radius:16px; padding:12px 14px }
+.hdLbHead{ font-family:var(--font-display); font-weight:800; font-size:14px; margin-bottom:8px }
+.hdLbRow{ display:flex; align-items:center; gap:10px; padding:6px 8px; border-radius:10px; font-size:13.5px }
+.hdLbRow.me{ background:rgba(255,255,255,.22); font-weight:800 }
+.hdLbRank{ flex:0 0 auto; width:26px; text-align:center; font-weight:800; font-variant-numeric:tabular-nums }
+.hdLbName{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.hdLbXp{ flex:0 0 auto; font-weight:800; font-variant-numeric:tabular-nums; opacity:.95 }
 
 /* =========================================================
    TAB LEVEL cho trang Bài học

@@ -72,6 +72,15 @@
       return (out && out.data) || null;
     } catch (e) { return null; }
   };
+  /* Bảng xếp hạng lớp theo XP môn AI (RPC ai_leaderboard) */
+  Cloud.leaderboard = async function (limit) {
+    await Cloud.ready;
+    if (!Cloud.enabled || !Cloud.user) return null;
+    try {
+      var out = await Cloud.sb.rpc("ai_leaderboard", { p_limit: limit || 10 });
+      return (out && out.data) || [];
+    } catch (e) { return null; }
+  };
   /* Đọc tiến độ RIÊNG của môn AI (bảng ai_progress) */
   Cloud.getProgress = async function () {
     await Cloud.ready;

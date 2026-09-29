@@ -88,7 +88,27 @@ join public.quiz_results q on q.student_id = p.id
 where p.role = 'student'
 group by p.id, p.display_name, p.class_code, q.subject, q.day;
 
+-- 5) RPC bang xep hang LOP theo XP mon AI (chi hoc sinh cung lop nguoi goi)
+drop function if exists public.ai_leaderboard(int);
+create or replace function public.ai_leaderboard(p_limit int default 10)
+returns table(display_name text, xp int, streak int, is_me boolean)
+language sql security definer set search_path = public as $$
+  select p.display_name,
+         coalesce(a.xp, 0)     as xp,
+         coalesce(a.streak, 0) as streak,
+         (p.id = auth.uid())   as is_me
+  from public.profiles p
+  left join public.ai_progress a on a.student_id = p.id
+  where p.role = 'student'
+    and p.class_code is not null
+    and p.class_code = (select class_code from public.profiles where id = auth.uid())
+  order by coalesce(a.xp,0) desc, p.display_name
+  limit greatest(coalesce(p_limit,10), 1);
+$$;
+grant execute on function public.ai_leaderboard(int) to authenticated;
+
 -- ============================================================
 --  XONG. Kiem tra khi da dang nhap:  select * from public.ai_record(10, 'ai:1.1.1', true, 80, 2, 10);
+--                                     select * from public.ai_leaderboard(10);
 --  (Neu truoc do da tao bang gamification/lesson_progress thi cu de yen, khong dung nua.)
 -- ============================================================
