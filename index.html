@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://esm.sh">
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=68">
+<link rel="stylesheet" href="styles.css?v=70">
 </head>
 <body>
 
@@ -143,18 +143,12 @@
     </div>
   </section>
 
-  <!-- ---------- KIỂM TRA (màn giới thiệu) ---------- -->
+  <!-- ---------- KIỂM TRA (màn giới thiệu — dùng ảnh minh hoạ) ---------- -->
   <section id="kiemtra" class="page hidden">
-    <div class="card hero quizIntro">
-      <div class="avatar">🤖</div>
-      <h1>Thử tài hiểu biết<br><span class="grad">về AI!</span></h1>
-      <p class="intro"><b id="quizCount">0 câu</b> · kiến thức nền tảng về trí tuệ nhân tạo.<br>Trả lời đúng để chinh phục <b>3 sao ⭐</b> nhé! 🚀</p>
-      <div class="rules">
-        <div class="rule up"><div class="ic">✅</div><div><div class="tt">Đúng +1 sao</div><div class="dd">Câu sau khó hơn</div></div></div>
-        <div class="rule down"><div class="ic">❌</div><div><div class="tt">Sai −1 sao</div><div class="dd">Câu sau dễ lại</div></div></div>
-        <div class="rule rand"><div class="ic">🎲</div><div><div class="tt">Ngẫu nhiên</div><div class="dd">Mỗi lần một bộ mới</div></div></div>
-      </div>
-      <div class="tags" id="quizTags"></div>
+    <div class="quizIntroImg">
+      <h1 class="srOnly">Thử tài hiểu biết về AI — trả lời đúng để chinh phục 3 sao</h1>
+      <img class="quizHeroImg" src="images/bg-kiemtra.webp?v=1" width="1200" height="514" decoding="async" fetchpriority="high"
+           alt="Thử tài hiểu biết về AI: trả lời đúng +1 sao, sai −1 sao, câu hỏi ngẫu nhiên mỗi lần; chủ đề AI là gì, AI học thế nào, AI quanh ta, ra lệnh cho AI, dùng AI an toàn.">
       <button class="btn pulseBtn" onclick="startQuiz()">Bắt đầu luôn! 🎮</button>
     </div>
   </section>
@@ -205,6 +199,6 @@
 
 <script defer src="supabase-config.js?v=63"></script>
 <script defer src="cloud.js?v=66"></script>
-<script defer src="app.js?v=68"></script>
+<script defer src="app.js?v=70"></script>
 </body>
 </html>

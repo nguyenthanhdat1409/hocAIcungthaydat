@@ -157,9 +157,9 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .lead{color:rgba(255,255,255,.96); font-size:16.5px; line-height:1.55; max-width:520px; margin:0}
 .lead b{color:#FEF9C3}
 .heroBtns{display:flex; gap:12px; flex-wrap:wrap}
-.heroBtns .btn{transition:transform .2s, box-shadow .2s}
-.heroBtns .btn:hover{transform:translateY(-3px)}
-.heroBtns .btn:active{transform:translateY(1px)}
+.heroBtns .btn{transition:transform .2s, box-shadow .2s, filter .2s}
+.heroBtns .btn:hover{transform:translateY(-3px) scale(1.07); filter:drop-shadow(0 10px 20px rgba(124,58,237,.4))}
+.heroBtns .btn:active{transform:translateY(1px) scale(1.02)}
 .heroStats{display:flex; gap:22px; margin-top:22px}
 .heroStats div{display:flex; flex-direction:column; color:#fff}
 .heroStats b{font-family:var(--font-display); font-size:30px; line-height:1}
@@ -201,7 +201,8 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .ctaBanner{animation:borderGlow 2.5s ease-in-out infinite, fadeUp .5s ease .4s both}
 .ctaBanner:hover{transform:translateY(-3px); transition:transform .2s}
 
-.pill{animation:pulse 2.5s ease-in-out infinite}
+.pill{animation:pillPop 2.2s ease-in-out infinite; transform-origin:center}
+@keyframes pillPop{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
 
 .grad{
   background:linear-gradient(90deg,#FDE047,#FB7185,#F472B6,#FDE047);
@@ -806,8 +807,17 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .bar{height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,var(--lime),var(--yel)); transition:width .35s ease}
 .counter{font-family:var(--font-display); font-weight:800; color:#fff; font-size:16px; text-shadow:0 2px 0 rgba(0,0,0,.2); white-space:nowrap}
 
-/* ---- màn giới thiệu kiểm tra (dùng chung .hero cũ) ---- */
+/* ---- màn giới thiệu kiểm tra: dùng ẢNH minh hoạ + nút ---- */
+.srOnly{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0}
+.quizIntroImg{max-width:920px; margin:0 auto; text-align:center; display:block; animation:scaleIn .4s ease}
+.quizHeroImg{width:100%; height:auto; display:block; border-radius:28px;
+  box-shadow:0 26px 60px -14px rgba(76,29,149,.35), 0 2px 6px rgba(0,0,0,.06)}
+.quizIntroImg .pulseBtn{margin:24px auto 8px; animation:btnGlow 2s ease-in-out 1s infinite}
+@media(max-width:600px){ .quizHeroImg{border-radius:18px} .quizIntroImg .pulseBtn{margin-top:18px} }
+
+/* ---- màn giới thiệu kiểm tra (bản cũ .hero — giữ lại phòng khi dùng lại) ---- */
 .quizIntro{max-width:640px; margin:0 auto; text-align:center; display:block; padding:6px 2px 4px}
+.quizIntro::before{ display:none }  /* bỏ thanh gradient tím ở đầu popup "Thử tài hiểu biết về AI" */
 .quizIntro .avatar{width:100px; height:100px; margin:0 auto 14px; border-radius:50%;
   background:linear-gradient(145deg,var(--yel),var(--org)); display:flex; align-items:center; justify-content:center;
   font-size:54px; border:5px solid #fff; box-shadow:0 8px 0 rgba(30,27,75,.25)}

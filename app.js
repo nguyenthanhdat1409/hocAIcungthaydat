@@ -223,8 +223,8 @@ function renderHome(){
   setText("statTopics", cst.modules || 31);
   setText("statQuiz", totalQ);
   setText("quizCount", totalQ + " câu");
-  document.getElementById("quizTags").innerHTML =
-    Object.values(TOPICS).map(t => `<span>${t.emoji} ${t.name}</span>`).join("");
+  const _qt = document.getElementById("quizTags");
+  if(_qt) _qt.innerHTML = Object.values(TOPICS).map(t => `<span>${t.emoji} ${t.name}</span>`).join("");
 }
 function setText(id, v){ const el = document.getElementById(id); if(el) el.textContent = v; }
 
@@ -648,7 +648,7 @@ const MOD_IMG = {
   "1.7":"images/mod-1.7.webp", "1.8":"images/mod-1.8.webp",
   "2.1":"images/mod-2.1.webp", "2.2":"images/mod-2.2.webp", "2.3":"images/mod-2.3.webp", "2.4":"images/mod-2.4.webp",
 };
-const LEVEL_BANNER = { 0:"images/bg-level1.webp", 1:"images/bg-level2.webp", 2:"images/bg-level3.webp" };
+const LEVEL_BANNER = { 0:"images/bg-level1.webp", 1:"images/bg-level2.webp", 2:"images/bg-level3.webp", 3:"images/bg-level4.webp" };
 
 function renderLevel(lv, li){
   const c = LEVEL_COLORS[li], soft = LEVEL_SOFT[li];
