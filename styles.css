@@ -158,8 +158,9 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .lead b{color:#FEF9C3}
 .heroBtns{display:flex; gap:12px; flex-wrap:wrap}
 .heroBtns .btn{transition:transform .2s, box-shadow .2s, filter .2s}
-.heroBtns .btn:hover{transform:translateY(-4px) scale(1.12); filter:drop-shadow(0 12px 24px rgba(124,58,237,.45))}
-.heroBtns .btn:active{transform:translateY(1px) scale(1.05)}
+/* !important để thắng transform bị "khoá" bởi animation vào trang (slideRight ... both) */
+.heroBtns .btn:hover{transform:translateY(-4px) scale(1.12) !important; filter:drop-shadow(0 12px 24px rgba(124,58,237,.45))}
+.heroBtns .btn:active{transform:translateY(1px) scale(1.05) !important}
 .heroStats{display:flex; gap:22px; margin-top:22px}
 .heroStats div{display:flex; flex-direction:column; color:#fff}
 .heroStats b{font-family:var(--font-display); font-size:30px; line-height:1}
@@ -829,6 +830,11 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
   box-shadow:0 26px 60px -14px rgba(76,29,149,.35), 0 2px 6px rgba(0,0,0,.06)}
 .quizIntroImg .pulseBtn{margin:24px auto 8px; animation:btnGlow 2s ease-in-out 1s infinite}
 @media(max-width:600px){ .quizHeroImg{border-radius:18px} .quizIntroImg .pulseBtn{margin-top:18px} }
+/* Banner ảnh đầu trang (Kiểm tra đầu vào…) */
+.pageBanner{margin:0 0 18px; border-radius:24px; overflow:hidden; line-height:0;
+  box-shadow:0 18px 44px -20px rgba(30,27,75,.5)}
+.pageBanner img{width:100%; height:auto; display:block; aspect-ratio:1916/821}
+@media(max-width:600px){ .pageBanner{border-radius:16px} }
 
 /* ---- màn giới thiệu kiểm tra (bản cũ .hero — giữ lại phòng khi dùng lại) ---- */
 .quizIntro{max-width:640px; margin:0 auto; text-align:center; display:block; padding:6px 2px 4px}
@@ -2154,4 +2160,5 @@ html,body{ overflow-x:hidden }
 #curriculum .lvStarBanner .lsbName{ font-family:var(--font-display); font-weight:800; font-size:14px; opacity:.95; margin-top:10px; text-transform:uppercase; letter-spacing:1.5px }
 #curriculum .lvStarBanner .lsbTitle{ font-family:var(--font-display); font-weight:800; font-size:clamp(20px,4vw,30px); margin:4px 0 0; text-shadow:0 2px 8px rgba(0,0,0,.25); text-wrap:balance }
 /* Thanh meta gọn dưới banner (trên nền màu của trang) */
-#curriculum .lvMetaBar{ margin:0 0 14px; text-align:center; font-size:13.5px; font-weight:600; color:#fff; text-shadow:0 1px 3px rgba(30,27,75,.45) }
+/* Ẩn thanh meta level "🗓️ 6 tháng · 📘 48 buổi · 📚 48 bài · 🧩 8 module" (theo yêu cầu) */
+#curriculum .lvMetaBar{ display:none }
