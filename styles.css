@@ -201,8 +201,8 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .ctaBanner{animation:borderGlow 2.5s ease-in-out infinite, fadeUp .5s ease .4s both}
 .ctaBanner:hover{transform:translateY(-3px); transition:transform .2s}
 
-.pill{animation:pillPop 2.2s ease-in-out infinite; transform-origin:center}
-@keyframes pillPop{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+.pill{animation:pillPop 1.8s ease-in-out infinite; transform-origin:center}
+@keyframes pillPop{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
 
 .grad{
   background:linear-gradient(90deg,#FDE047,#FB7185,#F472B6,#FDE047);
