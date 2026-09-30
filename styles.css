@@ -2226,3 +2226,54 @@ html,body{ overflow-x:hidden }
 .raBtns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
 .raPick{ min-width:150px }
 @media (prefers-reduced-motion:reduce){ .mzBot{ transition:none } .raInner{ transition:transform .2s linear } }
+
+/* ---- Thẻ hub cho 2 game mới ---- */
+.mgCard.mgTrain{ --lc:#8B5CF6 } .mgCard.mgPrompt{ --lc:#EC4899 }
+
+/* ---- Huấn luyện AI ---- */
+.trGame{ text-align:center }
+.trHead b{ display:block; font-family:var(--font-display); font-size:19px }
+.trHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 14px }
+.trMeter{ max-width:420px; margin:0 auto 18px; background:#F1F5F9; border-radius:14px; padding:10px 14px }
+.trMeterTop{ display:flex; justify-content:space-between; font-weight:700; font-size:13.5px; margin-bottom:6px }
+.trMeterTop b{ color:#8B5CF6; font-variant-numeric:tabular-nums }
+.trBar{ height:12px; background:#E2E8F0; border-radius:999px; overflow:hidden }
+.trBar span{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#8B5CF6,#22C55E); transition:width .4s ease }
+.trStage{ display:flex; align-items:center; justify-content:center; gap:10px; perspective:800px }
+.trBin{ flex:0 0 auto; width:96px; min-height:104px; border:0; border-radius:18px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:13px; color:#fff;
+  box-shadow:0 8px 0 rgba(30,27,75,.18); transition:transform .14s }
+.trBin:hover{ transform:translateY(-3px) } .trBin:active{ transform:translateY(2px) }
+.trBin .trBinIco{ font-size:32px }
+.trBin.binA{ background:linear-gradient(160deg,#34D399,#059669) } .trBin.binB{ background:linear-gradient(160deg,#60A5FA,#2563EB) }
+.trCardWrap{ flex:1; max-width:150px; display:flex; justify-content:center }
+.trCard{ width:130px; height:150px; border-radius:20px; background:linear-gradient(160deg,#fff,#F5F3FF);
+  box-shadow:0 14px 30px -12px rgba(30,27,75,.4); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  transform:rotateX(6deg); transition:transform .3s, opacity .3s }
+.trCard .trEmoji{ font-size:60px; line-height:1 } .trCard .trName{ font-weight:800; color:#334155; font-size:15px }
+.trCard.flyA{ transform:translateX(-120px) rotate(-16deg) scale(.6); opacity:0 }
+.trCard.flyB{ transform:translateX(120px) rotate(16deg) scale(.6); opacity:0 }
+.trMsg{ min-height:40px; margin-top:14px; font-weight:700; font-size:14px; line-height:1.5 }
+.trMsg.good{ color:#16A34A } .trMsg.bad{ color:#DC2626 }
+@media(max-width:480px){ .trBin{ width:78px; font-size:12px } .trBin .trBinIco{ font-size:26px } .trCard{ width:108px; height:130px } .trCard .trEmoji{ font-size:48px } }
+
+/* ---- Prompt Master (mảnh lego 3D) ---- */
+.pmGame{ text-align:center }
+.pmHead b{ display:block; font-family:var(--font-display); font-size:19px }
+.pmHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 12px }
+.pmGoal{ background:#FEF3C7; border-radius:14px; padding:10px 14px; font-size:14.5px; color:#92400E; margin:0 auto 14px; max-width:480px }
+.pmChips{ display:flex; flex-direction:column; gap:10px; max-width:480px; margin:0 auto 16px }
+.pmChip{ text-align:left; border:2px solid #E2E8F0; background:#fff; border-radius:14px; padding:12px 14px; font-size:14px; cursor:pointer;
+  box-shadow:0 4px 0 rgba(30,27,75,.1); transition:transform .12s, border-color .12s, background .12s }
+.pmChip:hover{ transform:translateY(-2px) }
+.pmChip.on{ border-color:var(--vio,#7C3AED); background:#F5F3FF; box-shadow:0 4px 0 rgba(124,58,237,.25) }
+.pmChip:disabled{ cursor:default }
+.pmChip.cGood{ border-color:#22C55E; background:#F0FDF4 } .pmChip.cGood::after{ content:" ✅" }
+.pmChip.cMiss{ border-color:#F59E0B; background:#FFFBEB; opacity:.85 } .pmChip.cMiss::after{ content:" ← nên chọn" ; color:#B45309; font-weight:700 }
+.pmChip.cBad{ border-color:#EF4444; background:#FEF2F2 } .pmChip.cBad::after{ content:" ✖ mơ hồ"; color:#DC2626; font-weight:700 }
+.pmResult{ max-width:480px; margin:0 auto; border-radius:16px; padding:14px; text-align:left; background:#F8FAFC }
+.pmResult.good{ background:#F0FDF4 } .pmResult.bad{ background:#FFF7ED }
+.pmScoreLine{ font-weight:800; font-size:15px; text-align:center; margin-bottom:8px }
+.pmPreview{ background:#fff; border-radius:12px; padding:10px 12px; font-size:13.5px }
+.pmPreview span{ font-weight:700; color:#64748B } .pmPreview p{ margin:4px 0 0; color:#334155; font-style:italic }
+.pmTip{ font-size:13px; color:#475569; margin-top:10px; line-height:1.5 }
