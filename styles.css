@@ -2162,3 +2162,67 @@ html,body{ overflow-x:hidden }
 /* Thanh meta gọn dưới banner (trên nền màu của trang) */
 /* Ẩn thanh meta level "🗓️ 6 tháng · 📘 48 buổi · 📚 48 bài · 🧩 8 module" (theo yêu cầu) */
 #curriculum .lvMetaBar{ display:none }
+
+/* =========================================================
+   TRÒ CHƠI AI (minigames) — thẻ hub + Robot mê cung + Thật hay AI?
+   ========================================================= */
+.exLevelH.mgHead{ background:linear-gradient(90deg,#0EA5E9,#22C55E); -webkit-background-clip:text; background-clip:text; color:transparent }
+.mgCard.mgMaze{ --lc:#0EA5E9 } .mgCard.mgReal{ --lc:#F97316 }
+.mgThumb{ display:flex; align-items:center; justify-content:center; height:96px; margin:0 -14px 10px;
+  font-size:52px; background:linear-gradient(135deg, color-mix(in srgb, var(--lc) 18%, #fff), #fff) }
+.mgResultIco{ width:74px; height:74px; margin:0 auto; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:40px; background:linear-gradient(135deg,#EDE9FE,#FCE7F3) }
+
+/* ---- Robot mê cung ---- */
+.mzGame{ text-align:center }
+.mzHead b{ display:block; font-family:var(--font-display); font-size:19px }
+.mzHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 12px }
+.mzWrap{ perspective:900px; display:flex; justify-content:center; margin:0 auto 12px }
+.mzBoard{ position:relative; width:100%; max-width:340px; aspect-ratio:var(--cols)/var(--rows);
+  display:grid; grid-template-columns:repeat(var(--cols),1fr); grid-template-rows:repeat(var(--rows),1fr);
+  gap:5px; padding:6px; border-radius:16px; background:#E0F2FE;
+  transform:rotateX(14deg); transform-style:preserve-3d; box-shadow:0 20px 40px -18px rgba(30,27,75,.5) }
+.mzCell{ border-radius:8px; background:#F8FAFC; box-shadow:inset 0 -2px 0 rgba(30,27,75,.06);
+  display:flex; align-items:center; justify-content:center; font-size:min(6vw,26px) }
+.mzWall{ background:linear-gradient(180deg,#64748B,#475569); box-shadow:0 4px 0 #334155; transform:translateZ(8px) }
+.mzGoal{ background:linear-gradient(135deg,#FEF9C3,#FDE68A); box-shadow:inset 0 0 0 2px #F59E0B }
+.mzBot{ position:absolute; width:calc(100%/var(--cols)); height:calc(100%/var(--rows));
+  display:flex; align-items:center; justify-content:center; font-size:min(7vw,30px);
+  transition:left .3s ease, top .3s ease; z-index:5; will-change:left,top; filter:drop-shadow(0 4px 4px rgba(0,0,0,.25)) }
+.mzBot.mzBump{ animation:mzBump .4s ease }
+@keyframes mzBump{ 0%,100%{transform:translateY(0)} 30%{transform:translateY(-6px) rotate(-8deg)} 60%{transform:translateY(2px) rotate(6deg)} }
+.mzProgWrap{ min-height:44px; margin:4px 0 10px }
+.mzProg{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; align-items:center; min-height:40px;
+  background:#F1F5F9; border-radius:12px; padding:8px }
+.mzChip{ font-size:20px; background:#fff; border-radius:8px; padding:2px 6px; box-shadow:0 2px 0 rgba(30,27,75,.1) }
+.mzEmpty{ font-size:12.5px; color:#94A3B8 }
+.mzPad{ display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:12px }
+.mzPadRow{ display:flex; gap:6px }
+.mzKey{ width:52px; height:52px; border:0; border-radius:14px; font-size:24px; cursor:pointer;
+  background:#fff; box-shadow:0 4px 0 rgba(30,27,75,.14); transition:transform .12s }
+.mzKey:hover{ transform:translateY(-2px) } .mzKey:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(30,27,75,.14) }
+.mzBtns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
+.mzMsg{ min-height:22px; margin-top:12px; font-weight:700; font-size:14px }
+.mzMsg.good{ color:#16A34A } .mzMsg.bad{ color:#DC2626 }
+
+/* ---- Thật hay AI? (thẻ lật 3D) ---- */
+.raGame{ text-align:center }
+.raHead b{ display:block; font-family:var(--font-display); font-size:19px }
+.raHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 14px }
+.raCard{ perspective:1000px; max-width:440px; margin:0 auto 16px; min-height:210px }
+.raInner{ position:relative; width:100%; min-height:210px; transition:transform .5s cubic-bezier(.34,1.4,.5,1); transform-style:preserve-3d }
+.raCard.flipped .raInner{ transform:rotateY(180deg) }
+.raFront, .raBack{ position:absolute; inset:0; -webkit-backface-visibility:hidden; backface-visibility:hidden;
+  border-radius:20px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  box-shadow:0 12px 30px -12px rgba(30,27,75,.35) }
+.raFront{ background:linear-gradient(160deg,#fff,#F5F3FF) }
+.raFront .raIco{ font-size:44px; margin-bottom:8px }
+.raFront p{ font-size:15px; color:#334155; line-height:1.55; margin:0 }
+.raBack{ background:linear-gradient(160deg,#fff,#ECFEFF); transform:rotateY(180deg); text-align:center }
+.raVerdict{ font-family:var(--font-display); font-weight:800; font-size:20px }
+.raVerdict.good{ color:#16A34A } .raVerdict.bad{ color:#DC2626 }
+.raReal{ font-weight:800; margin:6px 0 8px; font-size:15px }
+.raWhy{ font-size:13.5px; color:#475569; line-height:1.55; margin:0 }
+.raBtns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
+.raPick{ min-width:150px }
+@media (prefers-reduced-motion:reduce){ .mzBot{ transition:none } .raInner{ transition:transform .2s linear } }

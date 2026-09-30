@@ -1437,6 +1437,21 @@ function renderExHub(){
     });
     html += `</div></div>`;
   }
+  // Trò chơi AI (3D nhẹ) — Robot mê cung & Thật hay AI?
+  if(window.MINIGAMES){
+    html += `<div class="exLevel"><h3 class="exLevelH mgHead">🕹️ Trò chơi AI <span>tư duy thuật toán · nhận biết AI · 6–15 tuổi</span></h3><div class="exGrid">
+      <button class="exModCard mgCard mgMaze" onclick="startMaze()">
+        <span class="mgThumb">🤖</span>
+        <span class="emCode">🎮 TRÒ CHƠI</span>
+        <span class="emName">Robot mê cung</span>
+        <span class="emMeta">Xếp lệnh đưa robot tới đích · tư duy thuật toán</span></button>
+      <button class="exModCard mgCard mgReal" onclick="startRealAI()">
+        <span class="mgThumb">🕵️</span>
+        <span class="emCode">🎮 TRÒ CHƠI</span>
+        <span class="emName">Thật hay AI?</span>
+        <span class="emMeta">Đoán nội dung do AI hay người tạo · tư duy phản biện</span></button>
+    </div></div>`;
+  }
   P.levels.forEach((lv, li) => {
     html += `<div class="exLevel" style="--lc:${LEVEL_COLORS[li]}"><h3 class="exLevelH">${esc(lv.name)} · ${esc(lv.title)}</h3><div class="exGrid">`;
     lv.modules.forEach(m => {
