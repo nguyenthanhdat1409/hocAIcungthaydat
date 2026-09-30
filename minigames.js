@@ -293,64 +293,142 @@
     { icon: "📰", text: "Một “tin” giật gân kèm ảnh người nổi tiếng, nhưng <b>không báo nào khác đưa tin</b>.", isAI: true, why: "Nội dung/ảnh giả (deepfake) do AI tạo hay lan truyền một mình. Hãy kiểm tra nhiều nguồn tin cậy trước khi tin." },
     { icon: "🎨", text: "Bức tranh bé tự vẽ bằng sáp màu, hơi lệch, tô lem ra ngoài viền.", isAI: false, why: "Nét vẽ tay chưa đều, tô lem là sản phẩm thật của con người." }
   ];
-  var raList = [], raIdx = 0, raScore = 0, raLocked = false;
+  var RA_CLUES = [
+    { ic: "✨", n: "Ánh sáng", tip: "Ảnh AI hay có ánh sáng quá mượt, đều một cách bất thường." },
+    { ic: "👀", n: "Khuôn mặt", tip: "Nhìn kỹ mắt, răng, tai — AI hay vẽ méo hoặc lệch." },
+    { ic: "🖐️", n: "Bàn tay", tip: "Đếm ngón tay nhé! AI thường vẽ thừa hoặc thiếu ngón." },
+    { ic: "🌳", n: "Bối cảnh", tip: "Nền nhoè, méo, vật thể dính vào nhau → dấu hiệu AI." },
+    { ic: "📝", n: "Chi tiết", tip: "Nội dung “quá hoàn hảo” hoặc chắc nịch mà sai sự thật → nghi AI." }
+  ];
+  var raList = [], raIdx = 0, raScore = 0, raCorrect = 0, raLocked = false, raHints = 0, raTimeId = null, raTimeLeft = 15;
+
+  function raClearTimer() { if (raTimeId) { clearInterval(raTimeId); raTimeId = null; } }
   window.startRealAI = function () {
     raList = window.shuffle ? shuffle(RA_ROUNDS.slice()) : RA_ROUNDS.slice();
-    raList = raList.slice(0, 6); raIdx = 0; raScore = 0;
+    raList = raList.slice(0, 6); raIdx = 0; raScore = 0; raCorrect = 0;
     if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
-    enterRunner(false); raRender();
+    enterRunner(false);
+    $("starBox").classList.add("hidden");
+    raRender();
   };
   function raRender() {
-    raLocked = false;
+    raClearTimer();
+    raLocked = false; raHints = 0; raTimeLeft = 15;
     var it = raList[raIdx];
-    var counter = $("counter"); if (counter) counter.textContent = (raIdx + 1) + "/" + raList.length;
+    var counter = $("counter"); if (counter) counter.textContent = "Câu " + (raIdx + 1) + "/" + raList.length;
     var bar = $("bar"); if (bar) bar.style.width = (raIdx / raList.length * 100) + "%";
+    var clues = RA_CLUES.map(function (c, i) {
+      return '<button class="adClue" style="animation-delay:' + (i * 0.07) + 's" onclick="raClue(' + i + ',this)">' + c.ic + " " + esc(c.n) + "</button>";
+    }).join("");
     $("qCard").innerHTML =
-      '<div class="raGame">' +
-        '<div class="raHead"><b>🕵️ Thật hay AI?</b><span>Nội dung này do <b>AI</b> tạo hay do <b>người/thật</b>?</span></div>' +
-        '<div class="raCard" id="raCard"><div class="raInner" id="raInner">' +
-          '<div class="raFront"><div class="raIco">' + it.icon + '</div><p>' + it.text + "</p></div>" +
-          '<div class="raBack" id="raBack"></div>' +
-        "</div></div>" +
-        '<div class="raBtns" id="raBtns">' +
-          '<button class="btn raPick" onclick="raPick(true)">🤖 AI tạo</button>' +
-          '<button class="btn light raPick" onclick="raPick(false)">🧑 Người / Thật</button>' +
-        "</div>" +
-        '<div class="center raNextWrap hidden" id="raNextWrap"><button class="btn" id="raNext" onclick="raNext()">Câu tiếp ➜</button></div>' +
-      "</div>";
+      '<div class="adGame">' +
+        '<div class="adBar">' +
+          '<span class="adTimer" id="adTimer">⏱️ <b>15</b>s</span>' +
+          '<span class="adScoreBox">⭐ <b id="adScore">' + raScore + '</b> điểm</span>' +
+          '<button class="adHint" id="adHint" onclick="raHint()">💡 Gợi ý</button>' +
+        '</div>' +
+        '<div class="adMain">' +
+          '<div class="adLeft"><div class="adMedia" id="adMedia">' +
+            '<div class="adMediaEmoji">' + it.icon + '</div>' +
+            '<div class="adPost"><div class="adPostTop"><span class="adAva">❓</span><span>Nội dung bí ẩn</span></div>' +
+              '<p class="adPostBody">' + it.text + '</p></div>' +
+            '<div class="adZoom">🔍 Quan sát thật kỹ nhé!</div>' +
+          '</div></div>' +
+          '<div class="adRight">' +
+            '<div class="adDetectiveHead">🕵️ Thám tử AI</div>' +
+            '<div class="adQ">Nội dung này do <b>AI</b> tạo hay <b>người/thật</b>?</div>' +
+            '<div class="adClueLbl">🔍 Bé hãy quan sát:</div>' +
+            '<div class="adClues">' + clues + '</div>' +
+            '<div class="adClueTip" id="adClueTip">Bấm vào một dấu hiệu để xem mẹo quan sát 👆</div>' +
+            '<div class="adAnswers" id="adAnswers">' +
+              '<button class="adAns adAI" onclick="raPick(true)"><span class="adAnsIco">🤖</span><b>AI TẠO</b><small>Do trí tuệ nhân tạo</small></button>' +
+              '<button class="adAns adHuman" onclick="raPick(false)"><span class="adAnsIco">👤</span><b>NGƯỜI THẬT</b><small>Do con người</small></button>' +
+            '</div>' +
+            '<div class="adFeedback hidden" id="adFeedback"></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    requestAnimationFrame(function () { var m = $("adMedia"); if (m) m.classList.add("in"); });
+    raStartTimer();
     $("runner").scrollTo({ top: 0 });
   }
-  window.raPick = function (guessAI) {
-    if (raLocked) return; raLocked = true;
-    var it = raList[raIdx];
-    var ok = (guessAI === it.isAI);
-    if (ok) { raScore++; sfxSafe("correct"); burstSafe(5); } else sfxSafe("wrong");
-    var real = it.isAI ? "🤖 Do AI tạo" : "🧑 Do người / Thật";
-    $("raBack").innerHTML =
-      '<div class="raVerdict ' + (ok ? "good" : "bad") + '">' + (ok ? "✅ Chính xác!" : "❌ Chưa đúng") + "</div>" +
-      '<div class="raReal">' + real + "</div><p class=\"raWhy\">" + it.why + "</p>";
-    $("raCard").classList.add("flipped");
-    $("raBtns").classList.add("hidden");
-    var nw = $("raNextWrap"); if (nw) nw.classList.remove("hidden");
-    var nx = $("raNext"); if (nx) nx.textContent = (raIdx < raList.length - 1) ? "Câu tiếp ➜" : "Xem kết quả 🏁";
+  function raStartTimer() {
+    raTimeLeft = 15;
+    raTimeId = setInterval(function () {
+      if (!$("adTimer")) { raClearTimer(); return; }
+      raTimeLeft--;
+      var tb = $("adTimer"); if (tb) { tb.innerHTML = "⏱️ <b>" + Math.max(0, raTimeLeft) + "</b>s"; tb.classList.toggle("warn", raTimeLeft <= 5); }
+      if (raTimeLeft <= 0) { raClearTimer(); if (!raLocked) raReveal(null, true); }
+    }, 1000);
+  }
+  window.raClue = function (i, el) {
+    var tip = $("adClueTip");
+    if (tip) { tip.innerHTML = "<b>" + RA_CLUES[i].ic + " " + esc(RA_CLUES[i].n) + ":</b> " + esc(RA_CLUES[i].tip); tip.classList.add("show"); }
+    if (el) { document.querySelectorAll(".adClue.on").forEach(function (c) { c.classList.remove("on"); }); el.classList.add("on"); }
   };
+  window.raHint = function () {
+    if (raLocked || raHints >= 2) return;
+    raHints++;
+    var hints = ["Đừng nhìn tổng thể — hãy soi những chi tiết nhỏ 👀", "Kiểm tra ánh sáng, bàn tay và xem thông tin có đúng sự thật không 🔎"];
+    var tip = $("adClueTip"); if (tip) { tip.innerHTML = "💡 <b>Gợi ý:</b> " + hints[raHints - 1] + " <i>(−1 sao)</i>"; tip.classList.add("show"); }
+    if (raHints >= 2) { var h = $("adHint"); if (h) { h.disabled = true; h.textContent = "💡 Hết gợi ý"; } }
+  };
+  window.raPick = function (guessAI) { if (raLocked) return; raReveal(guessAI, false); };
+  function raReveal(guessAI, timedOut) {
+    raLocked = true; raClearTimer();
+    var it = raList[raIdx];
+    var ok = (!timedOut && guessAI === it.isAI);
+    var stars = ok ? Math.max(1, 3 - raHints) : 1;
+    raScore += stars; if (ok) raCorrect++;
+    var ansWrap = $("adAnswers");
+    if (ansWrap) {
+      ansWrap.querySelectorAll(".adAns").forEach(function (b) { b.disabled = true; });
+      var cEl = ansWrap.querySelector(it.isAI ? ".adAI" : ".adHuman"); if (cEl) cEl.classList.add("correct");
+      if (!timedOut && !ok) { var chEl = ansWrap.querySelector(guessAI ? ".adAI" : ".adHuman"); if (chEl) chEl.classList.add("wrong"); }
+    }
+    if (ok) { sfxSafe("correct"); burstSafe(14); }
+    else { sfxSafe("wrong"); var m = $("adMedia"); if (m) { m.classList.add("shake"); setTimeout(function () { m.classList.remove("shake"); }, 500); } }
+    var sc = $("adScore"); if (sc) { sc.textContent = raScore; sc.classList.remove("pop"); void sc.offsetWidth; sc.classList.add("pop"); }
+    var pctAI = it.isAI ? (78 + (raIdx % 3) * 5) : (12 + (raIdx % 3) * 6);
+    var real = it.isAI ? "🤖 Do AI tạo" : "👤 Do người / Thật";
+    var head = timedOut ? "⏰ Hết giờ rồi!" : (ok ? "🎉 Chính xác!" : "💡 Chưa đúng!");
+    var sub = timedOut ? "Không sao, cùng xem đáp án nhé!" : (ok ? "Bạn đã phát hiện đúng dấu hiệu! 🕵️" : "Không sao — hãy xem kỹ các chi tiết nhé!");
+    var starRow = '<div class="adStars">' + [1, 2, 3].map(function (n) { return '<span class="adStar' + (n <= stars ? " on" : "") + '" style="animation-delay:' + (n * 0.1) + 's">★</span>'; }).join("") + "</div>";
+    var fb = $("adFeedback");
+    fb.className = "adFeedback " + (ok ? "good" : "warn");
+    fb.innerHTML =
+      '<div class="adFbHead">' + head + "</div>" +
+      starRow + '<div class="adFbPts">+' + stars + " điểm</div>" +
+      '<div class="adFbSub">' + sub + "</div>" +
+      '<div class="adDetector"><div class="adDetLbl">🤖 AI DETECTOR</div>' +
+        '<div class="adDetBar"><span style="width:' + pctAI + '%"></span></div>' +
+        '<div class="adDetVal">' + pctAI + "% giống AI · " + real + "</div></div>" +
+      '<div class="adWhy"><b>🔍 Dấu hiệu:</b> ' + it.why + "</div>" +
+      '<button class="btn adNext" onclick="raNext()">' + (raIdx < raList.length - 1 ? "Câu tiếp ➜" : "Xem kết quả 🏁") + "</button>";
+    fb.classList.remove("hidden");
+    if (ansWrap) ansWrap.classList.add("answered");
+  }
   window.raNext = function () { if (raIdx < raList.length - 1) { raIdx++; raRender(); } else raFinish(); };
   function raFinish() {
-    var pct = Math.round(raScore / raList.length * 100);
-    var stars = pct >= 85 ? 3 : pct >= 60 ? 2 : 1;
-    var tier = pct >= 85 ? "Thám tử AI đại tài! 🏆" : pct >= 60 ? "Mắt tinh đấy! 😎" : "Luyện thêm để không bị AI đánh lừa nhé 💪";
+    raClearTimer();
+    var maxStars = raList.length * 3;
+    var pct = Math.round(raScore / maxStars * 100);
+    var badge = pct >= 85 ? "Thám tử AI đại tài! 🏆" : pct >= 55 ? "Thám tử AI cừ khôi! 😎" : "Tân thám tử AI 🔎";
     $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
+    var big = '<div class="adFinalStars">' + [1, 2, 3].map(function (n) { return '<span class="adStar' + (pct >= n * 30 ? " on" : "") + '">★</span>'; }).join("") + "</div>";
     $("resultCard").innerHTML =
-      '<div class="mgResultIco">🕵️</div><h2 style="margin-top:8px">Thật hay AI?</h2>' +
-      '<div class="plTier">Đúng <b>' + raScore + "/" + raList.length + "</b> · " + pct + "% — " + tier + "</div>" +
-      '<div class="plRec"><div class="plRecHead">💡 Ghi nhớ</div><p>AI tạo được ảnh, văn, nhạc rất nhanh và “mượt”, nhưng có thể <b>sai chi tiết</b> hoặc <b>bịa thông tin</b>. Hãy luôn <b>nghi ngờ &amp; kiểm chứng nhiều nguồn</b> trước khi tin.</p></div>' +
-      '<div class="center"><button class="btn" onclick="startRealAI()">Chơi lại 🔄</button>' +
-        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
+      '<div class="mgResultIco">🕵️</div><h2 style="margin-top:8px">🎉 Bạn đã trở thành AI Detective!</h2>' +
+      big +
+      '<div class="plTier">' + badge + " · Nhận diện đúng <b>" + raCorrect + "/" + raList.length + "</b> · " + raScore + "/" + maxStars + " điểm</div>" +
+      '<div class="plRec"><div class="plRecHead">💡 Ghi nhớ</div><p>AI tạo được ảnh, văn, nhạc rất nhanh và “mượt”, nhưng có thể <b>sai chi tiết</b> hoặc <b>bịa thông tin</b>. Hãy luôn <b>quan sát kỹ &amp; kiểm chứng nhiều nguồn</b>!</p></div>' +
+      '<div class="center"><button class="btn" onclick="startRealAI()">🔄 Chơi lại</button>' +
+        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">🚀 Tiếp tục học AI</button></div>';
     $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });
-    if (pct >= 60) burstSafe(18);
+    if (pct >= 55) burstSafe(20);
     if (window.Cloud) {
-      Cloud.saveQuizResult({ mode: "practice", score: raScore, total: raList.length, percent: pct, stars: stars });
-      Cloud.aiRecord({ xp: 15, lesson: "ai:game:realai", quiz: true, percent: pct, stars: stars });
+      var st = pct >= 85 ? 3 : pct >= 55 ? 2 : 1;
+      Cloud.saveQuizResult({ mode: "practice", score: raCorrect, total: raList.length, percent: pct, stars: st });
+      Cloud.aiRecord({ xp: 15, lesson: "ai:game:realai", quiz: true, percent: pct, stars: st });
     }
   }
 

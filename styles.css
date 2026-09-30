@@ -2166,7 +2166,8 @@ html,body{ overflow-x:hidden }
 /* =========================================================
    TRÒ CHƠI AI (minigames) — thẻ hub + Robot mê cung + Thật hay AI?
    ========================================================= */
-.exLevelH.mgHead{ background:linear-gradient(90deg,#0EA5E9,#22C55E); -webkit-background-clip:text; background-clip:text; color:transparent }
+.exLevelH.mgHead{ background:linear-gradient(135deg,#0EA5E9,#8B5CF6) }
+.exLevelH.mgHead span{ font-family:var(--font-body); font-weight:500; font-size:12px; opacity:.9; display:block; margin-top:2px }
 .mgCard.mgMaze{ --lc:#0EA5E9 } .mgCard.mgReal{ --lc:#F97316 }
 .mgThumb{ display:flex; align-items:center; justify-content:center; height:96px; margin:0 -14px 10px;
   font-size:52px; background:linear-gradient(135deg, color-mix(in srgb, var(--lc) 18%, #fff), #fff) }
@@ -2243,31 +2244,84 @@ html,body{ overflow-x:hidden }
 @media (prefers-reduced-motion:reduce){ .mzGoal,.mzStar.on,.mzHintPath{ animation:none } }
 @media(max-width:480px){ .mzKey{ width:48px; height:48px; font-size:22px } .mzBoard{ max-width:100% } }
 
-/* ---- Thật hay AI? (thẻ lật 3D) ---- */
-.raGame{ text-align:center; border-radius:22px; padding:16px;
-  background:linear-gradient(rgba(255,255,255,.62),rgba(255,255,255,.74)), url("images/bg-realai.webp") center/cover }
-.raHead b{ display:block; font-family:var(--font-display); font-size:19px }
-.raHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 14px }
-.raCard{ perspective:1000px; max-width:440px; margin:0 auto 16px; min-height:210px }
-.raInner{ position:relative; width:100%; min-height:210px; transition:transform .5s cubic-bezier(.34,1.4,.5,1); transform-style:preserve-3d }
-.raCard.flipped .raInner{ transform:rotateY(180deg) }
-.raFront, .raBack{ position:absolute; inset:0; -webkit-backface-visibility:hidden; backface-visibility:hidden;
-  border-radius:20px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  box-shadow:0 12px 30px -12px rgba(30,27,75,.35) }
-.raFront{ background:linear-gradient(160deg,#fff,#F5F3FF) }
-.raFront .raIco{ font-size:44px; margin-bottom:8px }
-.raFront p{ font-size:15px; color:#334155; line-height:1.55; margin:0 }
-.raBack{ background:linear-gradient(160deg,#fff,#ECFEFF); transform:rotateY(180deg); text-align:center }
-.raVerdict{ font-family:var(--font-display); font-weight:800; font-size:20px }
-.raVerdict.good{ color:#16A34A } .raVerdict.bad{ color:#DC2626 }
-.raReal{ font-weight:800; margin:6px 0 8px; font-size:15px }
-.raWhy{ font-size:13.5px; color:#475569; line-height:1.55; margin:0 }
-.raBtns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
-.raPick{ min-width:150px }
-@media (prefers-reduced-motion:reduce){ .mzBot{ transition:none } .raInner{ transition:transform .2s linear } }
+/* ---- Thật hay AI? — AI DETECTIVE ---- */
+.adGame{ border-radius:22px; padding:14px; position:relative; overflow:hidden;
+  background:linear-gradient(150deg, rgba(139,92,246,.30), rgba(236,72,153,.22) 45%, rgba(14,165,233,.24)), url("images/bg-realai.webp") center/cover }
+.adGame::before{ content:""; position:absolute; inset:0; background:rgba(255,255,255,.42); backdrop-filter:blur(1px); z-index:0 }
+.adGame > *{ position:relative; z-index:1 }
+/* thanh trên: timer · điểm · gợi ý */
+.adBar{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px }
+.adTimer,.adScoreBox{ background:rgba(255,255,255,.85); border-radius:999px; padding:6px 14px; font-weight:700; font-size:14px; color:#475569; box-shadow:0 3px 10px -4px rgba(30,27,75,.3) }
+.adTimer b{ font-variant-numeric:tabular-nums; color:#0EA5E9 }
+.adTimer.warn{ color:#DC2626; animation:adPulse .6s ease-in-out infinite } .adTimer.warn b{ color:#DC2626 }
+.adScoreBox b{ color:#F59E0B; font-variant-numeric:tabular-nums } .adScore.pop{ display:inline-block; animation:adPop .4s ease }
+.adHint{ border:0; border-radius:999px; padding:7px 14px; font-weight:800; font-size:13.5px; cursor:pointer; color:#92400E; background:#FDE68A; box-shadow:0 3px 0 rgba(180,120,10,.3) }
+.adHint:disabled{ opacity:.6; cursor:default }
+@keyframes adPulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+@keyframes adPop{ 0%{transform:scale(1)} 40%{transform:scale(1.5)} 100%{transform:scale(1)} }
+/* bố cục 2 cột */
+.adMain{ display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start }
+/* media card */
+.adMedia{ background:rgba(255,255,255,.9); border-radius:22px; padding:18px; box-shadow:0 16px 40px -16px rgba(30,27,75,.5);
+  opacity:0; transform:translateY(14px) scale(.96); transition:opacity .4s ease, transform .4s cubic-bezier(.34,1.4,.5,1) }
+.adMedia.in{ opacity:1; transform:none }
+.adMedia.shake{ animation:adShake .5s ease }
+@keyframes adShake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.adMediaEmoji{ font-size:64px; text-align:center; filter:drop-shadow(0 6px 8px rgba(0,0,0,.15)); margin-bottom:8px }
+.adPost{ background:#F8FAFC; border-radius:16px; padding:12px 14px; text-align:left }
+.adPostTop{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; color:#94A3B8; margin-bottom:6px }
+.adAva{ width:26px; height:26px; border-radius:50%; background:#EDE9FE; display:flex; align-items:center; justify-content:center; font-size:15px }
+.adPostBody{ margin:0; font-size:15px; line-height:1.6; color:#1f2937 }
+.adZoom{ text-align:center; margin-top:12px; font-size:12.5px; font-weight:700; color:#7C3AED }
+/* cột phải: thám tử */
+.adDetectiveHead{ font-family:var(--font-display); font-weight:800; font-size:18px; color:#5B21B6 }
+.adQ{ font-size:14px; color:#334155; margin:2px 0 12px }
+.adClueLbl{ font-weight:800; font-size:13px; color:#475569; margin-bottom:6px }
+.adClues{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:8px }
+.adClue{ border:0; background:rgba(255,255,255,.9); border-radius:999px; padding:7px 12px; font-size:13px; font-weight:700; color:#475569; cursor:pointer;
+  box-shadow:0 3px 0 rgba(30,27,75,.1); animation:adFadeUp .4s both; transition:transform .12s }
+.adClue:hover{ transform:translateY(-2px) } .adClue.on{ background:#EDE9FE; color:#5B21B6; box-shadow:0 3px 0 rgba(124,58,237,.3) }
+@keyframes adFadeUp{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+.adClueTip{ background:rgba(255,255,255,.85); border-radius:14px; padding:10px 12px; font-size:13px; color:#475569; line-height:1.5; min-height:20px; margin-bottom:14px }
+.adClueTip.show{ animation:adPop .3s ease }
+/* 2 thẻ trả lời lớn */
+.adAnswers{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.adAns{ border:2px solid transparent; border-radius:20px; padding:16px 10px; cursor:pointer; text-align:center; color:#fff;
+  display:flex; flex-direction:column; align-items:center; gap:2px; box-shadow:0 8px 0 rgba(30,27,75,.18); transition:transform .14s, box-shadow .14s, filter .14s }
+.adAns:hover{ transform:translateY(-3px) scale(1.03); filter:drop-shadow(0 10px 16px rgba(30,27,75,.3)) }
+.adAns:active{ transform:translateY(1px) scale(1.01) }
+.adAns:disabled{ cursor:default }
+.adAI{ background:linear-gradient(160deg,#8B5CF6,#6D28D9) } .adHuman{ background:linear-gradient(160deg,#F59E0B,#EA580C) }
+.adAnsIco{ font-size:38px; line-height:1 } .adAns b{ font-family:var(--font-display); font-size:16px; letter-spacing:.5px } .adAns small{ font-size:11px; opacity:.9 }
+.adAns.correct{ outline:4px solid #22C55E; outline-offset:2px; animation:adPop .5s ease }
+.adAns.wrong{ outline:4px solid #EF4444; outline-offset:2px; opacity:.75 }
+/* feedback học tập */
+.adFeedback{ margin-top:14px; border-radius:18px; padding:16px; text-align:center; animation:adFadeUp .35s both }
+.adFeedback.good{ background:linear-gradient(160deg,#F0FDF4,#DCFCE7) } .adFeedback.warn{ background:linear-gradient(160deg,#FFFBEB,#FEF3C7) }
+.adFbHead{ font-family:var(--font-display); font-weight:800; font-size:21px }
+.adFeedback.good .adFbHead{ color:#16A34A } .adFeedback.warn .adFbHead{ color:#B45309 }
+.adStars{ display:flex; gap:6px; justify-content:center; margin:6px 0 2px }
+.adStar{ font-size:30px; color:#E2E8F0 }
+.adStar.on{ color:#F59E0B; animation:mzStarPop .5s cubic-bezier(.34,1.56,.64,1) both; filter:drop-shadow(0 3px 4px rgba(245,158,11,.5)) }
+.adFbPts{ font-weight:800; color:#F59E0B; font-size:15px }
+.adFbSub{ font-size:13.5px; color:#475569; margin:4px 0 10px }
+.adDetector{ background:rgba(255,255,255,.75); border-radius:14px; padding:10px 12px; margin:0 0 10px }
+.adDetLbl{ font-size:12px; font-weight:800; color:#64748B; letter-spacing:.5px; margin-bottom:5px }
+.adDetBar{ height:14px; background:#E2E8F0; border-radius:999px; overflow:hidden }
+.adDetBar span{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#22C55E,#F59E0B,#EF4444); animation:adFill .8s ease forwards }
+@keyframes adFill{ from{width:0} }
+.adDetVal{ font-size:12.5px; font-weight:700; color:#475569; margin-top:5px }
+.adWhy{ font-size:13.5px; color:#334155; line-height:1.55; text-align:left; background:rgba(255,255,255,.7); border-radius:12px; padding:10px 12px; margin-bottom:12px }
+.adNext{ width:100%; font-size:15px }
+.adFinalStars{ display:flex; gap:8px; justify-content:center; margin:8px 0 }
+.adFinalStars .adStar{ font-size:40px } .adFinalStars .adStar.on{ animation:mzStarPop .5s cubic-bezier(.34,1.56,.64,1) both }
+/* responsive: mobile 1 cột */
+@media(max-width:640px){ .adMain{ grid-template-columns:1fr } .adMediaEmoji{ font-size:52px } }
+@media (prefers-reduced-motion:reduce){ .mzBot{ transition:none } .adMedia{ transition:opacity .2s } .adClue,.adFeedback,.adStar.on,.adDetBar span{ animation:none } }
 
 /* ---- Thẻ hub cho 2 game mới ---- */
 .mgCard.mgTrain{ --lc:#8B5CF6 } .mgCard.mgPrompt{ --lc:#EC4899 }
+.mgThumbImg img{ object-fit:cover !important }
 
 /* ---- Huấn luyện AI ---- */
 .trGame{ text-align:center }
