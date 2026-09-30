@@ -1450,11 +1450,6 @@ function renderExHub(){
         <span class="emCode">🎮 TRÒ CHƠI</span>
         <span class="emName">🕵️ Thật hay AI?</span>
         <span class="emMeta">Đoán nội dung do AI hay người tạo · tư duy phản biện</span></button>
-      <button class="exModCard mgCard mgTrain" onclick="startTrain()">
-        <span class="mgThumb">🧠</span>
-        <span class="emCode">🎮 TRÒ CHƠI</span>
-        <span class="emName">Huấn luyện AI</span>
-        <span class="emMeta">Gắn nhãn dữ liệu dạy robot · máy học từ dữ liệu</span></button>
       <button class="exModCard mgCard mgPrompt" onclick="startPrompt()">
         <span class="mgThumb">🎯</span>
         <span class="emCode">🎮 TRÒ CHƠI</span>

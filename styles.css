@@ -2320,35 +2320,8 @@ html,body{ overflow-x:hidden }
 @media (prefers-reduced-motion:reduce){ .mzBot{ transition:none } .adMedia{ transition:opacity .2s } .adClue,.adFeedback,.adStar.on,.adDetBar span{ animation:none } }
 
 /* ---- Thẻ hub cho 2 game mới ---- */
-.mgCard.mgTrain{ --lc:#8B5CF6 } .mgCard.mgPrompt{ --lc:#EC4899 }
+.mgCard.mgPrompt{ --lc:#EC4899 }
 .mgThumbImg img{ object-fit:cover !important }
-
-/* ---- Huấn luyện AI ---- */
-.trGame{ text-align:center }
-.trHead b{ display:block; font-family:var(--font-display); font-size:19px }
-.trHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 14px }
-.trMeter{ max-width:420px; margin:0 auto 18px; background:#F1F5F9; border-radius:14px; padding:10px 14px }
-.trMeterTop{ display:flex; justify-content:space-between; font-weight:700; font-size:13.5px; margin-bottom:6px }
-.trMeterTop b{ color:#8B5CF6; font-variant-numeric:tabular-nums }
-.trBar{ height:12px; background:#E2E8F0; border-radius:999px; overflow:hidden }
-.trBar span{ display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#8B5CF6,#22C55E); transition:width .4s ease }
-.trStage{ display:flex; align-items:center; justify-content:center; gap:10px; perspective:800px }
-.trBin{ flex:0 0 auto; width:96px; min-height:104px; border:0; border-radius:18px; cursor:pointer;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:13px; color:#fff;
-  box-shadow:0 8px 0 rgba(30,27,75,.18); transition:transform .14s }
-.trBin:hover{ transform:translateY(-3px) } .trBin:active{ transform:translateY(2px) }
-.trBin .trBinIco{ font-size:32px }
-.trBin.binA{ background:linear-gradient(160deg,#34D399,#059669) } .trBin.binB{ background:linear-gradient(160deg,#60A5FA,#2563EB) }
-.trCardWrap{ flex:1; max-width:150px; display:flex; justify-content:center }
-.trCard{ width:130px; height:150px; border-radius:20px; background:linear-gradient(160deg,#fff,#F5F3FF);
-  box-shadow:0 14px 30px -12px rgba(30,27,75,.4); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-  transform:rotateX(6deg); transition:transform .3s, opacity .3s }
-.trCard .trEmoji{ font-size:60px; line-height:1 } .trCard .trName{ font-weight:800; color:#334155; font-size:15px }
-.trCard.flyA{ transform:translateX(-120px) rotate(-16deg) scale(.6); opacity:0 }
-.trCard.flyB{ transform:translateX(120px) rotate(16deg) scale(.6); opacity:0 }
-.trMsg{ min-height:40px; margin-top:14px; font-weight:700; font-size:14px; line-height:1.5 }
-.trMsg.good{ color:#16A34A } .trMsg.bad{ color:#DC2626 }
-@media(max-width:480px){ .trBin{ width:78px; font-size:12px } .trBin .trBinIco{ font-size:26px } .trCard{ width:108px; height:130px } .trCard .trEmoji{ font-size:48px } }
 
 /* ---- Prompt Master (mảnh lego 3D) ---- */
 .pmGame{ text-align:center }

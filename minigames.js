@@ -2,7 +2,7 @@
    minigames.js — Trò chơi AI (3D nhẹ bằng CSS)
    • 🤖 Robot mê cung V2: lập kế hoạch chuỗi lệnh, tối ưu bước (BFS), sao, gợi ý,
      pin thu thập, bẫy, năng lượng, mở khoá màn → tư duy thuật toán
-   • 🕵️ Thật hay AI?  • 🧠 Huấn luyện AI  • 🎯 Prompt Master
+   • 🕵️ Thật hay AI? (AI Detective)  • 🎯 Prompt Master
    Dùng chung #runner. Cộng XP qua Cloud.aiRecord nếu đăng nhập.
    ========================================================= */
 (function () {
@@ -433,75 +433,7 @@
   }
 
   /* =======================================================
-     GAME 3 — 🧠 HUẤN LUYỆN AI (gắn nhãn dữ liệu)
-     ======================================================= */
-  var TR_BIN = { A: { icon: "🐾", name: "Động vật" }, B: { icon: "📦", name: "Đồ vật" } };
-  var TR_ITEMS = [
-    { e: "🐶", n: "Chó", cat: "A" }, { e: "🚗", n: "Ô tô", cat: "B" },
-    { e: "🐱", n: "Mèo", cat: "A" }, { e: "📱", n: "Điện thoại", cat: "B" },
-    { e: "🐘", n: "Voi", cat: "A" }, { e: "🪑", n: "Cái ghế", cat: "B" },
-    { e: "🦁", n: "Sư tử", cat: "A" }, { e: "⚽", n: "Quả bóng", cat: "B" },
-    { e: "🐸", n: "Ếch", cat: "A" }, { e: "🎸", n: "Đàn ghi-ta", cat: "B" }
-  ];
-  var trList = [], trIdx = 0, trScore = 0, trLocked = false;
-  window.startTrain = function () {
-    trList = window.shuffle ? shuffle(TR_ITEMS.slice()) : TR_ITEMS.slice();
-    trIdx = 0; trScore = 0;
-    if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
-    enterRunner(false); trRender();
-  };
-  function trRender() {
-    trLocked = false;
-    var it = trList[trIdx];
-    var counter = $("counter"); if (counter) counter.textContent = (trIdx + 1) + "/" + trList.length;
-    var bar = $("bar"); if (bar) bar.style.width = (trIdx / trList.length * 100) + "%";
-    var pct = trIdx ? Math.round(trScore / trIdx * 100) : 0;
-    $("qCard").innerHTML =
-      '<div class="trGame">' +
-        '<div class="trHead"><b>🧠 Huấn luyện AI</b><span>Gắn nhãn đúng để robot học! Đây là con gì / cái gì?</span></div>' +
-        '<div class="trMeter"><div class="trMeterTop"><span>🤖 Độ thông minh</span><b id="trPct">' + pct + '%</b></div>' +
-          '<div class="trBar"><span id="trBarFill" style="width:' + pct + '%"></span></div></div>' +
-        '<div class="trStage">' +
-          '<button class="trBin binA" onclick="trLabel(\'A\')"><span class="trBinIco">' + TR_BIN.A.icon + '</span><span>' + TR_BIN.A.name + '</span></button>' +
-          '<div class="trCardWrap"><div class="trCard" id="trCard"><span class="trEmoji">' + it.e + '</span><span class="trName">' + esc(it.n) + '</span></div></div>' +
-          '<button class="trBin binB" onclick="trLabel(\'B\')"><span class="trBinIco">' + TR_BIN.B.icon + '</span><span>' + TR_BIN.B.name + '</span></button>' +
-        "</div><div class=\"trMsg\" id=\"trMsg\"></div></div>";
-    $("runner").scrollTo({ top: 0 });
-  }
-  window.trLabel = async function (cat) {
-    if (trLocked) return; trLocked = true;
-    var it = trList[trIdx];
-    var ok = (cat === it.cat);
-    var card = $("trCard"), msg = $("trMsg");
-    if (card) card.classList.add(cat === "A" ? "flyA" : "flyB");
-    if (ok) { trScore++; sfxSafe("correct"); burstSafe(4); if (msg) { msg.className = "trMsg good"; msg.textContent = "✅ Đúng rồi! Robot thông minh hơn 🤖"; } }
-    else { sfxSafe("wrong"); if (msg) { msg.className = "trMsg bad"; msg.textContent = "❌ Chưa đúng — “" + it.n + "” là " + TR_BIN[it.cat].name + ". Nhãn sai thì AI học sai đó!"; } }
-    var pct = Math.round(trScore / (trIdx + 1) * 100);
-    var f = $("trBarFill"), p = $("trPct"); if (f) f.style.width = pct + "%"; if (p) p.textContent = pct + "%";
-    await sleep(1000);
-    if (trIdx < trList.length - 1) { trIdx++; trRender(); } else trFinish();
-  };
-  function trFinish() {
-    var pct = Math.round(trScore / trList.length * 100);
-    var stars = pct >= 85 ? 3 : pct >= 60 ? 2 : 1;
-    var tier = pct >= 85 ? "Kỹ sư AI tài ba! 🏆" : pct >= 60 ? "Robot khá thông minh! 😎" : "Robot cần học thêm 💪";
-    $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
-    $("resultCard").innerHTML =
-      '<div class="mgResultIco">🧠</div><h2 style="margin-top:8px">Huấn luyện AI</h2>' +
-      '<div class="plTier">Gắn nhãn đúng <b>' + trScore + "/" + trList.length + "</b> · Robot thông minh " + pct + "% — " + tier + "</div>" +
-      '<div class="plRec"><div class="plRecHead">💡 Em vừa học</div><p>AI học từ <b>dữ liệu được gắn nhãn</b>. Nếu ta gắn nhãn <b>sai</b>, AI sẽ học sai — người ta gọi là “rác vào thì rác ra”. Dữ liệu tốt &amp; đúng thì AI mới giỏi!</p></div>' +
-      '<div class="center"><button class="btn" onclick="startTrain()">Chơi lại 🔄</button>' +
-        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
-    $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });
-    if (pct >= 60) burstSafe(18);
-    if (window.Cloud) {
-      Cloud.saveQuizResult({ mode: "practice", score: trScore, total: trList.length, percent: pct, stars: stars });
-      Cloud.aiRecord({ xp: 15, lesson: "ai:game:train", quiz: true, percent: pct, stars: stars });
-    }
-  }
-
-  /* =======================================================
-     GAME 4 — 🎯 PROMPT MASTER (ghép mảnh prompt)
+     GAME 3 — 🎯 PROMPT MASTER (ghép mảnh prompt)
      ======================================================= */
   var PROMPTS = [
     { goal: "Nhờ AI viết lời chúc sinh nhật cho bà 70 tuổi", pieces: [
