@@ -2346,6 +2346,7 @@ html,body{ overflow-x:hidden }
 
 /* ---- 💣 Gỡ boom (UI giống Robot mê cung) ---- */
 .mgCard.mgBoom{ --lc:#EF4444 }
+.gbWrap{ background:linear-gradient(rgba(255,255,255,.42),rgba(255,255,255,.5)), url("images/bg-domin.webp") center/cover !important }
 .gbGame{ text-align:center }
 .gbBar{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:8px }
 .gbStat{ background:#F1F5F9; border-radius:999px; padding:6px 14px; font-size:14px; font-weight:700; color:#475569 }

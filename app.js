@@ -1455,10 +1455,10 @@ function renderExHub(){
         <span class="emCode">🎮 TRÒ CHƠI</span>
         <span class="emName">Prompt Master</span>
         <span class="emMeta">Ghép mảnh prompt rõ ràng · cách ra lệnh cho AI</span></button>
-      <button class="exModCard mgCard mgBoom" onclick="startBoom()">
-        <span class="mgThumb">💣</span>
+      <button class="exModCard mgCard mgBoom hasThumb" onclick="startBoom()">
+        <span class="emThumb mgThumbImg"><img src="images/bg-domin.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>
         <span class="emCode">🎮 TRÒ CHƠI</span>
-        <span class="emName">Gỡ boom</span>
+        <span class="emName">💣 Gỡ boom</span>
         <span class="emMeta">Dò mìn + trả lời câu hỏi AI để gỡ boom · quan sát &amp; suy luận</span></button>
     </div></div>`;
   }

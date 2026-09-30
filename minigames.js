@@ -607,7 +607,7 @@
           '<span class="gbStat">💣 <b>' + nBooms + '</b></span>' +
         "</div>" +
         '<div class="gbHint">💣 Bấm ô để mở. Trúng boom thì trả lời câu hỏi để gỡ nhé!</div>' +
-        '<div class="mzWrap"><div class="gbBoard" id="gbBoard" style="--cols:' + gbCols + ";--rows:" + gbRows + '">' + cells + "</div></div>" +
+        '<div class="mzWrap gbWrap"><div class="gbBoard" id="gbBoard" style="--cols:' + gbCols + ";--rows:" + gbRows + '">' + cells + "</div></div>" +
         '<div class="gbQuiz hidden" id="gbQuiz"></div>' +
         '<div class="gbMsg" id="gbMsg"></div>' +
       "</div>";
