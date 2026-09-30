@@ -2244,7 +2244,8 @@ html,body{ overflow-x:hidden }
 @media(max-width:480px){ .mzKey{ width:48px; height:48px; font-size:22px } .mzBoard{ max-width:100% } }
 
 /* ---- Thật hay AI? (thẻ lật 3D) ---- */
-.raGame{ text-align:center }
+.raGame{ text-align:center; border-radius:22px; padding:16px;
+  background:linear-gradient(rgba(255,255,255,.62),rgba(255,255,255,.74)), url("images/bg-realai.webp") center/cover }
 .raHead b{ display:block; font-family:var(--font-display); font-size:19px }
 .raHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 14px }
 .raCard{ perspective:1000px; max-width:440px; margin:0 auto 16px; min-height:210px }
