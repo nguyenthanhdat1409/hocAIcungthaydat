@@ -597,7 +597,7 @@
     var bar = $("bar"); if (bar) bar.style.width = (gbRound / GB_TOTAL * 100) + "%";
     var cells = "";
     for (var r = 0; r < gbRows; r++) for (var c = 0; c < gbCols; c++) {
-      cells += '<button class="gbCell hidden" data-rc="' + r + '-' + c + '" onclick="gbReveal(' + r + ',' + c + ')"></button>';
+      cells += '<button class="gbCell gbHidden" data-rc="' + r + '-' + c + '" onclick="gbReveal(' + r + ',' + c + ')"></button>';
     }
     $("qCard").innerHTML =
       '<div class="gbGame">' +
