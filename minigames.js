@@ -555,7 +555,7 @@
   ];
   var GB_TOTAL = 3;
   var gbRound = 0, gbRows = 0, gbCols = 5, gbBooms = {}, gbState = [], gbCount = [];
-  var gbLives = 3, gbScore = 0, gbSafeLeft = 0, gbLocked = false, gbQIdx = 0, gbQPool = [];
+  var gbLives = 3, gbScore = 0, gbHiddenLeft = 0, gbLocked = false, gbQIdx = 0, gbQPool = [];
 
   window.startBoom = function () {
     gbRound = 0; gbLives = 3; gbScore = 0;
@@ -587,7 +587,7 @@
       }
       gbCount[r2][c2] = n;
     }
-    gbSafeLeft = cells - placed;
+    gbHiddenLeft = cells;   // thắng khi mở/gỡ HẾT mọi ô (kể cả gỡ hết boom)
     gbLocked = false;
     gbRender(nBooms);
   }
@@ -602,7 +602,7 @@
     $("qCard").innerHTML =
       '<div class="gbGame">' +
         '<div class="gbBar">' +
-          '<span class="gbStat gbLives" id="gbLives">' + "❤️".repeat(gbLives) + "</span>" +
+          '<span class="gbStat gbLives" id="gbLives">' + gbHeartsHTML() + "</span>" +
           '<span class="gbStat">⭐ <b id="gbScore">' + gbScore + '</b></span>' +
           '<span class="gbStat">💣 <b>' + nBooms + '</b></span>' +
         "</div>" +
@@ -615,16 +615,13 @@
   }
 
   function gbEl(r, c) { return document.querySelector('#gbBoard [data-rc="' + r + "-" + c + '"]'); }
+  function gbHeartsHTML() { var h = ""; for (var i = 0; i < gbLives; i++) h += '<span class="gbHeart">❤️</span>'; return h; }
   function gbPaint(r, c) {
     var el = gbEl(r, c); if (!el) return;
     var st = gbState[r][c];
-    el.className = "gbCell " + st;
-    if (st === "open") {
-      var n = gbCount[r][c];
-      el.textContent = n > 0 ? n : "";
-      if (n > 0) el.classList.add("n" + n);
-    } else if (st === "defused") { el.textContent = "✅"; }
-    else if (st === "boom") { el.textContent = "💥"; }
+    el.className = "gbCell " + st;      // open = ô an toàn (không hiện số); defused = đã gỡ boom
+    if (st === "defused") { el.textContent = "✅"; }
+    else { el.textContent = ""; }
   }
 
   window.gbReveal = function (r, c) {
@@ -636,7 +633,7 @@
       var cur = stack.pop(), cr = cur[0], cc = cur[1];
       if (cr < 0 || cc < 0 || cr >= gbRows || cc >= gbCols) continue;
       if (gbState[cr][cc] !== "hidden" || gbBooms[cr + "," + cc]) continue;
-      gbState[cr][cc] = "open"; gbSafeLeft--; gbScore++; gbPaint(cr, cc);
+      gbState[cr][cc] = "open"; gbHiddenLeft--; gbScore++; gbPaint(cr, cc);
       if (gbCount[cr][cc] === 0) {
         for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
           if (dr === 0 && dc === 0) continue;
@@ -646,11 +643,12 @@
     }
     var sc = $("gbScore"); if (sc) sc.textContent = gbScore;
     sfxSafe("pop");
-    if (gbSafeLeft <= 0) gbRoundWin();
+    if (gbHiddenLeft <= 0) gbRoundWin();
   };
 
   function gbAsk(r, c) {
     gbLocked = true;
+    var el = gbEl(r, c); if (el) { el.className = "gbCell gbAsk"; el.textContent = "💣"; } // hiện boom ngay trên ô vừa chọn
     var q = gbQPool[gbQIdx % gbQPool.length]; gbQIdx++;
     var pairs = q.o.map(function (t, i) { return [t, i === q.a]; });
     if (window.shuffle) pairs = shuffle(pairs);
@@ -674,19 +672,22 @@
     if (!ok) btn.classList.add("no");
     var msg = $("gbMsg");
     if (ok) {
-      gbState[r][c] = "defused"; gbScore += 10; gbPaint(r, c); sfxSafe("correct"); burstSafe(8);
+      gbState[r][c] = "defused"; gbScore += 10; gbHiddenLeft--; gbPaint(r, c); sfxSafe("correct"); burstSafe(8);
       if (msg) { msg.className = "gbMsg good"; msg.textContent = "✅ Gỡ boom thành công! +10 điểm 🎉"; }
     } else {
-      gbLives--; gbState[r][c] = "boom"; gbPaint(r, c); sfxSafe("wrong");
-      var lv = $("gbLives"); if (lv) lv.textContent = "❤️".repeat(Math.max(0, gbLives));
-      if (msg) { msg.className = "gbMsg bad"; msg.textContent = "💥 Boom nổ mất rồi! Đừng lo, cùng học tiếp nhé — còn " + Math.max(0, gbLives) + " mạng."; }
+      gbState[r][c] = "boom"; gbHiddenLeft--; gbPaint(r, c); sfxSafe("wrong");
+      var hs = document.querySelectorAll("#gbLives .gbHeart:not(.lost)");
+      if (hs.length) hs[hs.length - 1].classList.add("lost");   // hiệu ứng mất 1 tim
+      gbLives--;
+      if (msg) { msg.className = "gbMsg bad"; msg.textContent = "💥 Boom nổ! Mất 1 mạng — còn " + Math.max(0, gbLives) + ". Cùng học tiếp nhé!"; }
     }
     var sc = $("gbScore"); if (sc) sc.textContent = gbScore;
     setTimeout(function () {
       var qz = $("gbQuiz"); if (qz) { qz.classList.add("hidden"); qz.innerHTML = ""; }
+      if (gbState[r][c] === "boom") { gbState[r][c] = "open"; gbPaint(r, c); }  // clear boom ra khỏi ô
       gbLocked = false;
       if (gbLives <= 0) { gbOver(); return; }
-      if (gbSafeLeft <= 0) gbRoundWin();
+      if (gbHiddenLeft <= 0) gbRoundWin();
     }, 1100);
   };
 
