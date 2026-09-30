@@ -533,4 +533,190 @@
       Cloud.aiRecord({ xp: 15, lesson: "ai:game:prompt", quiz: true, percent: pct, stars: stars });
     }
   }
+
+  /* =======================================================
+     GAME 4 — 💣 GỠ BOOM (dò mìn + trả lời câu hỏi AI)
+     Bấm ô để mở; trúng boom phải trả lời câu hỏi để gỡ.
+     Bàn cờ & số boom tăng dần theo vòng. Thắng = mở hết ô an toàn + pass vòng.
+     ======================================================= */
+  var GB_Q = [
+    { q: "AI là viết tắt của điều gì?", o: ["Trí tuệ nhân tạo", "Ánh sáng nhân tạo", "Âm thanh ảo"], a: 0 },
+    { q: "ChatGPT có thể làm gì?", o: ["Trò chuyện, trả lời câu hỏi", "Nấu ăn thật", "Giặt quần áo"], a: 0 },
+    { q: "AI trở nên giỏi hơn nhờ điều gì?", o: ["Nhiều dữ liệu tốt", "Ngủ nhiều", "Ăn kẹo"], a: 0 },
+    { q: "Khi AI trả lời, em nên?", o: ["Kiểm chứng lại thông tin", "Tin tuyệt đối", "Bỏ qua"], a: 0 },
+    { q: "Đâu KHÔNG phải là AI?", o: ["Cái bàn gỗ", "Trợ lý ảo", "Xe tự lái"], a: 0 },
+    { q: "Robot hút bụi né đồ vật nhờ gì?", o: ["Cảm biến", "Phép thuật", "May mắn"], a: 0 },
+    { q: "Deepfake là gì?", o: ["Ảnh/video giả do AI tạo", "Một món ăn", "Một trò chơi"], a: 0 },
+    { q: "Muốn AI vẽ đúng ý, em cần?", o: ["Mô tả rõ ràng (prompt tốt)", "Hét thật to", "Nhắm mắt"], a: 0 },
+    { q: "AI có cảm xúc thật như con người không?", o: ["Không", "Có", "Luôn buồn"], a: 0 },
+    { q: "Dùng AI an toàn nghĩa là?", o: ["Không chia sẻ thông tin cá nhân", "Tin mọi thứ AI nói", "Dùng cả ngày"], a: 0 },
+    { q: "AI dịch tiếng Anh sang tiếng Việt là ứng dụng của?", o: ["Xử lý ngôn ngữ", "Nấu ăn", "Thể thao"], a: 0 },
+    { q: "Ai là người kiểm tra kết quả của AI?", o: ["Con người", "Không ai cả", "Chú mèo"], a: 0 }
+  ];
+  var GB_TOTAL = 3;
+  var gbRound = 0, gbRows = 0, gbCols = 5, gbBooms = {}, gbState = [], gbCount = [];
+  var gbLives = 3, gbScore = 0, gbSafeLeft = 0, gbLocked = false, gbQIdx = 0, gbQPool = [];
+
+  window.startBoom = function () {
+    gbRound = 0; gbLives = 3; gbScore = 0;
+    gbQPool = window.shuffle ? shuffle(GB_Q.slice()) : GB_Q.slice(); gbQIdx = 0;
+    if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
+    enterRunner(false);
+    $("starBox").classList.add("hidden");
+    gbNewRound();
+  };
+
+  function gbNewRound() {
+    gbCols = 5; gbRows = 4 + gbRound;              // bàn cờ to dần theo vòng
+    var cells = gbRows * gbCols;
+    var nBooms = Math.max(3, Math.round(cells * 0.16) + gbRound); // boom nhiều dần
+    gbBooms = {};
+    var placed = 0;
+    while (placed < nBooms) {
+      var r = Math.floor(Math.random() * gbRows), c = Math.floor(Math.random() * gbCols);
+      if (!gbBooms[r + "," + c]) { gbBooms[r + "," + c] = true; placed++; }
+    }
+    gbState = []; gbCount = [];
+    for (var i = 0; i < gbRows; i++) { gbState.push(new Array(gbCols).fill("hidden")); gbCount.push(new Array(gbCols).fill(0)); }
+    for (var r2 = 0; r2 < gbRows; r2++) for (var c2 = 0; c2 < gbCols; c2++) {
+      if (gbBooms[r2 + "," + c2]) continue;
+      var n = 0;
+      for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        if (gbBooms[(r2 + dr) + "," + (c2 + dc)]) n++;
+      }
+      gbCount[r2][c2] = n;
+    }
+    gbSafeLeft = cells - placed;
+    gbLocked = false;
+    gbRender(nBooms);
+  }
+
+  function gbRender(nBooms) {
+    var counter = $("counter"); if (counter) counter.textContent = "Vòng " + (gbRound + 1) + "/" + GB_TOTAL;
+    var bar = $("bar"); if (bar) bar.style.width = (gbRound / GB_TOTAL * 100) + "%";
+    var cells = "";
+    for (var r = 0; r < gbRows; r++) for (var c = 0; c < gbCols; c++) {
+      cells += '<button class="gbCell hidden" data-rc="' + r + '-' + c + '" onclick="gbReveal(' + r + ',' + c + ')"></button>';
+    }
+    $("qCard").innerHTML =
+      '<div class="gbGame">' +
+        '<div class="gbBar">' +
+          '<span class="gbStat gbLives" id="gbLives">' + "❤️".repeat(gbLives) + "</span>" +
+          '<span class="gbStat">⭐ <b id="gbScore">' + gbScore + '</b></span>' +
+          '<span class="gbStat">💣 <b>' + nBooms + '</b></span>' +
+        "</div>" +
+        '<div class="gbHint">💣 Bấm ô để mở. Trúng boom thì trả lời câu hỏi để gỡ nhé!</div>' +
+        '<div class="mzWrap"><div class="gbBoard" id="gbBoard" style="--cols:' + gbCols + ";--rows:" + gbRows + '">' + cells + "</div></div>" +
+        '<div class="gbQuiz hidden" id="gbQuiz"></div>' +
+        '<div class="gbMsg" id="gbMsg"></div>' +
+      "</div>";
+    $("runner").scrollTo({ top: 0 });
+  }
+
+  function gbEl(r, c) { return document.querySelector('#gbBoard [data-rc="' + r + "-" + c + '"]'); }
+  function gbPaint(r, c) {
+    var el = gbEl(r, c); if (!el) return;
+    var st = gbState[r][c];
+    el.className = "gbCell " + st;
+    if (st === "open") {
+      var n = gbCount[r][c];
+      el.textContent = n > 0 ? n : "";
+      if (n > 0) el.classList.add("n" + n);
+    } else if (st === "defused") { el.textContent = "✅"; }
+    else if (st === "boom") { el.textContent = "💥"; }
+  }
+
+  window.gbReveal = function (r, c) {
+    if (gbLocked || gbState[r][c] !== "hidden") return;
+    if (gbBooms[r + "," + c]) { gbAsk(r, c); return; }
+    // flood fill mở ô an toàn
+    var stack = [[r, c]];
+    while (stack.length) {
+      var cur = stack.pop(), cr = cur[0], cc = cur[1];
+      if (cr < 0 || cc < 0 || cr >= gbRows || cc >= gbCols) continue;
+      if (gbState[cr][cc] !== "hidden" || gbBooms[cr + "," + cc]) continue;
+      gbState[cr][cc] = "open"; gbSafeLeft--; gbScore++; gbPaint(cr, cc);
+      if (gbCount[cr][cc] === 0) {
+        for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          stack.push([cr + dr, cc + dc]);
+        }
+      }
+    }
+    var sc = $("gbScore"); if (sc) sc.textContent = gbScore;
+    sfxSafe("pop");
+    if (gbSafeLeft <= 0) gbRoundWin();
+  };
+
+  function gbAsk(r, c) {
+    gbLocked = true;
+    var q = gbQPool[gbQIdx % gbQPool.length]; gbQIdx++;
+    var pairs = q.o.map(function (t, i) { return [t, i === q.a]; });
+    if (window.shuffle) pairs = shuffle(pairs);
+    var opts = pairs.map(function (p) {
+      return '<button class="gbOpt" data-ok="' + (p[1] ? 1 : 0) + '" onclick="gbAnswer(this,' + r + "," + c + ')">' + esc(p[0]) + "</button>";
+    }).join("");
+    var qz = $("gbQuiz");
+    qz.innerHTML =
+      '<div class="gbQHead">💣 Boom! Trả lời đúng để gỡ nhé</div>' +
+      '<div class="gbQText">' + esc(q.q) + "</div>" +
+      '<div class="gbOpts">' + opts + "</div>";
+    qz.classList.remove("hidden");
+    qz.classList.add("show");
+    $("runner").scrollTo({ top: $("qCard").scrollHeight });
+  }
+
+  window.gbAnswer = function (btn, r, c) {
+    var ok = btn.dataset.ok === "1";
+    var opts = document.querySelectorAll("#gbQuiz .gbOpt");
+    opts.forEach(function (b) { b.disabled = true; if (b.dataset.ok === "1") b.classList.add("ok"); });
+    if (!ok) btn.classList.add("no");
+    var msg = $("gbMsg");
+    if (ok) {
+      gbState[r][c] = "defused"; gbScore += 10; gbPaint(r, c); sfxSafe("correct"); burstSafe(8);
+      if (msg) { msg.className = "gbMsg good"; msg.textContent = "✅ Gỡ boom thành công! +10 điểm 🎉"; }
+    } else {
+      gbLives--; gbState[r][c] = "boom"; gbPaint(r, c); sfxSafe("wrong");
+      var lv = $("gbLives"); if (lv) lv.textContent = "❤️".repeat(Math.max(0, gbLives));
+      if (msg) { msg.className = "gbMsg bad"; msg.textContent = "💥 Boom nổ mất rồi! Đừng lo, cùng học tiếp nhé — còn " + Math.max(0, gbLives) + " mạng."; }
+    }
+    var sc = $("gbScore"); if (sc) sc.textContent = gbScore;
+    setTimeout(function () {
+      var qz = $("gbQuiz"); if (qz) { qz.classList.add("hidden"); qz.innerHTML = ""; }
+      gbLocked = false;
+      if (gbLives <= 0) { gbOver(); return; }
+      if (gbSafeLeft <= 0) gbRoundWin();
+    }, 1100);
+  };
+
+  function gbRoundWin() {
+    gbLocked = true;
+    var msg = $("gbMsg"); if (msg) { msg.className = "gbMsg good"; msg.textContent = "🎉 Qua vòng " + (gbRound + 1) + "!"; }
+    burstSafe(16); sfxSafe("win");
+    setTimeout(function () {
+      if (gbRound < GB_TOTAL - 1) { gbRound++; gbNewRound(); }
+      else gbFinish(true);
+    }, 1200);
+  }
+  function gbOver() { gbFinish(false); }
+
+  function gbFinish(won) {
+    gbLocked = true;
+    $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
+    var head = won ? "🏆 Thắng rồi! Bạn là chuyên gia gỡ boom!" : "💪 Hết mạng rồi — thử lại nhé!";
+    var stars = won ? 3 : (gbRound >= 1 ? 2 : 1);
+    $("resultCard").innerHTML =
+      '<div class="mgResultIco">💣</div><h2 style="margin-top:8px">Gỡ boom</h2>' +
+      '<div class="plTier">' + head + " · <b>" + gbScore + "</b> điểm · Qua <b>" + (won ? GB_TOTAL : gbRound) + "/" + GB_TOTAL + "</b> vòng</div>" +
+      '<div class="plRec"><div class="plRecHead">💡 Em vừa ôn</div><p>Vừa rèn <b>quan sát &amp; suy luận</b> (như dò mìn), vừa ôn kiến thức AI qua các câu hỏi. Cứ sai là được học thêm điều mới!</p></div>' +
+      '<div class="center"><button class="btn" onclick="startBoom()">Chơi lại 🔄</button>' +
+        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
+    $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });
+    if (won) burstSafe(22);
+    if (won && window.Cloud) {
+      Cloud.saveQuizResult({ mode: "practice", score: gbScore, total: gbScore, percent: 100, stars: stars });
+      Cloud.aiRecord({ xp: 15, lesson: "ai:game:boom", quiz: true, percent: 100, stars: stars });
+    }
+  }
 })();

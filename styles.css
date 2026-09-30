@@ -2343,3 +2343,41 @@ html,body{ overflow-x:hidden }
 .pmPreview{ background:#fff; border-radius:12px; padding:10px 12px; font-size:13.5px }
 .pmPreview span{ font-weight:700; color:#64748B } .pmPreview p{ margin:4px 0 0; color:#334155; font-style:italic }
 .pmTip{ font-size:13px; color:#475569; margin-top:10px; line-height:1.5 }
+
+/* ---- 💣 Gỡ boom (UI giống Robot mê cung) ---- */
+.mgCard.mgBoom{ --lc:#EF4444 }
+.gbGame{ text-align:center }
+.gbBar{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:8px }
+.gbStat{ background:#F1F5F9; border-radius:999px; padding:6px 14px; font-size:14px; font-weight:700; color:#475569 }
+.gbLives{ letter-spacing:2px }
+.gbStat b{ font-variant-numeric:tabular-nums; color:#7C3AED }
+.gbHint{ font-size:13px; color:#64748B; margin-bottom:10px }
+.gbBoard{ position:relative; width:100%; max-width:400px; margin:0 auto; aspect-ratio:var(--cols)/var(--rows);
+  display:grid; grid-template-columns:repeat(var(--cols),1fr); grid-template-rows:repeat(var(--rows),1fr);
+  gap:5px; padding:7px; border-radius:16px; background:rgba(255,255,255,.72);
+  transform:rotateX(13deg); transform-style:preserve-3d; box-shadow:0 24px 44px -18px rgba(30,27,75,.55) }
+.gbCell{ border:0; border-radius:9px; cursor:pointer; font-size:min(6.5vw,24px); font-weight:800;
+  display:flex; align-items:center; justify-content:center; transition:transform .1s, background .15s; padding:0 }
+.gbCell.hidden{ background:linear-gradient(160deg,#C4B5FD,#A78BFA); box-shadow:0 4px 0 #7C3AED, inset 0 2px 2px rgba(255,255,255,.3) }
+.gbCell.hidden:hover{ transform:translateY(-2px) } .gbCell.hidden:active{ transform:translateY(2px) }
+.gbCell.open{ background:#F8FAFC; box-shadow:inset 0 -2px 0 rgba(30,27,75,.06); cursor:default; color:#94A3B8 }
+.gbCell.open.n1{ color:#2563EB } .gbCell.open.n2{ color:#16A34A } .gbCell.open.n3{ color:#EA580C }
+.gbCell.open.n4{ color:#7C3AED } .gbCell.open.n5{ color:#DB2777 } .gbCell.open.n6,.gbCell.open.n7,.gbCell.open.n8{ color:#DC2626 }
+.gbCell.defused{ background:linear-gradient(135deg,#D1FAE5,#A7F3D0); box-shadow:inset 0 0 0 2px #10B981; cursor:default }
+.gbCell.boom{ background:linear-gradient(135deg,#FEE2E2,#FCA5A5); box-shadow:inset 0 0 0 2px #EF4444; cursor:default; animation:mzBump .4s ease }
+.gbQuiz{ max-width:440px; margin:14px auto 0; background:linear-gradient(160deg,#fff,#FFF7ED); border-radius:18px; padding:16px;
+  box-shadow:0 14px 34px -14px rgba(239,68,68,.4); border:2px solid #FCA5A5 }
+.gbQuiz.show{ animation:adFadeUp .35s both }
+.gbQHead{ font-family:var(--font-display); font-weight:800; font-size:16px; color:#DC2626; margin-bottom:6px }
+.gbQText{ font-size:15px; color:#334155; line-height:1.5; margin-bottom:12px }
+.gbOpts{ display:flex; flex-direction:column; gap:8px }
+.gbOpt{ border:2px solid #E2E8F0; background:#fff; border-radius:14px; padding:11px 14px; font-size:14px; font-weight:600; cursor:pointer;
+  box-shadow:0 3px 0 rgba(30,27,75,.1); transition:transform .12s }
+.gbOpt:hover{ transform:translateY(-2px); border-color:#C7D2FE }
+.gbOpt:disabled{ cursor:default }
+.gbOpt.ok{ border-color:#22C55E; background:#F0FDF4 } .gbOpt.ok::after{ content:" ✅" }
+.gbOpt.no{ border-color:#EF4444; background:#FEF2F2 }
+.gbMsg{ min-height:24px; margin-top:12px; font-weight:700; font-size:14px; line-height:1.5 }
+.gbMsg.good{ color:#16A34A } .gbMsg.bad{ color:#DC2626 }
+@media(max-width:480px){ .gbBoard{ max-width:100% } }
+@media (prefers-reduced-motion:reduce){ .gbCell.boom,.gbQuiz{ animation:none } }
