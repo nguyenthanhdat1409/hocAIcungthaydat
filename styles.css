@@ -2324,7 +2324,8 @@ html,body{ overflow-x:hidden }
 .mgThumbImg img{ object-fit:cover !important }
 
 /* ---- Prompt Master (mảnh lego 3D) ---- */
-.pmGame{ text-align:center }
+.pmGame{ text-align:center; border-radius:22px; padding:16px;
+  background:linear-gradient(rgba(255,255,255,.66),rgba(255,255,255,.78)), url("images/bg-prompt.webp") center/cover }
 .pmHead b{ display:block; font-family:var(--font-display); font-size:19px }
 .pmHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 12px }
 .pmGoal{ background:#FEF3C7; border-radius:14px; padding:10px 14px; font-size:14.5px; color:#92400E; margin:0 auto 14px; max-width:480px }

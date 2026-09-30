@@ -1450,10 +1450,10 @@ function renderExHub(){
         <span class="emCode">🎮 TRÒ CHƠI</span>
         <span class="emName">🕵️ Thật hay AI?</span>
         <span class="emMeta">Đoán nội dung do AI hay người tạo · tư duy phản biện</span></button>
-      <button class="exModCard mgCard mgPrompt" onclick="startPrompt()">
-        <span class="mgThumb">🎯</span>
+      <button class="exModCard mgCard mgPrompt hasThumb" onclick="startPrompt()">
+        <span class="emThumb mgThumbImg"><img src="images/bg-prompt.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>
         <span class="emCode">🎮 TRÒ CHƠI</span>
-        <span class="emName">Prompt Master</span>
+        <span class="emName">🎯 Prompt Master</span>
         <span class="emMeta">Ghép mảnh prompt rõ ràng · cách ra lệnh cho AI</span></button>
       <button class="exModCard mgCard mgBoom hasThumb" onclick="startBoom()">
         <span class="emThumb mgThumbImg"><img src="images/bg-domin.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>
