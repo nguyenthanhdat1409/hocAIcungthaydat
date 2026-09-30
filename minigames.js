@@ -1,8 +1,9 @@
 /* =========================================================
-   minigames.js — 2 trò chơi AI (3D nhẹ bằng CSS)
-   • 🤖 Robot mê cung: xếp chuỗi lệnh đưa robot tới đích → tư duy thuật toán
-   • 🕵️ Thật hay AI?: đoán nội dung do AI hay người tạo → AI literacy, tư duy phản biện
-   Dùng chung #runner (như game Nhập vai). Cộng XP qua Cloud.aiRecord nếu đăng nhập.
+   minigames.js — Trò chơi AI (3D nhẹ bằng CSS)
+   • 🤖 Robot mê cung V2: lập kế hoạch chuỗi lệnh, tối ưu bước (BFS), sao, gợi ý,
+     pin thu thập, bẫy, năng lượng, mở khoá màn → tư duy thuật toán
+   • 🕵️ Thật hay AI?  • 🧠 Huấn luyện AI  • 🎯 Prompt Master
+   Dùng chung #runner. Cộng XP qua Cloud.aiRecord nếu đăng nhập.
    ========================================================= */
 (function () {
   "use strict";
@@ -19,152 +20,267 @@
   window.MINIGAMES = true;
 
   /* =======================================================
-     GAME 1 — 🤖 ROBOT MÊ CUNG
-     Bản đồ: chuỗi ký tự  S=xuất phát  G=đích  #=tường  .=ô trống
+     GAME 1 — 🤖 ROBOT MÊ CUNG V2
+     Ký tự bản đồ: S=xuất phát  G=đích  #=tường  B=pin(gom hết mới thắng)
+                   T=bẫy(tránh)  .=ô trống
      ======================================================= */
   var MAZE = [
-    { name: "Màn 1 · Khởi động", grid: ["S....", ".###.", ".....", "###.G"] },
-    { name: "Màn 2 · Rẽ lối",    grid: ["S.#..", "..#..", "..#..", "....#", "#...G"] },
-    { name: "Màn 3 · Đường vòng", grid: ["S#...", ".#.#.", ".#.#.", "...#.", "###.G"] }
+    { name: "Màn 1 · Khởi động", intro: "Xếp lệnh đưa robot tới 🔋 rồi bấm ▶️ Chạy!",
+      grid: ["S....", ".###.", ".....", ".###.", "....G"] },
+    { name: "Màn 2 · Lập kế hoạch", intro: "Gom 🔋 pin rồi mới tới đích — nghĩ trước khi chạy nhé!",
+      grid: ["S.....", ".####.", ".#..#.", ".#.B#.", ".#...G", "......"], energy: 16 },
+    { name: "Màn 3 · Tối ưu", intro: "Tránh 🔥 bẫy, gom pin và tìm đường NGẮN NHẤT!",
+      grid: ["S......", "##.###.", "...T.#.", ".#.##..", ".#.B.#.", ".###.#.", ".....G."], energy: 18 }
   ];
   var DIR = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] };
   var DIR_ICON = { up: "⬆️", down: "⬇️", left: "⬅️", right: "➡️" };
 
-  var mzLevel = 0, mzProg = [], mzRunning = false, mzSolved = 0, mzGrid = null, mzRows = 0, mzCols = 0, mzStart = null, mzGoal = null;
+  var mzLevel = 0, mzProg = [], mzRunning = false, mzHintUsed = false;
+  var mzGrid = null, mzRows = 0, mzCols = 0, mzStart = null, mzGoal = null, mzBats = [], mzTraps = {}, mzOptimal = 0;
+  var mzStars = [0, 0, 0], mzUnlocked = 1;
 
   function mzParse(rows) {
-    var g = rows.map(function (r) { return r.split(""); });
-    for (var r = 0; r < g.length; r++) for (var c = 0; c < g[r].length; c++) {
-      if (g[r][c] === "S") mzStart = [r, c];
-      if (g[r][c] === "G") mzGoal = [r, c];
+    mzGrid = rows.map(function (r) { return r.split(""); });
+    mzRows = mzGrid.length; mzCols = mzGrid[0].length; mzBats = []; mzTraps = {};
+    for (var r = 0; r < mzRows; r++) for (var c = 0; c < mzCols; c++) {
+      var ch = mzGrid[r][c];
+      if (ch === "S") mzStart = [r, c];
+      else if (ch === "G") mzGoal = [r, c];
+      else if (ch === "B") mzBats.push([r, c]);
+      else if (ch === "T") mzTraps[r + "," + c] = true;
     }
-    mzRows = g.length; mzCols = g[0].length; mzGrid = g;
   }
+  function mzBlocked(r, c) { return r < 0 || c < 0 || r >= mzRows || c >= mzCols || mzGrid[r][c] === "#" || mzGrid[r][c] === "T"; }
+  // BFS trạng thái (r,c,mask pin) → bước tối ưu + đường đi
+  function mzSolve(wantPath) {
+    var bidx = {}; mzBats.forEach(function (b, i) { bidx[b[0] + "," + b[1]] = i; });
+    var all = (1 << mzBats.length) - 1;
+    var D = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    var key = function (r, c, m) { return r + "," + c + "," + m; };
+    var q = [[mzStart[0], mzStart[1], 0]], seen = {}, parent = {};
+    seen[key(mzStart[0], mzStart[1], 0)] = true;
+    while (q.length) {
+      var cur = q.shift(), r = cur[0], c = cur[1], m = cur[2];
+      if (r === mzGoal[0] && c === mzGoal[1] && m === all) {
+        if (!wantPath) return { opt: distOf(parent, key, r, c, m) };
+        var path = [], k = key(r, c, m);
+        while (k) { var p = k.split(","); path.unshift([+p[0], +p[1]]); k = parent[k]; }
+        return { opt: path.length - 1, path: path };
+      }
+      for (var d = 0; d < 4; d++) {
+        var nr = r + D[d][0], nc = c + D[d][1];
+        if (mzBlocked(nr, nc)) continue;
+        var nm = m; var bi = bidx[nr + "," + nc]; if (bi !== undefined) nm = m | (1 << bi);
+        var nk = key(nr, nc, nm);
+        if (seen[nk]) continue; seen[nk] = true; parent[nk] = key(r, c, m);
+        q.push([nr, nc, nm]);
+      }
+    }
+    return { opt: null };
+  }
+  function distOf(parent, key, r, c, m) { var d = 0, k = key(r, c, m); while (parent[k]) { d++; k = parent[k]; } return d; }
 
   window.startMaze = function () {
-    mzLevel = 0; mzSolved = 0;
+    mzStars = [0, 0, 0]; mzUnlocked = 1; mzLevel = 0;
     if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
     enterRunner(false);
-    mzRenderLevel();
+    mzGoLevel(0);
+  };
+  window.mzGoLevel = function (i) {
+    if (i > mzUnlocked - 1) return; // chưa mở khoá
+    mzLevel = i; mzProg = []; mzRunning = false; mzHintUsed = false;
+    mzParse(MAZE[i].grid);
+    var s = mzSolve(false); mzOptimal = s.opt || 0;
+    $("qCard").classList.remove("hidden");
+    $("resultCard").classList.add("hidden");
+    $("runnerTop").classList.remove("hidden");
+    mzRender();
   };
 
-  function mzRenderLevel() {
+  function mzLevelStrip() {
+    return '<div class="mzLevels">' + MAZE.map(function (lv, i) {
+      var locked = i > mzUnlocked - 1;
+      var st = mzStars[i] ? "★".repeat(mzStars[i]) : "";
+      var cls = "mzLvPill" + (i === mzLevel ? " on" : "") + (locked ? " locked" : "");
+      var label = locked ? "🔒" : (mzStars[i] ? '<span class="mzLvStars">' + st + "</span>" : (i + 1));
+      return '<button class="' + cls + '" ' + (locked ? "disabled" : 'onclick="mzGoLevel(' + i + ')"') + '>' + label + "</button>";
+    }).join("") + "</div>";
+  }
+
+  function mzRender() {
     var lv = MAZE[mzLevel];
-    mzParse(lv.grid);
-    mzProg = []; mzRunning = false;
     var counter = $("counter"); if (counter) counter.textContent = "Màn " + (mzLevel + 1) + "/" + MAZE.length;
     var bar = $("bar"); if (bar) bar.style.width = (mzLevel / MAZE.length * 100) + "%";
 
     var cells = "";
     for (var r = 0; r < mzRows; r++) for (var c = 0; c < mzCols; c++) {
       var ch = mzGrid[r][c];
-      var cls = "mzCell" + (ch === "#" ? " mzWall" : "") + (ch === "G" ? " mzGoal" : "");
-      cells += '<div class="' + cls + '">' + (ch === "G" ? "🔋" : "") + "</div>";
+      var cls = "mzCell", inner = "";
+      if (ch === "#") cls += " mzWall";
+      else if (ch === "G") { cls += " mzGoal"; inner = "🏁"; }
+      else if (ch === "B") { cls += " mzBat"; inner = "🔋"; }
+      else if (ch === "T") { cls += " mzTrap"; inner = "🔥"; }
+      cells += '<div class="' + cls + '" data-rc="' + r + "-" + c + '">' + inner + "</div>";
     }
-    var pad =
-      '<div class="mzPad">' +
-      '<button class="mzKey" onclick="mzAdd(\'up\')">⬆️</button>' +
-      '<div class="mzPadRow">' +
-        '<button class="mzKey" onclick="mzAdd(\'left\')">⬅️</button>' +
-        '<button class="mzKey" onclick="mzAdd(\'down\')">⬇️</button>' +
-        '<button class="mzKey" onclick="mzAdd(\'right\')">➡️</button>' +
-      '</div></div>';
-
+    var energyHtml = lv.energy
+      ? '<span class="mzStat mzEnergy" id="mzEnergy">⚡ <b>' + (lv.energy - mzProg.length) + "</b>/" + lv.energy + "</span>"
+      : "";
     $("qCard").innerHTML =
       '<div class="mzGame">' +
-        '<div class="mzHead"><b>🤖 ' + esc(lv.name) + '</b><span>Xếp lệnh đưa robot tới 🔋 rồi bấm ▶️ Chạy</span></div>' +
-        '<div class="mzWrap"><div class="mzBoard" id="mzBoard" style="--cols:' + mzCols + ';--rows:' + mzRows + '">' +
-          cells +
-          '<div class="mzBot" id="mzBot">🤖</div>' +
-        '</div></div>' +
+        mzLevelStrip() +
+        '<div class="mzHead"><b>🤖 ' + esc(lv.name) + '</b><span>' + esc(lv.intro) + "</span></div>" +
+        '<div class="mzStats"><span class="mzStat">🎯 Tối ưu: <b>' + mzOptimal + '</b></span>' +
+          '<span class="mzStat">👣 Đã dùng: <b id="mzUsed">0</b></span>' + energyHtml + "</div>" +
+        '<div class="mzWrap"><div class="mzBoard" id="mzBoard" style="--cols:' + mzCols + ";--rows:" + mzRows + '">' +
+          cells + '<div class="mzBot" id="mzBot">🤖</div></div></div>' +
+        '<div class="mzProgLbl">🧩 Các lệnh của bé</div>' +
         '<div class="mzProgWrap"><div class="mzProg" id="mzProg"></div></div>' +
-        pad +
+        '<div class="mzPad">' +
+          '<button class="mzKey" onclick="mzAdd(\'up\')">⬆️</button>' +
+          '<div class="mzPadRow">' +
+            '<button class="mzKey" onclick="mzAdd(\'left\')">⬅️</button>' +
+            '<button class="mzKey" onclick="mzAdd(\'down\')">⬇️</button>' +
+            '<button class="mzKey" onclick="mzAdd(\'right\')">➡️</button>' +
+          "</div></div>" +
         '<div class="mzBtns">' +
-          '<button class="btn light mzUndo" onclick="mzUndo()">⌫ Xoá lệnh cuối</button>' +
+          '<button class="mzTool" onclick="mzUndo()">↶ Hoàn tác</button>' +
+          '<button class="mzTool" onclick="mzClear()">🗑️ Xoá hết</button>' +
+          '<button class="mzTool mzHintBtn" onclick="mzHint()">💡 Gợi ý</button>' +
           '<button class="btn mzRun" id="mzRun" onclick="mzRun()">▶️ Chạy</button>' +
-        '</div>' +
+        "</div>" +
         '<div class="mzMsg" id="mzMsg"></div>' +
-      '</div>';
-    mzPlaceBot(mzStart[0], mzStart[1]);
+      "</div>";
+    mzPlaceBot(mzStart[0], mzStart[1], true);
     mzDrawProg();
+    $("runner").scrollTo({ top: 0 });
   }
 
-  function mzPlaceBot(r, c) {
+  function mzCell(r, c) { return document.querySelector('#mzBoard .mzCell[data-rc="' + r + "-" + c + '"]'); }
+  function mzPlaceBot(r, c, instant) {
     var bot = $("mzBot"); if (!bot) return;
+    if (instant) bot.style.transition = "none"; else bot.style.transition = "";
     bot.style.left = (c / mzCols * 100) + "%";
     bot.style.top = (r / mzRows * 100) + "%";
+    if (instant) { void bot.offsetWidth; bot.style.transition = ""; }
   }
   function mzDrawProg() {
     var el = $("mzProg"); if (!el) return;
     el.innerHTML = mzProg.length
-      ? mzProg.map(function (d) { return '<span class="mzChip">' + DIR_ICON[d] + "</span>"; }).join("")
-      : '<span class="mzEmpty">Chưa có lệnh nào… bấm mũi tên để thêm</span>';
+      ? mzProg.map(function (d, i) { return '<button class="mzChip" id="mzChip-' + i + '" onclick="mzDelAt(' + i + ')" title="Xoá lệnh này">' + DIR_ICON[d] + "</button>"; }).join("")
+      : '<span class="mzEmpty">Bấm mũi tên bên dưới để thêm lệnh…</span>';
+    var used = $("mzUsed"); if (used) used.textContent = mzProg.length;
+    var lv = MAZE[mzLevel];
+    if (lv.energy) { var e = $("mzEnergy"); if (e) e.innerHTML = "⚡ <b>" + Math.max(0, lv.energy - mzProg.length) + "</b>/" + lv.energy; }
   }
-  window.mzAdd = function (d) { if (mzRunning) return; if (mzProg.length >= 30) return; mzProg.push(d); mzDrawProg(); sfxSafe("pop"); };
+  window.mzAdd = function (d) {
+    if (mzRunning) return;
+    var lv = MAZE[mzLevel];
+    if (lv.energy && mzProg.length >= lv.energy) {
+      var e = $("mzEnergy"); if (e) { e.classList.remove("flash"); void e.offsetWidth; e.classList.add("flash"); }
+      var msg = $("mzMsg"); if (msg) { msg.className = "mzMsg bad"; msg.textContent = "⚡ Hết năng lượng rồi! Hãy tìm đường ngắn hơn nhé."; }
+      return;
+    }
+    mzProg.push(d); mzDrawProg(); sfxSafe("pop");
+  };
+  window.mzDelAt = function (i) { if (mzRunning) return; mzProg.splice(i, 1); mzDrawProg(); };
   window.mzUndo = function () { if (mzRunning) return; mzProg.pop(); mzDrawProg(); };
+  window.mzClear = function () { if (mzRunning) return; mzProg = []; mzDrawProg(); };
+
+  window.mzHint = async function () {
+    if (mzRunning) return;
+    mzHintUsed = true;
+    var sol = mzSolve(true);
+    var msg = $("mzMsg");
+    if (!sol.path) { if (msg) { msg.className = "mzMsg"; msg.textContent = ""; } return; }
+    if (msg) { msg.className = "mzMsg"; msg.textContent = "💡 Đường gợi ý đang sáng lên — đường ngắn nhất dài " + mzOptimal + " bước."; }
+    for (var i = 0; i < sol.path.length; i++) {
+      var cell = mzCell(sol.path[i][0], sol.path[i][1]);
+      if (cell) { cell.classList.add("mzHintPath"); }
+    }
+    await sleep(2600);
+    document.querySelectorAll("#mzBoard .mzHintPath").forEach(function (c) { c.classList.remove("mzHintPath"); });
+  };
 
   window.mzRun = async function () {
     if (mzRunning || !mzProg.length) return;
     mzRunning = true;
     var runBtn = $("mzRun"); if (runBtn) runBtn.disabled = true;
     var msg = $("mzMsg"); if (msg) { msg.className = "mzMsg"; msg.textContent = ""; }
+    mzPlaceBot(mzStart[0], mzStart[1], true);
     var r = mzStart[0], c = mzStart[1];
+    var got = {}; // pin đã gom
     for (var i = 0; i < mzProg.length; i++) {
-      var d = DIR[mzProg[i]];
-      var nr = r + d[0], nc = c + d[1];
+      var chip = $("mzChip-" + i); if (chip) chip.classList.add("running");
+      var d = DIR[mzProg[i]], nr = r + d[0], nc = c + d[1];
       if (nr < 0 || nc < 0 || nr >= mzRows || nc >= mzCols || mzGrid[nr][nc] === "#") {
-        // đụng tường / ra ngoài
-        var bot = $("mzBot"); if (bot) { bot.classList.add("mzBump"); }
-        sfxSafe("wrong");
-        await sleep(400);
-        if (bot) bot.classList.remove("mzBump");
-        if (msg) { msg.className = "mzMsg bad"; msg.textContent = "😅 Ối! Robot đụng tường ở bước " + (i + 1) + ". Sửa lệnh rồi thử lại nhé!"; }
-        mzRunning = false; if (runBtn) runBtn.disabled = false;
-        return;
+        var bot = $("mzBot"); if (bot) bot.classList.add("mzBump"); sfxSafe("wrong");
+        await sleep(420); if (bot) bot.classList.remove("mzBump");
+        if (chip) chip.classList.remove("running");
+        return mzStuck("Oops! Robot gặp vật cản 🤖 — thử nghĩ lại đường đi nhé!");
+      }
+      if (mzGrid[nr][nc] === "T") {
+        var bot2 = $("mzBot"); if (bot2) bot2.classList.add("mzBump"); sfxSafe("wrong");
+        await sleep(420); if (bot2) bot2.classList.remove("mzBump");
+        if (chip) chip.classList.remove("running");
+        return mzStuck("Úi! Robot dính bẫy 🔥 — tránh ô lửa ra nhé!");
       }
       r = nr; c = nc; mzPlaceBot(r, c); sfxSafe("pop");
-      await sleep(340);
+      await sleep(300);
+      if (mzGrid[r][c] === "B" && !got[r + "," + c]) {
+        got[r + "," + c] = true;
+        var bc = mzCell(r, c); if (bc) { bc.classList.add("mzBatGot"); bc.textContent = "✨"; }
+        burstSafe(4);
+      }
+      if (chip) chip.classList.remove("running");
     }
-    if (r === mzGoal[0] && c === mzGoal[1]) {
-      mzSolved++;
-      sfxSafe("correct"); burstSafe(10);
-      if (msg) { msg.className = "mzMsg good"; msg.textContent = "🎉 Tuyệt! Robot đã tới nơi!"; }
-      await sleep(900);
-      if (mzLevel < MAZE.length - 1) { mzLevel++; mzRenderLevel(); }
-      else mzFinish();
-    } else {
-      if (msg) { msg.className = "mzMsg bad"; msg.textContent = "🤖 Robot dừng chưa đúng chỗ. Thử thêm/bớt lệnh nhé!"; }
-      mzRunning = false; if (runBtn) runBtn.disabled = false;
-    }
+    var allBats = mzBats.every(function (b) { return got[b[0] + "," + b[1]]; });
+    if (r === mzGoal[0] && c === mzGoal[1] && allBats) return mzWin();
+    if (r === mzGoal[0] && c === mzGoal[1] && !allBats) return mzStuck("Gần đúng rồi! 🔋 Nhớ gom đủ pin trước khi tới đích nhé!");
+    return mzStuck("Robot chưa tới được đích 🤖 — thêm/bớt lệnh rồi thử lại nhé!");
   };
+  function mzStuck(text) {
+    var msg = $("mzMsg"); if (msg) { msg.className = "mzMsg bad"; msg.textContent = text; }
+    mzRunning = false; var runBtn = $("mzRun"); if (runBtn) runBtn.disabled = false;
+  }
 
-  function mzFinish() {
-    var pct = Math.round(mzSolved / MAZE.length * 100);
-    var stars = pct >= 100 ? 3 : pct >= 66 ? 2 : 1;
-    var tier = pct >= 100 ? "Lập trình viên nhí! 🏆" : pct >= 66 ? "Tư duy tốt! 😎" : "Cố thêm chút nữa nhé 💪";
+  function mzWin() {
+    var used = mzProg.length;
+    var stars = used <= mzOptimal ? 3 : used <= mzOptimal + 3 ? 2 : 1;
+    if (mzHintUsed) stars = Math.min(stars, 2);
+    if (stars > mzStars[mzLevel]) mzStars[mzLevel] = stars;
+    if (mzLevel + 1 > mzUnlocked - 1 && mzLevel + 1 < MAZE.length) mzUnlocked = mzLevel + 2;
+    sfxSafe("win"); burstSafe(22);
+    var isLast = mzLevel >= MAZE.length - 1;
+    var starRow = '<div class="mzStarRow">' + [1, 2, 3].map(function (n) {
+      return '<span class="mzStar' + (n <= stars ? " on" : "") + '" style="animation-delay:' + (n * 0.12) + 's">★</span>';
+    }).join("") + "</div>";
+    var praise = stars === 3 ? "Xuất sắc! Bạn đang suy nghĩ như một lập trình viên! 🎉" : stars === 2 ? "Giỏi lắm! Thử tìm đường ngắn hơn để đạt 3 sao nhé! 💪" : "Hoàn thành rồi! Lần sau tối ưu hơn nhé! 🌟";
     $("runnerTop").classList.add("hidden");
     $("qCard").classList.add("hidden");
     $("resultCard").innerHTML =
       '<div class="mgResultIco">🤖</div>' +
-      '<h2 style="margin-top:8px">Robot mê cung</h2>' +
-      '<div class="plTier">Qua <b>' + mzSolved + "/" + MAZE.length + "</b> màn · " + pct + "% — " + tier + "</div>" +
-      '<div class="plRec"><div class="plRecHead">💡 Em vừa học</div><p>Máy tính &amp; robot làm đúng khi ta ra <b>lệnh rõ ràng, đúng thứ tự</b> — đó chính là <b>thuật toán</b>. AI cũng cần chỉ dẫn rõ ràng thì mới làm tốt!</p></div>' +
+      "<h2 style=\"margin-top:6px\">🎉 Hoàn thành " + esc(MAZE[mzLevel].name.split("·")[0].trim()) + "!</h2>" +
+      starRow +
+      '<div class="plTier">' + praise + "</div>" +
+      '<div class="mzScoreBox"><div>👣 Bước của bạn: <b>' + used + "</b></div><div>🎯 Bước tối ưu: <b>" + mzOptimal + "</b></div></div>" +
       '<div class="center">' +
-        '<button class="btn" onclick="startMaze()">Chơi lại 🔄</button>' +
+        (isLast ? "" : '<button class="btn" onclick="mzGoLevel(' + (mzLevel + 1) + ')">Chơi màn tiếp →</button> ') +
+        '<button class="btn light" onclick="mzGoLevel(' + mzLevel + ')" style="margin-left:8px">Chơi lại 🔄</button>' +
         '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button>' +
-      "</div>";
+      "</div>" +
+      (isLast ? '<div class="plRec" style="margin-top:14px"><div class="plRecHead">🏆 Tuyệt vời!</div><p>Em đã qua cả 3 màn! Ra lệnh <b>rõ ràng, đúng thứ tự và ngắn gọn</b> chính là <b>thuật toán</b> — nền tảng để hiểu cách máy tính và AI làm việc.</p></div>' : "");
     $("resultCard").classList.remove("hidden");
     $("runner").scrollTo({ top: 0 });
-    if (pct >= 66) burstSafe(18);
-    if (window.Cloud) {
-      Cloud.saveQuizResult({ mode: "practice", score: mzSolved, total: MAZE.length, percent: pct, stars: stars });
-      Cloud.aiRecord({ xp: 15, lesson: "ai:game:maze", quiz: true, percent: pct, stars: stars });
+    if (isLast && window.Cloud) {
+      var totalStars = mzStars.reduce(function (a, b) { return a + b; }, 0);
+      var pct = Math.round(totalStars / 9 * 100);
+      Cloud.saveQuizResult({ mode: "practice", score: totalStars, total: 9, percent: pct, stars: Math.round(totalStars / 3) });
+      Cloud.aiRecord({ xp: 15, lesson: "ai:game:maze", quiz: true, percent: pct, stars: Math.round(totalStars / 3) });
     }
   }
 
   /* =======================================================
      GAME 2 — 🕵️ THẬT HAY AI?
-     Mỗi vòng: 1 nội dung → đoán do AI hay Người/Thật tạo → lật thẻ 3D lộ đáp án + vì sao
      ======================================================= */
   var RA_ROUNDS = [
     { icon: "🖼️", text: "Bức ảnh một bàn tay người có <b>6 ngón</b>, mấy ngón cong kỳ lạ, nền phía sau nhoè và méo.", isAI: true, why: "AI vẽ ảnh thường sai chi tiết nhỏ như số ngón tay, răng, chữ viết. Thấy tay 6 ngón là dấu hiệu ảnh do AI tạo." },
@@ -177,20 +293,13 @@
     { icon: "📰", text: "Một “tin” giật gân kèm ảnh người nổi tiếng, nhưng <b>không báo nào khác đưa tin</b>.", isAI: true, why: "Nội dung/ảnh giả (deepfake) do AI tạo hay lan truyền một mình. Hãy kiểm tra nhiều nguồn tin cậy trước khi tin." },
     { icon: "🎨", text: "Bức tranh bé tự vẽ bằng sáp màu, hơi lệch, tô lem ra ngoài viền.", isAI: false, why: "Nét vẽ tay chưa đều, tô lem là sản phẩm thật của con người." }
   ];
-
   var raList = [], raIdx = 0, raScore = 0, raLocked = false;
-
   window.startRealAI = function () {
-    raList = RA_ROUNDS.slice();
-    // xáo trộn nhẹ theo chỉ số (không dùng Math.random cố định của app — dùng shuffle nếu có)
-    if (window.shuffle) raList = shuffle(raList);
-    raList = raList.slice(0, 6);
-    raIdx = 0; raScore = 0;
+    raList = window.shuffle ? shuffle(RA_ROUNDS.slice()) : RA_ROUNDS.slice();
+    raList = raList.slice(0, 6); raIdx = 0; raScore = 0;
     if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
-    enterRunner(false);
-    raRender();
+    enterRunner(false); raRender();
   };
-
   function raRender() {
     raLocked = false;
     var it = raList[raIdx];
@@ -211,7 +320,6 @@
       "</div>";
     $("runner").scrollTo({ top: 0 });
   }
-
   window.raPick = function (guessAI) {
     if (raLocked) return; raLocked = true;
     var it = raList[raIdx];
@@ -220,36 +328,25 @@
     var real = it.isAI ? "🤖 Do AI tạo" : "🧑 Do người / Thật";
     $("raBack").innerHTML =
       '<div class="raVerdict ' + (ok ? "good" : "bad") + '">' + (ok ? "✅ Chính xác!" : "❌ Chưa đúng") + "</div>" +
-      '<div class="raReal">' + real + "</div>" +
-      '<p class="raWhy">' + it.why + "</p>";
+      '<div class="raReal">' + real + "</div><p class=\"raWhy\">" + it.why + "</p>";
     $("raCard").classList.add("flipped");
     $("raBtns").classList.add("hidden");
     var nw = $("raNextWrap"); if (nw) nw.classList.remove("hidden");
     var nx = $("raNext"); if (nx) nx.textContent = (raIdx < raList.length - 1) ? "Câu tiếp ➜" : "Xem kết quả 🏁";
   };
-
-  window.raNext = function () {
-    if (raIdx < raList.length - 1) { raIdx++; raRender(); }
-    else raFinish();
-  };
-
+  window.raNext = function () { if (raIdx < raList.length - 1) { raIdx++; raRender(); } else raFinish(); };
   function raFinish() {
     var pct = Math.round(raScore / raList.length * 100);
     var stars = pct >= 85 ? 3 : pct >= 60 ? 2 : 1;
     var tier = pct >= 85 ? "Thám tử AI đại tài! 🏆" : pct >= 60 ? "Mắt tinh đấy! 😎" : "Luyện thêm để không bị AI đánh lừa nhé 💪";
-    $("runnerTop").classList.add("hidden");
-    $("qCard").classList.add("hidden");
+    $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
     $("resultCard").innerHTML =
-      '<div class="mgResultIco">🕵️</div>' +
-      '<h2 style="margin-top:8px">Thật hay AI?</h2>' +
+      '<div class="mgResultIco">🕵️</div><h2 style="margin-top:8px">Thật hay AI?</h2>' +
       '<div class="plTier">Đúng <b>' + raScore + "/" + raList.length + "</b> · " + pct + "% — " + tier + "</div>" +
       '<div class="plRec"><div class="plRecHead">💡 Ghi nhớ</div><p>AI tạo được ảnh, văn, nhạc rất nhanh và “mượt”, nhưng có thể <b>sai chi tiết</b> hoặc <b>bịa thông tin</b>. Hãy luôn <b>nghi ngờ &amp; kiểm chứng nhiều nguồn</b> trước khi tin.</p></div>' +
-      '<div class="center">' +
-        '<button class="btn" onclick="startRealAI()">Chơi lại 🔄</button>' +
-        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button>' +
-      "</div>";
-    $("resultCard").classList.remove("hidden");
-    $("runner").scrollTo({ top: 0 });
+      '<div class="center"><button class="btn" onclick="startRealAI()">Chơi lại 🔄</button>' +
+        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
+    $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });
     if (pct >= 60) burstSafe(18);
     if (window.Cloud) {
       Cloud.saveQuizResult({ mode: "practice", score: raScore, total: raList.length, percent: pct, stars: stars });
@@ -259,8 +356,6 @@
 
   /* =======================================================
      GAME 3 — 🧠 HUẤN LUYỆN AI (gắn nhãn dữ liệu)
-     Gắn nhãn đúng cho từng dữ liệu → "độ thông minh" của robot tăng.
-     Dạy: AI học từ dữ liệu có nhãn; nhãn sai thì AI học sai (rác vào → rác ra).
      ======================================================= */
   var TR_BIN = { A: { icon: "🐾", name: "Động vật" }, B: { icon: "📦", name: "Đồ vật" } };
   var TR_ITEMS = [
@@ -271,15 +366,12 @@
     { e: "🐸", n: "Ếch", cat: "A" }, { e: "🎸", n: "Đàn ghi-ta", cat: "B" }
   ];
   var trList = [], trIdx = 0, trScore = 0, trLocked = false;
-
   window.startTrain = function () {
     trList = window.shuffle ? shuffle(TR_ITEMS.slice()) : TR_ITEMS.slice();
     trIdx = 0; trScore = 0;
     if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
-    enterRunner(false);
-    trRender();
+    enterRunner(false); trRender();
   };
-
   function trRender() {
     trLocked = false;
     var it = trList[trIdx];
@@ -288,57 +380,41 @@
     var pct = trIdx ? Math.round(trScore / trIdx * 100) : 0;
     $("qCard").innerHTML =
       '<div class="trGame">' +
-        '<div class="trHead"><b>🧠 Huấn luyện AI</b><span>Gắn nhãn đúng để robot học! Đây là con gì?</span></div>' +
+        '<div class="trHead"><b>🧠 Huấn luyện AI</b><span>Gắn nhãn đúng để robot học! Đây là con gì / cái gì?</span></div>' +
         '<div class="trMeter"><div class="trMeterTop"><span>🤖 Độ thông minh</span><b id="trPct">' + pct + '%</b></div>' +
           '<div class="trBar"><span id="trBarFill" style="width:' + pct + '%"></span></div></div>' +
         '<div class="trStage">' +
           '<button class="trBin binA" onclick="trLabel(\'A\')"><span class="trBinIco">' + TR_BIN.A.icon + '</span><span>' + TR_BIN.A.name + '</span></button>' +
           '<div class="trCardWrap"><div class="trCard" id="trCard"><span class="trEmoji">' + it.e + '</span><span class="trName">' + esc(it.n) + '</span></div></div>' +
           '<button class="trBin binB" onclick="trLabel(\'B\')"><span class="trBinIco">' + TR_BIN.B.icon + '</span><span>' + TR_BIN.B.name + '</span></button>' +
-        '</div>' +
-        '<div class="trMsg" id="trMsg"></div>' +
-      '</div>';
+        "</div><div class=\"trMsg\" id=\"trMsg\"></div></div>";
     $("runner").scrollTo({ top: 0 });
   }
-
   window.trLabel = async function (cat) {
     if (trLocked) return; trLocked = true;
     var it = trList[trIdx];
     var ok = (cat === it.cat);
     var card = $("trCard"), msg = $("trMsg");
     if (card) card.classList.add(cat === "A" ? "flyA" : "flyB");
-    if (ok) {
-      trScore++; sfxSafe("correct"); burstSafe(4);
-      if (msg) { msg.className = "trMsg good"; msg.textContent = "✅ Đúng rồi! Robot thông minh hơn 🤖"; }
-    } else {
-      sfxSafe("wrong");
-      if (msg) { msg.className = "trMsg bad"; msg.textContent = "❌ Chưa đúng — “" + it.n + "” là " + TR_BIN[it.cat].name + ". Nhãn sai thì AI học sai đó!"; }
-    }
+    if (ok) { trScore++; sfxSafe("correct"); burstSafe(4); if (msg) { msg.className = "trMsg good"; msg.textContent = "✅ Đúng rồi! Robot thông minh hơn 🤖"; } }
+    else { sfxSafe("wrong"); if (msg) { msg.className = "trMsg bad"; msg.textContent = "❌ Chưa đúng — “" + it.n + "” là " + TR_BIN[it.cat].name + ". Nhãn sai thì AI học sai đó!"; } }
     var pct = Math.round(trScore / (trIdx + 1) * 100);
-    var f = $("trBarFill"), p = $("trPct");
-    if (f) f.style.width = pct + "%"; if (p) p.textContent = pct + "%";
+    var f = $("trBarFill"), p = $("trPct"); if (f) f.style.width = pct + "%"; if (p) p.textContent = pct + "%";
     await sleep(1000);
-    if (trIdx < trList.length - 1) { trIdx++; trRender(); }
-    else trFinish();
+    if (trIdx < trList.length - 1) { trIdx++; trRender(); } else trFinish();
   };
-
   function trFinish() {
     var pct = Math.round(trScore / trList.length * 100);
     var stars = pct >= 85 ? 3 : pct >= 60 ? 2 : 1;
     var tier = pct >= 85 ? "Kỹ sư AI tài ba! 🏆" : pct >= 60 ? "Robot khá thông minh! 😎" : "Robot cần học thêm 💪";
-    $("runnerTop").classList.add("hidden");
-    $("qCard").classList.add("hidden");
+    $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
     $("resultCard").innerHTML =
-      '<div class="mgResultIco">🧠</div>' +
-      '<h2 style="margin-top:8px">Huấn luyện AI</h2>' +
+      '<div class="mgResultIco">🧠</div><h2 style="margin-top:8px">Huấn luyện AI</h2>' +
       '<div class="plTier">Gắn nhãn đúng <b>' + trScore + "/" + trList.length + "</b> · Robot thông minh " + pct + "% — " + tier + "</div>" +
       '<div class="plRec"><div class="plRecHead">💡 Em vừa học</div><p>AI học từ <b>dữ liệu được gắn nhãn</b>. Nếu ta gắn nhãn <b>sai</b>, AI sẽ học sai — người ta gọi là “rác vào thì rác ra”. Dữ liệu tốt &amp; đúng thì AI mới giỏi!</p></div>' +
-      '<div class="center">' +
-        '<button class="btn" onclick="startTrain()">Chơi lại 🔄</button>' +
-        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button>' +
-      "</div>";
-    $("resultCard").classList.remove("hidden");
-    $("runner").scrollTo({ top: 0 });
+      '<div class="center"><button class="btn" onclick="startTrain()">Chơi lại 🔄</button>' +
+        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
+    $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });
     if (pct >= 60) burstSafe(18);
     if (window.Cloud) {
       Cloud.saveQuizResult({ mode: "practice", score: trScore, total: trList.length, percent: pct, stars: stars });
@@ -348,8 +424,6 @@
 
   /* =======================================================
      GAME 4 — 🎯 PROMPT MASTER (ghép mảnh prompt)
-     Chọn các mảnh giúp prompt RÕ RÀNG (vai trò, bối cảnh, yêu cầu, định dạng),
-     tránh mảnh mơ hồ. Củng cố bài Prompt (Module 1.4).
      ======================================================= */
   var PROMPTS = [
     { goal: "Nhờ AI viết lời chúc sinh nhật cho bà 70 tuổi", pieces: [
@@ -374,22 +448,19 @@
       { t: "Tóm tắt sao cũng được, ngắn là ok", good: false } ] }
   ];
   var pmList = [], pmIdx = 0, pmScore = 0, pmLocked = false;
-
   window.startPrompt = function () {
     pmList = window.shuffle ? shuffle(PROMPTS.slice()) : PROMPTS.slice();
     pmIdx = 0; pmScore = 0;
     if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
-    enterRunner(false);
-    pmRender();
+    enterRunner(false); pmRender();
   };
-
   function pmRender() {
     pmLocked = false;
     var it = pmList[pmIdx];
     var counter = $("counter"); if (counter) counter.textContent = (pmIdx + 1) + "/" + pmList.length;
     var bar = $("bar"); if (bar) bar.style.width = (pmIdx / pmList.length * 100) + "%";
     var pieces = (window.shuffle ? shuffle(it.pieces.slice()) : it.pieces.slice());
-    var chips = pieces.map(function (p, i) {
+    var chips = pieces.map(function (p) {
       return '<button class="pmChip" data-good="' + (p.good ? 1 : 0) + '" onclick="pmToggle(this)">🧩 ' + esc(p.t) + "</button>";
     }).join("");
     $("qCard").innerHTML =
@@ -403,22 +474,19 @@
       "</div>";
     $("runner").scrollTo({ top: 0 });
   }
-
   window.pmToggle = function (btn) { if (pmLocked) return; btn.classList.toggle("on"); sfxSafe("pop"); };
-
   window.pmCheck = function () {
     if (pmLocked) return; pmLocked = true;
     var it = pmList[pmIdx];
     var chips = Array.prototype.slice.call(document.querySelectorAll("#qCard .pmChip"));
-    var right = 0; var chosenGood = [];
+    var right = 0, chosenGood = [];
     chips.forEach(function (ch) {
-      var good = ch.dataset.good === "1";
-      var on = ch.classList.contains("on");
+      var good = ch.dataset.good === "1", on = ch.classList.contains("on");
       ch.disabled = true;
       if (good && on) { ch.classList.add("cGood"); right++; chosenGood.push(ch.textContent.replace(/^🧩\s*/, "")); }
       else if (!good && !on) { right++; }
       else if (good && !on) { ch.classList.add("cMiss"); }
-      else { ch.classList.add("cBad"); } // chọn mảnh mơ hồ
+      else { ch.classList.add("cBad"); }
     });
     var roundPct = Math.round(right / it.pieces.length * 100);
     pmScore += roundPct;
@@ -436,29 +504,19 @@
     var nx = $("pmNext"); if (nx) nx.textContent = (pmIdx < pmList.length - 1) ? "Câu tiếp ➜" : "Xem kết quả 🏁";
     if (roundPct >= 75) { sfxSafe("correct"); burstSafe(6); } else sfxSafe("wrong");
   };
-
-  window.pmNext = function () {
-    if (pmIdx < pmList.length - 1) { pmIdx++; pmRender(); }
-    else pmFinish();
-  };
-
+  window.pmNext = function () { if (pmIdx < pmList.length - 1) { pmIdx++; pmRender(); } else pmFinish(); };
   function pmFinish() {
     var pct = Math.round(pmScore / pmList.length);
     var stars = pct >= 85 ? 3 : pct >= 60 ? 2 : 1;
     var tier = pct >= 85 ? "Bậc thầy ra lệnh AI! 🏆" : pct >= 60 ? "Ra lệnh khá tốt! 😎" : "Luyện thêm cách hỏi nhé 💪";
-    $("runnerTop").classList.add("hidden");
-    $("qCard").classList.add("hidden");
+    $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
     $("resultCard").innerHTML =
-      '<div class="mgResultIco">🎯</div>' +
-      '<h2 style="margin-top:8px">Prompt Master</h2>' +
+      '<div class="mgResultIco">🎯</div><h2 style="margin-top:8px">Prompt Master</h2>' +
       '<div class="plTier">Điểm trung bình <b>' + pct + "%</b> — " + tier + "</div>" +
       '<div class="plRec"><div class="plRecHead">💡 Bí quyết ra lệnh cho AI</div><p>Câu lệnh (prompt) càng <b>rõ ràng, đủ thông tin</b> thì AI trả lời càng đúng ý: nói rõ <b>vai trò</b>, <b>bối cảnh</b>, <b>việc cần làm</b> và <b>định dạng</b> mong muốn.</p></div>' +
-      '<div class="center">' +
-        '<button class="btn" onclick="startPrompt()">Chơi lại 🔄</button>' +
-        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button>' +
-      "</div>";
-    $("resultCard").classList.remove("hidden");
-    $("runner").scrollTo({ top: 0 });
+      '<div class="center"><button class="btn" onclick="startPrompt()">Chơi lại 🔄</button>' +
+        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
+    $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });
     if (pct >= 60) burstSafe(18);
     if (window.Cloud) {
       Cloud.saveQuizResult({ mode: "practice", score: pct, total: 100, percent: pct, stars: stars });

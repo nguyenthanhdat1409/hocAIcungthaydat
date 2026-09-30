@@ -2173,37 +2173,75 @@ html,body{ overflow-x:hidden }
 .mgResultIco{ width:74px; height:74px; margin:0 auto; border-radius:50%; display:flex; align-items:center;
   justify-content:center; font-size:40px; background:linear-gradient(135deg,#EDE9FE,#FCE7F3) }
 
-/* ---- Robot mê cung ---- */
+/* ---- Robot mê cung V2 ---- */
 .mzGame{ text-align:center }
+.mzLevels{ display:flex; gap:8px; justify-content:center; margin-bottom:10px }
+.mzLvPill{ min-width:40px; height:36px; padding:0 10px; border:0; border-radius:12px; cursor:pointer;
+  font-weight:800; font-size:14px; color:#7C3AED; background:#EDE9FE; box-shadow:0 3px 0 rgba(124,58,237,.2); transition:transform .12s }
+.mzLvPill:hover{ transform:translateY(-2px) }
+.mzLvPill.on{ color:#fff; background:linear-gradient(135deg,#8B5CF6,#EC4899); box-shadow:0 4px 0 rgba(124,58,237,.35) }
+.mzLvPill.locked{ color:#94A3B8; background:#F1F5F9; box-shadow:none; cursor:not-allowed }
+.mzLvStars{ letter-spacing:1px; font-size:12px; color:#F59E0B }
+.mzLvPill.on .mzLvStars{ color:#FDE68A }
 .mzHead b{ display:block; font-family:var(--font-display); font-size:19px }
-.mzHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 12px }
-.mzWrap{ perspective:900px; display:flex; justify-content:center; margin:0 auto 12px }
-.mzBoard{ position:relative; width:100%; max-width:340px; aspect-ratio:var(--cols)/var(--rows);
+.mzHead span{ display:block; font-size:13px; color:#64748B; margin:2px 0 10px }
+.mzStats{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:10px }
+.mzStat{ background:#F1F5F9; border-radius:999px; padding:5px 12px; font-size:13px; font-weight:600; color:#475569 }
+.mzStat b{ font-variant-numeric:tabular-nums; color:#7C3AED }
+.mzEnergy b{ color:#F59E0B } .mzEnergy.flash{ animation:mzFlash .5s ease }
+@keyframes mzFlash{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.18); background:#FEE2E2} }
+.mzWrap{ perspective:1000px; display:flex; justify-content:center; margin:0 auto 12px; padding:16px; border-radius:22px;
+  background:linear-gradient(rgba(245,243,255,.55),rgba(252,231,243,.6)), url("images/bg-robot.webp") center/cover; box-shadow:inset 0 0 0 1px rgba(255,255,255,.5) }
+.mzBoard{ position:relative; width:100%; max-width:400px; aspect-ratio:var(--cols)/var(--rows);
   display:grid; grid-template-columns:repeat(var(--cols),1fr); grid-template-rows:repeat(var(--rows),1fr);
-  gap:5px; padding:6px; border-radius:16px; background:#E0F2FE;
-  transform:rotateX(14deg); transform-style:preserve-3d; box-shadow:0 20px 40px -18px rgba(30,27,75,.5) }
-.mzCell{ border-radius:8px; background:#F8FAFC; box-shadow:inset 0 -2px 0 rgba(30,27,75,.06);
-  display:flex; align-items:center; justify-content:center; font-size:min(6vw,26px) }
-.mzWall{ background:linear-gradient(180deg,#64748B,#475569); box-shadow:0 4px 0 #334155; transform:translateZ(8px) }
-.mzGoal{ background:linear-gradient(135deg,#FEF9C3,#FDE68A); box-shadow:inset 0 0 0 2px #F59E0B }
+  gap:5px; padding:7px; border-radius:16px; background:rgba(255,255,255,.72);
+  transform:rotateX(13deg); transform-style:preserve-3d; box-shadow:0 24px 44px -18px rgba(30,27,75,.55) }
+.mzCell{ border-radius:9px; background:#F8FAFC; box-shadow:inset 0 -2px 0 rgba(30,27,75,.06);
+  display:flex; align-items:center; justify-content:center; font-size:min(6.5vw,26px); transition:box-shadow .2s }
+.mzWall{ background:linear-gradient(180deg,#7C86A0,#4B5568); box-shadow:0 5px 0 #3A4256, inset 0 2px 2px rgba(255,255,255,.15); transform:translateZ(10px) }
+.mzGoal{ background:linear-gradient(135deg,#FEF9C3,#FDE68A); box-shadow:inset 0 0 0 2px #F59E0B, 0 0 0 0 rgba(245,158,11,.55); animation:mzGoalGlow 1.6s ease-in-out infinite }
+@keyframes mzGoalGlow{ 0%,100%{box-shadow:inset 0 0 0 2px #F59E0B, 0 0 0 2px rgba(245,158,11,.15)} 50%{box-shadow:inset 0 0 0 2px #F59E0B, 0 0 14px 4px rgba(245,158,11,.6)} }
+.mzBat{ background:linear-gradient(135deg,#D1FAE5,#A7F3D0); box-shadow:inset 0 0 0 2px #10B981 }
+.mzBat.mzBatGot{ background:#F8FAFC; box-shadow:inset 0 -2px 0 rgba(30,27,75,.06) }
+.mzTrap{ background:linear-gradient(135deg,#FEE2E2,#FCA5A5); box-shadow:inset 0 0 0 2px #EF4444 }
+.mzHintPath{ box-shadow:inset 0 0 0 3px #22D3EE, 0 0 12px rgba(34,211,238,.6) !important; animation:mzHintPulse .8s ease-in-out infinite }
+@keyframes mzHintPulse{ 0%,100%{opacity:1} 50%{opacity:.6} }
 .mzBot{ position:absolute; width:calc(100%/var(--cols)); height:calc(100%/var(--rows));
-  display:flex; align-items:center; justify-content:center; font-size:min(7vw,30px);
-  transition:left .3s ease, top .3s ease; z-index:5; will-change:left,top; filter:drop-shadow(0 4px 4px rgba(0,0,0,.25)) }
-.mzBot.mzBump{ animation:mzBump .4s ease }
-@keyframes mzBump{ 0%,100%{transform:translateY(0)} 30%{transform:translateY(-6px) rotate(-8deg)} 60%{transform:translateY(2px) rotate(6deg)} }
-.mzProgWrap{ min-height:44px; margin:4px 0 10px }
-.mzProg{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; align-items:center; min-height:40px;
-  background:#F1F5F9; border-radius:12px; padding:8px }
-.mzChip{ font-size:20px; background:#fff; border-radius:8px; padding:2px 6px; box-shadow:0 2px 0 rgba(30,27,75,.1) }
+  display:flex; align-items:center; justify-content:center; font-size:min(7.5vw,32px);
+  transition:left .28s cubic-bezier(.34,1.3,.6,1), top .28s cubic-bezier(.34,1.3,.6,1); z-index:5; will-change:left,top; filter:drop-shadow(0 5px 5px rgba(0,0,0,.28)) }
+.mzBot.mzBump{ animation:mzBump .42s ease }
+@keyframes mzBump{ 0%,100%{transform:translateY(0)} 30%{transform:translateY(-7px) rotate(-9deg)} 60%{transform:translateY(3px) rotate(7deg)} }
+.mzProgLbl{ font-weight:800; font-size:13px; color:#475569; margin:2px 0 6px }
+.mzProgWrap{ min-height:48px; margin:0 0 12px }
+.mzProg{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; align-items:center; min-height:46px;
+  background:#F1F5F9; border-radius:14px; padding:9px }
+.mzChip{ font-size:20px; border:0; background:#fff; border-radius:10px; padding:4px 9px; cursor:pointer;
+  box-shadow:0 3px 0 rgba(30,27,75,.12); transition:transform .12s }
+.mzChip:hover{ transform:translateY(-2px) } .mzChip:hover::after{ content:"✕"; font-size:10px; color:#EF4444; margin-left:3px; vertical-align:top }
+.mzChip.running{ background:linear-gradient(135deg,#8B5CF6,#EC4899); box-shadow:0 0 0 3px rgba(124,58,237,.3); transform:translateY(-3px) scale(1.12) }
 .mzEmpty{ font-size:12.5px; color:#94A3B8 }
-.mzPad{ display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:12px }
-.mzPadRow{ display:flex; gap:6px }
-.mzKey{ width:52px; height:52px; border:0; border-radius:14px; font-size:24px; cursor:pointer;
-  background:#fff; box-shadow:0 4px 0 rgba(30,27,75,.14); transition:transform .12s }
-.mzKey:hover{ transform:translateY(-2px) } .mzKey:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(30,27,75,.14) }
-.mzBtns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
-.mzMsg{ min-height:22px; margin-top:12px; font-weight:700; font-size:14px }
+.mzPad{ display:flex; flex-direction:column; align-items:center; gap:7px; margin-bottom:14px }
+.mzPadRow{ display:flex; gap:7px }
+.mzKey{ width:56px; height:56px; border:0; border-radius:16px; font-size:26px; cursor:pointer;
+  background:#fff; box-shadow:0 5px 0 rgba(30,27,75,.14); transition:transform .12s }
+.mzKey:hover{ transform:translateY(-3px) } .mzKey:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(30,27,75,.14) }
+.mzBtns{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; align-items:center }
+.mzTool{ border:0; border-radius:12px; padding:10px 14px; font-size:13.5px; font-weight:700; cursor:pointer;
+  background:#EEF2F7; color:#334155; box-shadow:0 3px 0 rgba(30,27,75,.1); transition:transform .12s }
+.mzTool:hover{ transform:translateY(-2px) }
+.mzHintBtn{ background:#FEF3C7; color:#92400E }
+.mzRun{ font-size:16px; padding:12px 26px }
+.mzMsg{ min-height:22px; margin-top:12px; font-weight:700; font-size:14px; line-height:1.5 }
 .mzMsg.good{ color:#16A34A } .mzMsg.bad{ color:#DC2626 }
+.mzStarRow{ display:flex; gap:8px; justify-content:center; margin:8px 0 4px }
+.mzStar{ font-size:44px; color:#E2E8F0; transform:scale(.5); opacity:.5 }
+.mzStar.on{ color:#F59E0B; animation:mzStarPop .5s cubic-bezier(.34,1.56,.64,1) both; filter:drop-shadow(0 4px 6px rgba(245,158,11,.5)) }
+@keyframes mzStarPop{ 0%{transform:scale(0) rotate(-30deg); opacity:0} 100%{transform:scale(1) rotate(0); opacity:1} }
+.mzScoreBox{ display:flex; gap:12px; justify-content:center; margin:12px 0; flex-wrap:wrap }
+.mzScoreBox > div{ background:#F1F5F9; border-radius:14px; padding:10px 16px; font-size:14px; font-weight:600; color:#475569 }
+.mzScoreBox b{ color:#7C3AED; font-variant-numeric:tabular-nums }
+@media (prefers-reduced-motion:reduce){ .mzGoal,.mzStar.on,.mzHintPath{ animation:none } }
+@media(max-width:480px){ .mzKey{ width:48px; height:48px; font-size:22px } .mzBoard{ max-width:100% } }
 
 /* ---- Thật hay AI? (thẻ lật 3D) ---- */
 .raGame{ text-align:center }
