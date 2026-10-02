@@ -555,7 +555,7 @@
   ];
   var GB_TOTAL = 3;
   var gbRound = 0, gbRows = 0, gbCols = 5, gbBooms = {}, gbState = [], gbCount = [];
-  var gbLives = 3, gbScore = 0, gbHiddenLeft = 0, gbLocked = false, gbQIdx = 0, gbQPool = [];
+  var gbLives = 3, gbScore = 0, gbHiddenLeft = 0, gbLocked = false, gbQIdx = 0, gbQPool = [], gbFirst = true;
 
   window.startBoom = function () {
     gbRound = 0; gbLives = 3; gbScore = 0;
@@ -569,27 +569,54 @@
   function gbNewRound() {
     gbCols = 5; gbRows = 4 + gbRound;              // bàn cờ to dần theo vòng
     var cells = gbRows * gbCols;
-    var nBooms = Math.max(3, Math.round(cells * 0.16) + gbRound); // boom nhiều dần
+    var nBooms = Math.max(3, Math.round(cells * 0.12) + gbRound); // boom vừa phải để có vùng trống
     gbBooms = {};
     var placed = 0;
     while (placed < nBooms) {
       var r = Math.floor(Math.random() * gbRows), c = Math.floor(Math.random() * gbCols);
       if (!gbBooms[r + "," + c]) { gbBooms[r + "," + c] = true; placed++; }
     }
-    gbState = []; gbCount = [];
-    for (var i = 0; i < gbRows; i++) { gbState.push(new Array(gbCols).fill("hidden")); gbCount.push(new Array(gbCols).fill(0)); }
-    for (var r2 = 0; r2 < gbRows; r2++) for (var c2 = 0; c2 < gbCols; c2++) {
-      if (gbBooms[r2 + "," + c2]) continue;
+    gbState = [];
+    for (var i = 0; i < gbRows; i++) gbState.push(new Array(gbCols).fill("hidden"));
+    gbComputeCounts();
+    gbHiddenLeft = cells;   // thắng khi mở/gỡ HẾT mọi ô (kể cả gỡ hết boom)
+    gbFirst = true;         // lần bấm đầu sẽ được dọn boom quanh để mở ra vùng lớn
+    gbLocked = false;
+    gbRender(nBooms);
+  }
+  function gbComputeCounts() {
+    gbCount = [];
+    for (var i = 0; i < gbRows; i++) gbCount.push(new Array(gbCols).fill(0));
+    for (var r = 0; r < gbRows; r++) for (var c = 0; c < gbCols; c++) {
+      if (gbBooms[r + "," + c]) continue;
       var n = 0;
       for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
         if (dr === 0 && dc === 0) continue;
-        if (gbBooms[(r2 + dr) + "," + (c2 + dc)]) n++;
+        if (gbBooms[(r + dr) + "," + (c + dc)]) n++;
       }
-      gbCount[r2][c2] = n;
+      gbCount[r][c] = n;
     }
-    gbHiddenLeft = cells;   // thắng khi mở/gỡ HẾT mọi ô (kể cả gỡ hết boom)
-    gbLocked = false;
-    gbRender(nBooms);
+  }
+  // Dọn boom quanh ô bấm ĐẦU TIÊN (3x3) để lần đầu luôn mở ra một vùng trống lớn
+  function gbEnsureSafe(sr, sc) {
+    var toMove = [];
+    for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
+      var rr = sr + dr, cc = sc + dc;
+      if (rr < 0 || cc < 0 || rr >= gbRows || cc >= gbCols) continue;
+      if (gbBooms[rr + "," + cc]) toMove.push(rr + "," + cc);
+    }
+    if (!toMove.length) return;
+    var empty = [];
+    for (var r = 0; r < gbRows; r++) for (var c = 0; c < gbCols; c++) {
+      if (gbBooms[r + "," + c]) continue;
+      if (Math.abs(r - sr) <= 1 && Math.abs(c - sc) <= 1) continue;
+      empty.push([r, c]);
+    }
+    toMove.forEach(function (k) {
+      delete gbBooms[k];
+      if (empty.length) { var e = empty.splice(Math.floor(Math.random() * empty.length), 1)[0]; gbBooms[e[0] + "," + e[1]] = true; }
+    });
+    gbComputeCounts();
   }
 
   function gbRender(nBooms) {
@@ -626,6 +653,7 @@
 
   window.gbReveal = function (r, c) {
     if (gbLocked || gbState[r][c] !== "hidden") return;
+    if (gbFirst) { gbFirst = false; gbEnsureSafe(r, c); }   // lần đầu: dọn boom quanh để mở vùng lớn
     if (gbBooms[r + "," + c]) { gbAsk(r, c); return; }
     // flood fill mở ô an toàn
     var stack = [[r, c]];
