@@ -5,7 +5,7 @@
    - Google Fonts: cache-first (SWR).
    Đổi CACHE_VER mỗi khi cần buộc làm mới toàn bộ cache.
    ========================================================= */
-const CACHE_VER = "v7";
+const CACHE_VER = "v8";
 const CACHE = "hocaivui-" + CACHE_VER;
 
 /* App shell — tiền nạp để chạy được offline ngay lần đầu. */
@@ -19,6 +19,7 @@ const PRECACHE = [
   "./exercises.js",
   "./roleplay.js",
   "./minigames.js",
+  "./academy3d.js",
   // Dữ liệu bài học → học offline không cần mạng
   "./curriculum.js",
   "./lessons_content.js",
