@@ -748,4 +748,127 @@
       Cloud.aiRecord({ xp: 15, lesson: "ai:game:boom", quiz: true, percent: 100, stars: stars });
     }
   }
+
+  /* =======================================================
+     GAME 5 — 🎓 AI ACADEMY (story-driven, điều tra sự cố AI)
+     Mỗi chương = 1 vụ việc. Người chơi điều tra, dùng AI, quyết định → hậu quả → học.
+     Engine data-driven (node graph): thêm chương = thêm data.
+     ======================================================= */
+  var AC_CH1 = {
+    title: "Chương 1 · Học sinh bị oan",
+    start: "n1",
+    nodes: {
+      n1: { type: "say", avatar: "🔔", who: "07:42 sáng", text: "Hệ thống AI của trường vừa <b>khóa tài khoản</b> bạn Minh vì “gian lận”. Minh khẳng định mình không làm. Bạn có <b>30 phút</b> trước khi quyết định của AI thành vĩnh viễn…", next: "n2" },
+      n2: { type: "say", avatar: "👩‍🏫", who: "Cô Lan (giáo vụ)", text: "AI chấm bài thấy điểm Minh bất thường nên kết luận gian lận. Em là Thám tử AI của trường — điều tra giúp cô nhé!", next: "n3" },
+      n3: { type: "clue", text: "🔍 Thu thập manh mối (bấm từng cái để xem):", next: "n4",
+        clues: [
+          { ic: "🖥️", label: "Nhật ký AI", info: "AI thấy bài Minh giống tài liệu trên mạng 85% → tự kết luận “chép”." },
+          { ic: "📄", label: "Bài của Minh", info: "Minh dùng nhiều câu giống dàn ý thầy phát — vì em học thuộc dàn ý đó." },
+          { ic: "📊", label: "Dữ liệu của AI", info: "AI chỉ được học từ 50 bài mẫu, chưa từng thấy cách trình bày của Minh." }
+        ] },
+      n4: { type: "say", avatar: "🕵️", who: "Bạn", text: "Hmm… AI rất tự tin “85% gian lận”. Nhưng nó kết luận chỉ vì bài <i>giống tài liệu</i>, mà “giống” đâu chắc là “chép”?", next: "n5" },
+      n5: { type: "choice", q: "AI báo Minh gian lận với độ tin cậy 85%. Em làm gì?",
+        options: [
+          { t: "😮 Tin AI, khóa tài khoản luôn", good: false, reply: "Em tin ngay… và Minh bị oan!", goto: "n5bad" },
+          { t: "❓ Hỏi AI: “dựa vào gì mà kết luận?”", good: true, reply: "Tốt! Luôn bắt AI giải thích lý do.", goto: "n6" },
+          { t: "🔎 Tự đi kiểm chứng bằng chứng", good: true, reply: "Xuất sắc! Kiểm chứng trước khi tin.", goto: "n6" }
+        ] },
+      n5bad: { type: "say", avatar: "😢", who: "Hậu quả", text: "Minh bị khóa tài khoản oan, em ấy bật khóc… Nhưng chưa quá muộn — hãy quay lại xem kỹ bằng chứng!", next: "n6" },
+      n6: { type: "say", avatar: "🧠", who: "Bạn", text: "Xem kỹ thì: “giống tài liệu” ≠ “chép”. Và AI chỉ học từ <b>50 bài</b> — quá ít để phán xét công bằng.", next: "n7" },
+      n7: { type: "choice", q: "Vậy vấn đề THẬT SỰ là gì?", next: "n8",
+        options: [
+          { t: "AI phán xét từ dữ liệu quá ít & hiểu sai “giống = chép”", good: true, reply: "Chính xác! Đó mới là gốc rễ." },
+          { t: "Minh đúng là gian lận", good: false, reply: "Chưa có bằng chứng chắc chắn mà — xem lại manh mối nhé." },
+          { t: "Lỗi của Minh vì học thuộc dàn ý", good: false, reply: "Học thuộc dàn ý thầy phát đâu phải gian lận!" }
+        ] },
+      n8: { type: "say", avatar: "🎉", who: "Kết quả", text: "Em trình bày bằng chứng cho cô Lan. Minh được mở khóa & minh oan! Trường ra quy định mới: <b>AI chỉ GỢI Ý, con người mới QUYẾT ĐỊNH.</b>", next: "end" },
+      end: { type: "end", title: "Phá án thành công! 🎉",
+        lesson: "AI kết luận dựa trên <b>dữ liệu nó được học</b>. Dữ liệu ít hoặc lệch → kết luận sai. Đừng coi AI là chân lý — hãy <b>hỏi lý do &amp; kiểm chứng</b> trước khi tin!" }
+    }
+  };
+  var AC_CUR = null, acNode = "", acWrong = 0, acPending = "";
+
+  window.startAcademy = function () {
+    AC_CUR = AC_CH1; acNode = AC_CUR.start; acWrong = 0;
+    if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
+    enterRunner(false);
+    $("starBox").classList.add("hidden");
+    var counter = $("counter"); if (counter) counter.textContent = "🎓 AI Academy";
+    var bar = $("bar"); if (bar) bar.style.width = "0%";
+    acRender();
+  };
+  window.acGo = function (id) { acNode = id; acRender(); };
+  window.acAdvance = function () { if (acPending) acGo(acPending); };
+
+  function acRender() {
+    var node = AC_CUR.nodes[acNode];
+    if (!node) return;
+    if (node.type === "end") return acEnd(node);
+    var html = '<div class="acGame">';
+    if (node.type === "say") {
+      html += acBubble(node) +
+        '<div class="center"><button class="btn acNext" onclick="acGo(\'' + node.next + '\')">Tiếp ➜</button></div>';
+    } else if (node.type === "clue") {
+      html += '<div class="acClueLbl">' + esc(node.text) + "</div>" +
+        '<div class="acClues">' + node.clues.map(function (c, i) {
+          return '<button class="acClue" onclick="acClue(' + i + ',this)">' + c.ic + " " + esc(c.label) + "</button>";
+        }).join("") + "</div>" +
+        '<div class="acClueBox hidden" id="acClueBox"></div>' +
+        '<div class="center"><button class="btn acNext" onclick="acGo(\'' + node.next + '\')">Tiếp ➜</button></div>';
+    } else if (node.type === "choice") {
+      html += '<div class="acQ">' + esc(node.q) + "</div>" +
+        '<div class="acChoices" id="acChoices">' + node.options.map(function (o, i) {
+          return '<button class="acOpt" onclick="acPick(' + i + ')">' + esc(o.t) + "</button>";
+        }).join("") + "</div>" +
+        '<div class="acReply hidden" id="acReply"></div>' +
+        '<div class="center acNextWrap hidden" id="acNextWrap"><button class="btn acNext" id="acNextBtn" onclick="acAdvance()">Tiếp ➜</button></div>';
+    }
+    html += "</div>";
+    $("qCard").innerHTML = html;
+    requestAnimationFrame(function () { var g = $("qCard").querySelector(".acGame"); if (g) g.classList.add("in"); });
+    $("runner").scrollTo({ top: 0 });
+  }
+  function acBubble(node) {
+    return '<div class="acRow"><div class="acAvatar">' + (node.avatar || "💬") + "</div>" +
+      '<div class="acSpeech">' + (node.who ? '<div class="acWho">' + esc(node.who) + "</div>" : "") +
+      '<div class="acText">' + node.text + "</div></div></div>";
+  }
+  window.acClue = function (i, el) {
+    var node = AC_CUR.nodes[acNode], box = $("acClueBox");
+    if (box) { box.innerHTML = "<b>" + node.clues[i].ic + " " + esc(node.clues[i].label) + ":</b> " + esc(node.clues[i].info); box.classList.remove("hidden"); box.classList.add("show"); }
+    if (el) { document.querySelectorAll(".acClue.on").forEach(function (c) { c.classList.remove("on"); }); el.classList.add("on"); }
+    sfxSafe("pop");
+  };
+  window.acPick = function (i) {
+    var node = AC_CUR.nodes[acNode], opt = node.options[i], box = $("acReply");
+    var ok = !!opt.good;
+    if (ok) { sfxSafe("correct"); } else { sfxSafe("wrong"); acWrong++; }
+    if (box) { box.className = "acReply " + (ok ? "good" : "bad"); box.innerHTML = (ok ? "👍 " : "🤔 ") + esc(opt.reply || (ok ? "Lựa chọn tốt!" : "Thử nghĩ lại nhé!")); box.classList.remove("hidden"); }
+    var target = opt.goto || (ok ? node.next : null);
+    if (target) {
+      document.querySelectorAll("#acChoices .acOpt").forEach(function (b) { b.disabled = true; });
+      acPending = target;
+      var nw = $("acNextWrap"); if (nw) nw.classList.remove("hidden");
+      if (ok) burstSafe(6);
+    }
+  };
+  function acEnd(node) {
+    var stars = acWrong === 0 ? 3 : acWrong <= 2 ? 2 : 1;
+    var starRow = '<div class="mzStarRow">' + [1, 2, 3].map(function (n) { return '<span class="mzStar' + (n <= stars ? " on" : "") + '" style="animation-delay:' + (n * 0.12) + 's">★</span>'; }).join("") + "</div>";
+    $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
+    $("resultCard").innerHTML =
+      '<div class="mgResultIco">🎓</div><h2 style="margin-top:6px">' + esc(node.title) + "</h2>" +
+      starRow +
+      '<div class="plTier">Bạn là một Thám tử AI tài ba!</div>' +
+      '<div class="plRec"><div class="plRecHead">💡 Em vừa học</div><p>' + node.lesson + "</p></div>" +
+      '<div class="center"><button class="btn" onclick="startAcademy()">Chơi lại 🔄</button>' +
+        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
+    $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });
+    burstSafe(20); sfxSafe("win");
+    if (window.Cloud) {
+      var pct = stars >= 3 ? 100 : stars >= 2 ? 75 : 50;
+      Cloud.saveQuizResult({ mode: "practice", score: stars, total: 3, percent: pct, stars: stars });
+      Cloud.aiRecord({ xp: 15, lesson: "ai:game:academy1", quiz: true, percent: pct, stars: stars });
+    }
+  }
 })();
