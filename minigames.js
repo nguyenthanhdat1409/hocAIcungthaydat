@@ -786,81 +786,150 @@
         lesson: "AI kết luận dựa trên <b>dữ liệu nó được học</b>. Dữ liệu ít hoặc lệch → kết luận sai. Đừng coi AI là chân lý — hãy <b>hỏi lý do &amp; kiểm chứng</b> trước khi tin!" }
     }
   };
-  var AC_CUR = null, acNode = "", acWrong = 0, acPending = "";
+  var acWrong = 0;
+  /* ===== RPG OVERWORLD: đi lại bằng phím/D-pad, gặp nhân vật để điều tra ===== */
+  var RPG_MAP = [
+    "###########",
+    "#.........#",
+    "#.L.....A.#",
+    "#.........#",
+    "#..1.P.2..#",
+    "#.........#",
+    "#....3....#",
+    "###########"
+  ];
+  var RPG_EMO = { L: "👩‍🏫", A: "🤖", "1": "🖥️", "2": "📄", "3": "📊" };
+  var rpgRows = 0, rpgCols = 0, rpgR = 0, rpgC = 0, rpgEnt = {}, rpgWall = {};
+  var rpgSeen = {}, rpgSolved = false, rpgBusy = false;
 
   window.startAcademy = function () {
-    AC_CUR = AC_CH1; acNode = AC_CUR.start; acWrong = 0;
+    acWrong = 0; rpgSeen = {}; rpgSolved = false; rpgBusy = false; rpgEnt = {}; rpgWall = {};
+    rpgRows = RPG_MAP.length; rpgCols = RPG_MAP[0].length;
+    for (var r = 0; r < rpgRows; r++) for (var c = 0; c < rpgCols; c++) {
+      var ch = RPG_MAP[r][c];
+      if (ch === "#") rpgWall[r + "," + c] = true;
+      else if (ch === "P") { rpgR = r; rpgC = c; }
+      else if (ch !== ".") rpgEnt[r + "," + c] = ch;
+    }
     if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
     enterRunner(false);
     $("starBox").classList.add("hidden");
-    var counter = $("counter"); if (counter) counter.textContent = "🎓 AI Academy";
+    var counter = $("counter"); if (counter) counter.textContent = "🎓 AI Academy · Chương 1";
     var bar = $("bar"); if (bar) bar.style.width = "0%";
-    acRender();
+    rpgRender();
+    document.removeEventListener("keydown", rpgKey);
+    document.addEventListener("keydown", rpgKey);
+    rpgSay("🔔", AC_CH1.nodes.n1.who, AC_CH1.nodes.n1.text, window.rpgClose); // hook mở đầu
   };
-  window.acGo = function (id) { acNode = id; acRender(); };
-  window.acAdvance = function () { if (acPending) acGo(acPending); };
+  function rpgSeenCount() { return Object.keys(rpgSeen).length; }
 
-  function acRender() {
-    var node = AC_CUR.nodes[acNode];
-    if (!node) return;
-    if (node.type === "end") return acEnd(node);
-    var html = '<div class="acGame">';
-    if (node.type === "say") {
-      html += acBubble(node) +
-        '<div class="center"><button class="btn acNext" onclick="acGo(\'' + node.next + '\')">Tiếp ➜</button></div>';
-    } else if (node.type === "clue") {
-      html += '<div class="acClueLbl">' + esc(node.text) + "</div>" +
-        '<div class="acClues">' + node.clues.map(function (c, i) {
-          return '<button class="acClue" onclick="acClue(' + i + ',this)">' + c.ic + " " + esc(c.label) + "</button>";
-        }).join("") + "</div>" +
-        '<div class="acClueBox hidden" id="acClueBox"></div>' +
-        '<div class="center"><button class="btn acNext" onclick="acGo(\'' + node.next + '\')">Tiếp ➜</button></div>';
-    } else if (node.type === "choice") {
-      html += '<div class="acQ">' + esc(node.q) + "</div>" +
-        '<div class="acChoices" id="acChoices">' + node.options.map(function (o, i) {
-          return '<button class="acOpt" onclick="acPick(' + i + ')">' + esc(o.t) + "</button>";
-        }).join("") + "</div>" +
-        '<div class="acReply hidden" id="acReply"></div>' +
-        '<div class="center acNextWrap hidden" id="acNextWrap"><button class="btn acNext" id="acNextBtn" onclick="acAdvance()">Tiếp ➜</button></div>';
+  function rpgRender() {
+    var tiles = "";
+    for (var r = 0; r < rpgRows; r++) for (var c = 0; c < rpgCols; c++) {
+      var key = r + "," + c, cls = "rpgTile" + (rpgWall[key] ? " wall" : ""), ent = rpgEnt[key];
+      tiles += '<div class="' + cls + '">' + (ent ? '<span class="rpgEnt' + (rpgSeen[ent] ? " done" : "") + '">' + RPG_EMO[ent] + "</span>" : "") + "</div>";
     }
-    html += "</div>";
-    $("qCard").innerHTML = html;
-    requestAnimationFrame(function () { var g = $("qCard").querySelector(".acGame"); if (g) g.classList.add("in"); });
+    $("qCard").innerHTML =
+      '<div class="rpgGame">' +
+        '<div class="rpgTop"><span class="rpgBadge">🔍 Manh mối: <b id="rpgClue">' + rpgSeenCount() + '</b>/3</span>' +
+          '<span class="rpgHintTxt">Mũi tên / D-pad để đi · tới nhân vật để nói chuyện</span></div>' +
+        '<div class="rpgWrap"><div class="rpgBoard" id="rpgWorld" style="--cols:' + rpgCols + ";--rows:" + rpgRows + '">' +
+          tiles + '<div class="rpgHero" id="rpgHero">🧑‍🎓</div></div></div>' +
+        '<div class="rpgPad">' +
+          '<button class="rpgKey" onclick="rpgMove(-1,0)">⬆️</button>' +
+          '<div class="rpgPadRow"><button class="rpgKey" onclick="rpgMove(0,-1)">⬅️</button>' +
+            '<button class="rpgKey" onclick="rpgMove(1,0)">⬇️</button>' +
+            '<button class="rpgKey" onclick="rpgMove(0,1)">➡️</button></div></div>' +
+        '<div class="rpgDialog hidden" id="rpgDialog"></div>' +
+      "</div>";
+    rpgPlaceHero(true);
     $("runner").scrollTo({ top: 0 });
   }
-  function acBubble(node) {
-    return '<div class="acRow"><div class="acAvatar">' + (node.avatar || "💬") + "</div>" +
-      '<div class="acSpeech">' + (node.who ? '<div class="acWho">' + esc(node.who) + "</div>" : "") +
-      '<div class="acText">' + node.text + "</div></div></div>";
+  function rpgPlaceHero(instant) {
+    var h = $("rpgHero"); if (!h) return;
+    if (instant) h.style.transition = "none"; else h.style.transition = "";
+    h.style.left = (rpgC / rpgCols * 100) + "%";
+    h.style.top = (rpgR / rpgRows * 100) + "%";
+    if (instant) { void h.offsetWidth; h.style.transition = ""; }
   }
-  window.acClue = function (i, el) {
-    var node = AC_CUR.nodes[acNode], box = $("acClueBox");
-    if (box) { box.innerHTML = "<b>" + node.clues[i].ic + " " + esc(node.clues[i].label) + ":</b> " + esc(node.clues[i].info); box.classList.remove("hidden"); box.classList.add("show"); }
-    if (el) { document.querySelectorAll(".acClue.on").forEach(function (c) { c.classList.remove("on"); }); el.classList.add("on"); }
-    sfxSafe("pop");
+  window.rpgMove = function (dr, dc) {
+    if (rpgBusy || !$("rpgWorld")) return;
+    var nr = rpgR + dr, nc = rpgC + dc, key = nr + "," + nc;
+    if (nr < 0 || nc < 0 || nr >= rpgRows || nc >= rpgCols || rpgWall[key]) return;
+    rpgR = nr; rpgC = nc; rpgPlaceHero(false); sfxSafe("pop");
+    if (rpgEnt[key]) setTimeout(function () { rpgInteract(rpgEnt[key]); }, 150);
   };
-  window.acPick = function (i) {
-    var node = AC_CUR.nodes[acNode], opt = node.options[i], box = $("acReply");
+  function rpgKey(e) {
+    if (!$("rpgWorld")) { document.removeEventListener("keydown", rpgKey); return; }
+    if (rpgBusy) {
+      if (e.key === "Enter" || e.key === " ") { var b = document.querySelector("#rpgDialog .rpgDlgNext"); if (b) { e.preventDefault(); b.click(); } }
+      return;
+    }
+    var k = e.key.toLowerCase();
+    if (k === "arrowup" || k === "w") { e.preventDefault(); rpgMove(-1, 0); }
+    else if (k === "arrowdown" || k === "s") { e.preventDefault(); rpgMove(1, 0); }
+    else if (k === "arrowleft" || k === "a") { e.preventDefault(); rpgMove(0, -1); }
+    else if (k === "arrowright" || k === "d") { e.preventDefault(); rpgMove(0, 1); }
+  }
+  function rpgDlg(html) { rpgBusy = true; var d = $("rpgDialog"); if (!d) return; d.innerHTML = html; d.classList.remove("hidden"); d.classList.add("show"); }
+  window.rpgClose = function () { rpgBusy = false; var d = $("rpgDialog"); if (d) { d.classList.add("hidden"); d.innerHTML = ""; } };
+  function rpgSay(avatar, who, text, onNext) {
+    window._rpgNext = onNext || window.rpgClose;
+    rpgDlg('<div class="rpgRow"><div class="rpgAva">' + avatar + "</div><div class=\"rpgSpeech\">" +
+      (who ? '<div class="rpgWho">' + esc(who) + "</div>" : "") + '<div class="rpgText">' + text + "</div>" +
+      '<div class="center"><button class="btn rpgDlgNext" onclick="_rpgNext()">Tiếp ➜</button></div></div></div>');
+  }
+  function rpgMarkEnt() {
+    var world = $("rpgWorld"); if (!world) return;
+    for (var r = 0; r < rpgRows; r++) for (var c = 0; c < rpgCols; c++) {
+      var ent = rpgEnt[r + "," + c]; if (!ent) continue;
+      var span = world.children[r * rpgCols + c].querySelector(".rpgEnt");
+      if (span) span.classList.toggle("done", !!rpgSeen[ent]);
+    }
+  }
+  function rpgInteract(ent) {
+    var N = AC_CH1.nodes;
+    if (ent === "L") { rpgSay("👩‍🏫", "Cô Lan", N.n2.text, window.rpgClose); }
+    else if (ent === "1" || ent === "2" || ent === "3") {
+      var cl = N.n3.clues[+ent - 1];
+      rpgSeen[ent] = true;
+      var cEl = $("rpgClue"); if (cEl) cEl.textContent = rpgSeenCount();
+      rpgMarkEnt(); sfxSafe("correct"); burstSafe(3);
+      rpgSay(cl.ic, cl.label, esc(cl.info), window.rpgClose);
+    } else if (ent === "A") {
+      if (rpgSeenCount() < 3) { rpgSay("🤖", "Máy AI", "Hãy xem đủ <b>3 manh mối</b> (🖥️ 📄 📊) rồi hãy quyết định nhé!", window.rpgClose); return; }
+      if (rpgSolved) { rpgSay("🤖", "Máy AI", "Vụ án đã khép lại rồi — làm tốt lắm, Thám tử! 🎉", window.rpgClose); return; }
+      rpgDecision();
+    }
+  }
+  function rpgDecision() {
+    var n5 = AC_CH1.nodes.n5;
+    var opts = n5.options.map(function (o, i) { return '<button class="rpgOpt" onclick="rpgPick(' + i + ')">' + esc(o.t) + "</button>"; }).join("");
+    rpgDlg('<div class="rpgRow"><div class="rpgAva">🤖</div><div class="rpgSpeech"><div class="rpgWho">Máy AI</div>' +
+      '<div class="rpgText">' + esc(n5.q) + '</div><div class="rpgOpts" id="rpgOpts">' + opts + "</div>" +
+      '<div class="rpgReply hidden" id="rpgReply"></div></div></div>');
+  }
+  window.rpgPick = function (i) {
+    var n5 = AC_CH1.nodes.n5, opt = n5.options[i], box = $("rpgReply");
     var ok = !!opt.good;
     if (ok) { sfxSafe("correct"); } else { sfxSafe("wrong"); acWrong++; }
-    if (box) { box.className = "acReply " + (ok ? "good" : "bad"); box.innerHTML = (ok ? "👍 " : "🤔 ") + esc(opt.reply || (ok ? "Lựa chọn tốt!" : "Thử nghĩ lại nhé!")); box.classList.remove("hidden"); }
-    var target = opt.goto || (ok ? node.next : null);
-    if (target) {
-      document.querySelectorAll("#acChoices .acOpt").forEach(function (b) { b.disabled = true; });
-      acPending = target;
-      var nw = $("acNextWrap"); if (nw) nw.classList.remove("hidden");
-      if (ok) burstSafe(6);
+    if (box) { box.className = "rpgReply " + (ok ? "good" : "bad"); box.innerHTML = (ok ? "👍 " : "🤔 ") + esc(opt.reply); box.classList.remove("hidden"); }
+    if (ok) {
+      document.querySelectorAll("#rpgOpts .rpgOpt").forEach(function (b) { b.disabled = true; });
+      burstSafe(6);
+      window._rpgNext = function () { rpgSay("🎉", "Kết quả", AC_CH1.nodes.n8.text, function () { rpgSolved = true; rpgEnd(); }); };
+      box.innerHTML += '<div class="center" style="margin-top:8px"><button class="btn rpgDlgNext" onclick="_rpgNext()">Tiếp ➜</button></div>';
     }
   };
-  function acEnd(node) {
+  function rpgEnd() {
+    document.removeEventListener("keydown", rpgKey);
     var stars = acWrong === 0 ? 3 : acWrong <= 2 ? 2 : 1;
     var starRow = '<div class="mzStarRow">' + [1, 2, 3].map(function (n) { return '<span class="mzStar' + (n <= stars ? " on" : "") + '" style="animation-delay:' + (n * 0.12) + 's">★</span>'; }).join("") + "</div>";
     $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
     $("resultCard").innerHTML =
-      '<div class="mgResultIco">🎓</div><h2 style="margin-top:6px">' + esc(node.title) + "</h2>" +
-      starRow +
-      '<div class="plTier">Bạn là một Thám tử AI tài ba!</div>' +
-      '<div class="plRec"><div class="plRecHead">💡 Em vừa học</div><p>' + node.lesson + "</p></div>" +
+      '<div class="mgResultIco">🎓</div><h2 style="margin-top:6px">' + esc(AC_CH1.nodes.end.title) + "</h2>" +
+      starRow + '<div class="plTier">Bạn là một Thám tử AI tài ba!</div>' +
+      '<div class="plRec"><div class="plRecHead">💡 Em vừa học</div><p>' + AC_CH1.nodes.end.lesson + "</p></div>" +
       '<div class="center"><button class="btn" onclick="startAcademy()">Chơi lại 🔄</button>' +
         '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
     $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });

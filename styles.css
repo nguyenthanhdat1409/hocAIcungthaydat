@@ -2417,3 +2417,38 @@ html,body{ overflow-x:hidden }
 .acNext{ font-size:15px; margin-top:4px }
 @media(max-width:480px){ .acAvatar{ width:44px; height:44px; font-size:24px } }
 @media (prefers-reduced-motion:reduce){ .acGame{ transition:opacity .2s } .acClueBox{ animation:none } }
+
+/* ---- 🎓 AI Academy RPG (đi lại bằng phím) ---- */
+.rpgGame{ text-align:center }
+.rpgTop{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap }
+.rpgBadge{ background:#EEF2FF; color:#4338CA; border-radius:999px; padding:6px 14px; font-weight:800; font-size:14px }
+.rpgBadge b{ color:#6366F1; font-variant-numeric:tabular-nums }
+.rpgHintTxt{ font-size:12px; color:#94A3B8 }
+.rpgWrap{ display:flex; justify-content:center; margin:0 auto 12px }
+.rpgBoard{ position:relative; width:100%; max-width:440px; aspect-ratio:var(--cols)/var(--rows);
+  display:grid; grid-template-columns:repeat(var(--cols),1fr); grid-template-rows:repeat(var(--rows),1fr);
+  gap:3px; padding:6px; border-radius:16px; background:#C7D2FE; box-shadow:0 18px 40px -18px rgba(30,27,75,.5) }
+.rpgTile{ border-radius:6px; background:#EEF2FF; display:flex; align-items:center; justify-content:center; font-size:min(5.5vw,22px) }
+.rpgTile.wall{ background:linear-gradient(180deg,#818CF8,#4F46E5); box-shadow:inset 0 2px 2px rgba(255,255,255,.2) }
+.rpgEnt{ filter:drop-shadow(0 2px 2px rgba(0,0,0,.2)) }
+.rpgEnt.done{ opacity:.4 }
+.rpgHero{ position:absolute; width:calc(100%/var(--cols)); height:calc(100%/var(--rows)); display:flex; align-items:center; justify-content:center;
+  font-size:min(6vw,26px); transition:left .18s ease, top .18s ease; z-index:5; filter:drop-shadow(0 4px 4px rgba(0,0,0,.3)) }
+.rpgPad{ display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:10px }
+.rpgPadRow{ display:flex; gap:6px }
+.rpgKey{ width:52px; height:52px; border:0; border-radius:14px; font-size:24px; cursor:pointer; background:#fff; box-shadow:0 4px 0 rgba(99,102,241,.3); transition:transform .1s }
+.rpgKey:hover{ transform:translateY(-2px) } .rpgKey:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(99,102,241,.3) }
+.rpgDialog{ background:#fff; border-radius:18px; padding:14px; box-shadow:0 12px 30px -12px rgba(30,27,75,.35); border:2px solid #C7D2FE; text-align:left }
+.rpgDialog.show{ animation:adFadeUp .3s both }
+.rpgRow{ display:flex; gap:12px; align-items:flex-start }
+.rpgAva{ flex:0 0 auto; width:50px; height:50px; border-radius:50%; background:#EEF2FF; display:flex; align-items:center; justify-content:center; font-size:28px }
+.rpgSpeech{ flex:1; min-width:0 }
+.rpgWho{ font-family:var(--font-display); font-weight:800; font-size:13px; color:#6366F1; margin-bottom:3px }
+.rpgText{ font-size:15px; line-height:1.55; color:#1f2937 }
+.rpgOpts{ display:flex; flex-direction:column; gap:8px; margin-top:10px }
+.rpgOpt{ border:2px solid #C7D2FE; background:#fff; border-radius:14px; padding:12px 14px; font-size:14px; font-weight:600; text-align:left; cursor:pointer; box-shadow:0 3px 0 rgba(99,102,241,.18); transition:transform .12s, border-color .12s }
+.rpgOpt:hover{ transform:translateY(-2px); border-color:#6366F1 } .rpgOpt:disabled{ opacity:.65; cursor:default }
+.rpgReply{ margin-top:10px; border-radius:12px; padding:10px 12px; font-size:14px; font-weight:600; line-height:1.5 }
+.rpgReply.good{ background:#DCFCE7; color:#166534 } .rpgReply.bad{ background:#FEF3C7; color:#92400E }
+@media(max-width:480px){ .rpgKey{ width:46px; height:46px; font-size:22px } .rpgAva{ width:42px; height:42px; font-size:24px } }
+@media (prefers-reduced-motion:reduce){ .rpgHero{ transition:none } .rpgDialog{ animation:none } }
