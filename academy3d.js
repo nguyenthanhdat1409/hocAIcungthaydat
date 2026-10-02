@@ -13,7 +13,7 @@
 
   /* Nội dung Chapter 1 (giống bản 2D) */
   var AC = {
-    hook: { who: "07:42 sáng", text: "Hệ thống AI của trường vừa <b>khóa tài khoản</b> bạn Minh vì “gian lận”. Bạn có <b>30 phút</b> để điều tra!" },
+    hook: { who: "07:42 sáng", text: "Hệ thống AI của trường vừa <span class='hl hl-pink'>khóa tài khoản</span> bạn Minh vì “gian lận”. Bạn có <span class='hl hl-orange'>30 phút</span> để <span class='hl hl-violet'>điều tra!</span>" },
     lan: "AI chấm bài thấy điểm Minh bất thường nên kết luận gian lận. Em điều tra giúp cô nhé, Thám tử AI!",
     clues: [
       { ic: "🖥️", label: "Nhật ký AI", info: "AI thấy bài Minh giống tài liệu trên mạng 85% → tự kết luận “chép”." },
@@ -83,30 +83,38 @@
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(w, h);
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     stage.appendChild(renderer.domElement);
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0xbfb8ff, 1.0));
-    var dir = new THREE.DirectionalLight(0xffffff, 1.1); dir.position.set(6, 12, 6); scene.add(dir);
+    scene.add(new THREE.HemisphereLight(0xfff4ff, 0xcdbfff, 0.95));
+    var dir = new THREE.DirectionalLight(0xffffff, 1.0); dir.position.set(6, 13, 6);
+    dir.castShadow = true; dir.shadow.mapSize.set(1024, 1024);
+    dir.shadow.camera.left = -11; dir.shadow.camera.right = 11; dir.shadow.camera.top = 11; dir.shadow.camera.bottom = -11;
+    scene.add(dir);
+    var warm = new THREE.PointLight(0xffdca8, 0.7, 28); warm.position.set(-5, 5, -6); scene.add(warm); // nắng cửa sổ ấm
 
-    // sàn
-    var floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshStandardMaterial({ color: 0xf5f3ff }));
-    floor.rotation.x = -Math.PI / 2; scene.add(floor);
-    // viền kẻ ô cho dễ nhìn
-    var grid = new THREE.GridHelper(16, 16, 0xc4b5fd, 0xddd6fe); grid.position.y = 0.01; scene.add(grid);
-    // 4 tường thấp
-    var wallMat = new THREE.MeshStandardMaterial({ color: 0xa78bfa });
+    // sàn + thảm + lưới
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshStandardMaterial({ color: 0xf3efff, roughness: 0.9 }));
+    floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+    var rug = new THREE.Mesh(new THREE.CircleGeometry(4.3, 36), new THREE.MeshStandardMaterial({ color: 0xede9fe }));
+    rug.rotation.x = -Math.PI / 2; rug.position.y = 0.02; rug.receiveShadow = true; scene.add(rug);
+    var grid = new THREE.GridHelper(16, 16, 0xc4b5fd, 0xe6e0ff); grid.position.y = 0.013; scene.add(grid);
+    // 4 tường
+    var wallMat = new THREE.MeshStandardMaterial({ color: 0xb9a7f5, roughness: 0.95 });
     [[0, -8, 16, 0.4], [0, 8, 16, 0.4], [-8, 0, 0.4, 16], [8, 0, 0.4, 16]].forEach(function (p) {
-      var m = new THREE.Mesh(new THREE.BoxGeometry(p[2], 1.6, p[3]), wallMat);
-      m.position.set(p[0], 0.8, p[1]); scene.add(m);
+      var m = new THREE.Mesh(new THREE.BoxGeometry(p[2], 2.6, p[3]), wallMat);
+      m.position.set(p[0], 1.3, p[1]); m.receiveShadow = true; scene.add(m);
     });
+    a3dProps();
 
-    // NPC/vật: bệ + sprite emoji nổi phía trên
+    // NPC/vật: bệ + emoji nổi + dấu "!" nhấp nháy (ẩn khi đã điều tra)
     npcMeshes = [];
     NPCS.forEach(function (n) {
-      var base = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.9, 0.5, 16), new THREE.MeshStandardMaterial({ color: n.color }));
-      base.position.set(n.x, 0.25, n.z); scene.add(base);
+      var base = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.9, 0.5, 20), new THREE.MeshStandardMaterial({ color: n.color, roughness: 0.6 }));
+      base.position.set(n.x, 0.25, n.z); base.castShadow = true; base.receiveShadow = true; scene.add(base);
       var sp = a3dEmoji(n.emo); sp.position.set(n.x, 1.5, n.z); scene.add(sp);
-      npcMeshes.push({ data: n, base: base, sp: sp });
+      var mk = a3dEmoji("❗"); mk.scale.set(0.7, 0.7, 1); mk.position.set(n.x, 2.45, n.z); scene.add(mk);
+      npcMeshes.push({ data: n, base: base, sp: sp, mk: mk });
     });
 
     // nhân vật low-poly
@@ -132,7 +140,33 @@
     [-0.6, 0.6].forEach(function (x) { var a = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.7, 0.22), armMat); a.position.set(x, 0.95, 0); g.add(a); });
     var legMat = new THREE.MeshStandardMaterial({ color: 0x4338ca });
     [-0.22, 0.22].forEach(function (x) { var l = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.6, 0.28), legMat); l.position.set(x, 0.3, 0); g.add(l); });
+    g.traverse(function (o) { if (o.isMesh) o.castShadow = true; });
     return g;
+  }
+  function a3dProps() {
+    function box(w, h, d, color, x, y, z) {
+      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color: color, roughness: 0.85 }));
+      m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; scene.add(m); return m;
+    }
+    // cửa sổ sáng (tường sau) + khung
+    var win = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 1.9), new THREE.MeshStandardMaterial({ color: 0xfff6d8, emissive: 0xffe6a8, emissiveIntensity: 0.85 }));
+    win.position.set(-5, 1.7, -7.78); scene.add(win);
+    box(3.8, 0.18, 0.18, 0xffffff, -5, 2.7, -7.74); box(3.8, 0.18, 0.18, 0xffffff, -5, 0.75, -7.74);
+    box(0.18, 1.95, 0.18, 0xffffff, -6.8, 1.7, -7.74); box(0.18, 1.95, 0.18, 0xffffff, -3.2, 1.7, -7.74);
+    // kệ sách (tường phải) + sách màu
+    box(0.5, 2.4, 3.2, 0xcd9b6a, 7.55, 1.2, 3);
+    [0, 1, 2].forEach(function (i) { box(0.55, 0.7, 0.55, [0xf87171, 0xfbbf24, 0x60a5fa][i], 7.35, 0.75 + i * 0.75, 2 + i * 0.6); });
+    // 2 chậu cây ở góc
+    [[7, -7], [-7, 7]].forEach(function (p) {
+      box(0.6, 0.55, 0.6, 0xef9a6a, p[0], 0.27, p[1]);
+      var f = new THREE.Mesh(new THREE.SphereGeometry(0.6, 12, 12), new THREE.MeshStandardMaterial({ color: 0x4ade80, roughness: 0.8 }));
+      f.position.set(p[0], 1.05, p[1]); f.castShadow = true; scene.add(f);
+    });
+    // poster tường trái
+    [[0xf472b6, -2], [0x60a5fa, 2.5]].forEach(function (p) {
+      var m = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.1), new THREE.MeshStandardMaterial({ color: p[0] }));
+      m.position.set(-7.77, 2, p[1]); m.rotation.y = Math.PI / 2; scene.add(m);
+    });
   }
   function a3dEmoji(emoji) {
     var cv = document.createElement("canvas"); cv.width = cv.height = 128;
@@ -154,6 +188,8 @@
     camera.position.z += (cz + 9 - camera.position.z) * 0.1;
     camera.position.y += (9 - camera.position.y) * 0.1;
     camera.lookAt(cx, 1, cz);
+    moveT += 0.05;
+    for (var i = 0; i < npcMeshes.length; i++) { var mk = npcMeshes[i].mk; if (mk && mk.visible) mk.position.y = 2.45 + Math.sin(moveT * 2 + i) * 0.14; }
     renderer.render(scene, camera);
   }
   function a3dUpdateMove() {
@@ -225,11 +261,12 @@
   window.a3dDoInteract = function () {
     if (!nearNpc || dialogOpen) return;
     var n = nearNpc;
-    if (n.id === "lan") { a3dSay("👩‍🏫", "Cô Lan", AC.lan, window.a3dCloseDialog); }
+    function hideMk(id) { for (var i = 0; i < npcMeshes.length; i++) if (npcMeshes[i].data.id === id && npcMeshes[i].mk) npcMeshes[i].mk.visible = false; }
+    if (n.id === "lan") { hideMk("lan"); a3dSay("👩‍🏫", "Cô Lan", AC.lan, window.a3dCloseDialog); }
     else if (n.id === "c0" || n.id === "c1" || n.id === "c2") {
       var idx = +n.id.slice(1), cl = AC.clues[idx];
       seen[n.id] = true; var cEl = $("a3dClue"); if (cEl) cEl.textContent = a3dSeen();
-      sfxSafe("correct"); burstSafe(3);
+      hideMk(n.id); sfxSafe("correct"); burstSafe(3);
       a3dSay(cl.ic, cl.label, esc(cl.info), window.a3dCloseDialog);
     } else if (n.id === "ai") {
       if (a3dSeen() < 3) { a3dSay("🤖", "Máy AI", "Hãy xem đủ <b>3 manh mối</b> (🖥️ 📄 📊) rồi hãy quyết định nhé!", window.a3dCloseDialog); return; }
