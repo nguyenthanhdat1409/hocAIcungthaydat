@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://esm.sh">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=92">
+<link rel="stylesheet" href="styles.css?v=93">
 </head>
 <body>
 
@@ -42,19 +42,19 @@
 <!-- ===================== THANH ĐIỀU HƯỚNG ===================== -->
 <header id="nav">
   <div class="navInner">
-    <a class="brand" href="#home" onclick="go('home');return false;">
-      <span class="brandFace">🤖</span>
+    <a class="brand" href="#home" onclick="go('home');return false;" aria-label="Học AI Vui — trang chủ">
+      <img class="brandFace" src="icon.svg" alt="" width="40" height="40" decoding="async">
       <span class="brandText">Học AI Vui<small>Hiểu AI trong tầm tay</small></span>
     </a>
-    <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">☰</button>
-    <nav class="navLinks" id="navLinks">
-      <a data-nav="home"    href="#home"    onclick="go('home');return false;">🏠 Trang chủ</a>
-      <a data-nav="dauvao"  href="#dauvao"  onclick="go('dauvao');return false;">🎯 Đầu vào</a>
-      <a data-nav="baihoc"  href="#baihoc"  onclick="go('baihoc');return false;">📚 Bài học</a>
-      <a data-nav="baitap"  href="#baitap"  onclick="go('baitap');return false;">✏️ Bài tập</a>
-      <a data-nav="kiemtra" href="#kiemtra" onclick="go('kiemtra');return false;">🏆 Kiểm tra</a>
+    <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Mở menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+    <nav class="navLinks" id="navLinks" aria-label="Điều hướng chính">
+      <a data-nav="home"    href="#home"    onclick="go('home');return false;">Trang chủ</a>
+      <a data-nav="dauvao"  href="#dauvao"  onclick="go('dauvao');return false;">Đầu vào</a>
+      <a data-nav="baihoc"  href="#baihoc"  onclick="go('baihoc');return false;">Bài học</a>
+      <a data-nav="baitap"  href="#baitap"  onclick="go('baitap');return false;">Bài tập</a>
+      <a data-nav="kiemtra" href="#kiemtra" onclick="go('kiemtra');return false;">Kiểm tra</a>
     </nav>
-    <button class="acctBtn" id="acctBtn" onclick="openAuth()">👤 Đăng nhập</button>
+    <button class="acctBtn" id="acctBtn" onclick="openAuth()">Đăng nhập</button>
   </div>
 </header>
 
@@ -64,43 +64,119 @@
   <!-- ---------- TRANG CHỦ ---------- -->
   <section id="home" class="page">
     <div id="homeDash" class="homeDash hidden"></div>
-    <div class="hero">
-      <div class="heroText">
-        <span class="pill">🌟 Dành cho người mới bắt đầu</span>
-        <h1>Học <span class="grad">Trí tuệ nhân tạo</span><br>dễ như trò chuyện! 🤖</h1>
-        <p class="lead">Xin chào 👋 Cùng khám phá AI là gì, hoạt động ra sao và dùng thế nào cho đúng — qua những bài học ngắn, trực quan và vui nhộn.</p>
-        <div class="heroBtns">
-          <button class="btn light" onclick="go('baihoc')">📚 Bắt đầu học</button>
-          <button class="btn ghost" onclick="go('kiemtra')">🏆 Làm kiểm tra</button>
+
+    <!-- ===== HERO ===== -->
+    <div class="homeHero">
+      <div class="homeHero__inner">
+        <div class="heroText">
+          <span class="pill">☀️ Dành cho người mới bắt đầu</span>
+          <h1 class="heroHeadline">Học <span class="gradAI">Trí tuệ nhân tạo</span><br>dễ như trò chuyện!</h1>
+          <p class="lead">Khám phá AI là gì, hoạt động ra sao và cách ứng dụng trong cuộc sống thông qua những bài học ngắn, trực quan, dễ hiểu và vui nhộn.</p>
+          <div class="heroBtns">
+            <button class="heroCta heroCta--primary" onclick="go('baihoc')">
+              <span>Bắt đầu học</span>
+              <svg class="heroCta__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="heroCta heroCta--ghost" onclick="go('kiemtra')">Làm kiểm tra</button>
+          </div>
+          <div class="heroStats">
+            <div><b id="statLessons">0</b><span>bài học</span></div>
+            <div><b id="statTopics">0</b><span>module</span></div>
+            <div><b id="statQuiz">0</b><span>câu hỏi</span></div>
+          </div>
         </div>
-        <div class="heroStats">
-          <div><b id="statLessons">0</b><span>bài học</span></div>
-          <div><b id="statTopics">0</b><span>module</span></div>
-          <div><b id="statQuiz">0</b><span>câu hỏi</span></div>
+
+        <div class="heroArt" aria-hidden="true">
+          <span class="heroChip heroChip--1">💡</span>
+          <span class="heroChip heroChip--2">🧠</span>
+          <span class="heroChip heroChip--3">💬</span>
+          <div class="heroRobot">
+            <svg viewBox="0 0 320 340" width="320" height="340" role="img" aria-label="Robot linh vật Học AI Vui">
+              <defs>
+                <linearGradient id="roboBody" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#7A4BFF"/><stop offset="1" stop-color="#4F25CE"/>
+                </linearGradient>
+                <linearGradient id="roboHead" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F1ECFF"/>
+                </linearGradient>
+              </defs>
+              <!-- bóng đổ -->
+              <ellipse cx="160" cy="320" rx="92" ry="16" fill="#4F25CE" opacity=".14"/>
+              <!-- ăng-ten -->
+              <line x1="160" y1="40" x2="160" y2="70" stroke="#4F25CE" stroke-width="7" stroke-linecap="round"/>
+              <circle cx="160" cy="34" r="12" fill="#FFAD64"/>
+              <circle cx="160" cy="34" r="12" fill="none" stroke="#fff" stroke-width="3"/>
+              <!-- tay trái (vẫy) -->
+              <path d="M70 196 q-34 -6 -40 -44" fill="none" stroke="url(#roboBody)" stroke-width="18" stroke-linecap="round"/>
+              <circle cx="28" cy="150" r="13" fill="#6D3CF6"/>
+              <!-- tay phải -->
+              <path d="M250 200 q32 4 36 40" fill="none" stroke="url(#roboBody)" stroke-width="18" stroke-linecap="round"/>
+              <circle cx="288" cy="244" r="13" fill="#6D3CF6"/>
+              <!-- thân -->
+              <rect x="86" y="188" width="148" height="112" rx="40" fill="url(#roboBody)"/>
+              <rect x="116" y="214" width="88" height="58" rx="20" fill="#fff" opacity=".16"/>
+              <circle cx="160" cy="243" r="19" fill="#06B6D4"/>
+              <path d="M160 234 l6 9 -6 9 -6 -9 z" fill="#fff"/>
+              <!-- đầu -->
+              <rect x="72" y="70" width="176" height="130" rx="46" fill="url(#roboHead)" stroke="#6D3CF6" stroke-width="8"/>
+              <!-- màn hình mặt -->
+              <rect x="98" y="96" width="124" height="86" rx="30" fill="#17133A"/>
+              <!-- mắt -->
+              <circle cx="137" cy="138" r="15" fill="#06B6D4"/>
+              <circle cx="183" cy="138" r="15" fill="#06B6D4"/>
+              <circle cx="132" cy="132" r="5" fill="#fff"/>
+              <circle cx="178" cy="132" r="5" fill="#fff"/>
+              <!-- miệng cười -->
+              <path d="M138 160 a26 26 0 0 0 44 0" fill="none" stroke="#06B6D4" stroke-width="7" stroke-linecap="round"/>
+              <!-- má hồng -->
+              <circle cx="112" cy="156" r="8" fill="#F24CA1" opacity=".7"/>
+              <circle cx="208" cy="156" r="8" fill="#F24CA1" opacity=".7"/>
+              <!-- tai -->
+              <rect x="60" y="118" width="14" height="34" rx="7" fill="#6D3CF6"/>
+              <rect x="246" y="118" width="14" height="34" rx="7" fill="#6D3CF6"/>
+            </svg>
+          </div>
         </div>
-      </div>
-      <div class="heroArt">
-        <div class="heroBubble b1">💡</div>
-        <div class="heroBubble b2">🧠</div>
-        <div class="heroBubble b3">💬</div>
-        <div class="heroBubble b4">⚡</div>
-        <div class="heroAvatar">🤖</div>
       </div>
     </div>
 
-    <h2 class="sectionHead">✨ Vì sao học AI cùng chúng mình?</h2>
-    <div class="featGrid" id="featGrid"></div>
-
-    <h2 class="sectionHead">🎯 Các chủ đề bạn sẽ khám phá</h2>
-    <div class="skillGrid" id="skillGrid"></div>
-
-    <div class="ctaBanner">
-      <div>
-        <h3>Sẵn sàng chưa nào? 🚀</h3>
-        <p>Làm thử bài kiểm tra nhanh để xem mình đã hiểu AI tới đâu nhé!</p>
+    <!-- ===== VÌ SAO HỌC CÙNG CHÚNG MÌNH ===== -->
+    <section class="homeSection homeSection--tintTop">
+      <div class="homeWrap">
+        <div class="secHead">
+          <h2 class="secHead__title">Vì sao học AI cùng chúng mình?</h2>
+          <p class="secHead__sub">Học AI chưa bao giờ dễ và thú vị đến thế!</p>
+        </div>
+        <div class="featGrid" id="featGrid"></div>
       </div>
-      <button class="btn light" onclick="go('kiemtra')">Vào kiểm tra ➜</button>
-    </div>
+    </section>
+
+    <!-- ===== CÁC CHỦ ĐỀ ===== -->
+    <section class="homeSection">
+      <div class="homeWrap">
+        <div class="secHead">
+          <h2 class="secHead__title">Các chủ đề bạn sẽ khám phá</h2>
+          <p class="secHead__sub">Từng bước làm quen với thế giới trí tuệ nhân tạo.</p>
+        </div>
+        <div class="skillGrid" id="skillGrid"></div>
+      </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section class="homeSection homeSection--cta">
+      <div class="homeWrap">
+        <div class="ctaBanner">
+          <div class="ctaBanner__text">
+            <h3>Sẵn sàng chưa nào? 🚀</h3>
+            <p>Làm thử bài kiểm tra nhanh để xem mình đã hiểu AI tới đâu nhé!</p>
+          </div>
+          <button class="heroCta heroCta--light" onclick="go('kiemtra')">
+            <span>Vào kiểm tra</span>
+            <svg class="heroCta__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
   </section>
 
   <!-- ---------- BÀI HỌC (LỘ TRÌNH ĐẦY ĐỦ) ---------- -->
@@ -214,6 +290,6 @@
 
 <script defer src="supabase-config.js?v=63"></script>
 <script defer src="cloud.js?v=68"></script>
-<script defer src="app.js?v=83"></script>
+<script defer src="app.js?v=84"></script>
 </body>
 </html>

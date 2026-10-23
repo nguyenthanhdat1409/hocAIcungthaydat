@@ -171,6 +171,7 @@ function go(id){
   });
   document.querySelectorAll("#navLinks a").forEach(a => a.classList.toggle("active", a.dataset.nav === id));
   document.getElementById("nav").classList.remove("open");
+  { const b = document.getElementById("burger"); if(b){ b.setAttribute("aria-expanded","false"); b.setAttribute("aria-label","Mở menu"); } }
   if(("#" + id) !== location.hash){ navLock = true; location.hash = id; }
   window.scrollTo(0, 0);
   if(id === "baihoc") showCurriculum();
@@ -208,14 +209,23 @@ window.addEventListener("hashchange", () => {
   if(navLock){ navLock = false; return; }
   go((location.hash || "#home").slice(1));
 });
-function toggleMenu(){ document.getElementById("nav").classList.toggle("open"); }
+function toggleMenu(){
+  const open = document.getElementById("nav").classList.toggle("open");
+  const b = document.getElementById("burger");
+  if(b){ b.setAttribute("aria-expanded", open ? "true" : "false"); b.setAttribute("aria-label", open ? "Đóng menu" : "Mở menu"); }
+}
 
 /* ---------- Trang chủ ---------- */
 function renderHome(){
   document.getElementById("featGrid").innerHTML = FEATURES.map(f =>
-    `<div class="featCard"><div class="fi">${f.i}</div><h4>${f.h}</h4><p>${f.p}</p></div>`).join("");
+    `<div class="featCard"><div class="featCard__ic">${f.i}</div><h4>${f.h}</h4><p>${f.p}</p></div>`).join("");
+  const ARROW = `<svg class="skillCard__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   document.getElementById("skillGrid").innerHTML = Object.values(TOPICS).map(t =>
-    `<div class="skillCard" style="background:${t.color}"><span class="se">${t.emoji}</span><span class="sn">${t.name}</span></div>`).join("");
+    `<button class="skillCard" style="--tc:${t.color}" onclick="go('baihoc')">
+       <span class="skillCard__ic">${t.emoji}</span>
+       <span class="skillCard__name">${t.name}</span>
+       <span class="skillCard__go">Khám phá ${ARROW}</span>
+     </button>`).join("");
   // Thống kê tự động
   const totalQ = [1,2,3].reduce((s,lv)=>s+BANK[lv].length,0);
   const cst = curriculumStats();
