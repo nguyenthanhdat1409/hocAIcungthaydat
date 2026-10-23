@@ -2454,24 +2454,184 @@ html,body{ overflow-x:hidden }
 @media(max-width:480px){ .rpgKey{ width:46px; height:46px; font-size:22px } .rpgAva{ width:42px; height:42px; font-size:24px } }
 @media (prefers-reduced-motion:reduce){ .rpgHero{ transition:none } .rpgDialog{ animation:none } }
 
-/* ---- 🎓 AI Academy 3D (Three.js) ---- */
-.a3dLoading{ text-align:center; padding:48px 16px; font-size:16px; font-weight:700; color:#6366F1 }
-.a3dGame{ text-align:center }
-.a3dTop{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap }
-.a3dStage{ width:100%; max-width:560px; margin:0 auto; border-radius:18px; overflow:hidden; line-height:0;
-  box-shadow:0 18px 44px -18px rgba(30,27,75,.55); background:#e9e6ff }
-.a3dStage canvas{ width:100% !important; height:auto !important; display:block }
-.a3dInteract{ margin:12px auto 0; font-size:15px }
-.a3dPad{ display:flex; flex-direction:column; align-items:center; gap:6px; margin:12px 0 }
-
-/* ---- AI Academy: tô màu từ khoá trong thoại + phím 3D ---- */
+/* Tô màu từ khoá trong thoại (bản 2D rpg vẫn dùng .hl) */
 .rpgText{ color:#1e1b4b }
 .hl{ border-radius:7px; padding:1px 7px; font-weight:800; white-space:nowrap }
 .hl-pink{ background:#FCE7F3; color:#BE185D }
 .hl-orange{ background:#FEF3C7; color:#B45309 }
 .hl-violet{ background:#EDE9FE; color:#6D28D9 }
-.a3dPad .rpgKey{ background:linear-gradient(160deg,#ffffff,#EEF2FF); color:#4338CA; box-shadow:0 5px 0 rgba(99,102,241,.35), inset 0 2px 2px rgba(255,255,255,.7) }
-.a3dPad .rpgKey:active{ box-shadow:0 1px 0 rgba(99,102,241,.35) }
+.a3dHl{ border-radius:7px; padding:1px 7px; font-weight:800; white-space:nowrap }
+.a3dHl-pink{ background:#FCE7F3; color:#BE185D }
+.a3dHl-orange{ background:#FEF3C7; color:#B45309 }
+.a3dHl-violet{ background:#EDE9FE; color:#6D28D9 }
+
+/* =========================================================
+   🎓 AI ACADEMY 3D — game toàn màn hình (immersive HUD)
+   ========================================================= */
+:root{ --a3d-vio:#8B5CF6; --a3d-ind:#6366F1; --a3d-deep:#4338CA; --a3d-ink:#1e1b4b;
+  --a3d-line:#D9CFFB; --a3d-panel:#ffffff; --a3d-soft:#F5F3FF }
+
+#runner.a3dMode{ overflow:hidden }
+.a3dMode .runnerTop{ display:none }
+/* QUAN TRỌNG: tắt transform/animation của thẻ bọc để position:fixed của .a3dRoot
+   bám theo viewport (transform ở tổ tiên sẽ biến .a3dRoot thành con của thẻ → méo canvas). */
+.a3dMode #qCard, .a3dMode .app, .a3dMode .app .card{ animation:none !important; transform:none !important }
+.a3dMode #qCard{ padding:0; margin:0; max-width:none; background:none; border:0; box-shadow:none; border-radius:0 }
+.a3dMode .app{ max-width:none; padding:0 }
+
+.a3dRoot{ position:fixed; inset:0; z-index:90; background:#e7e3ff; color:var(--a3d-ink);
+  font-family:var(--font-body); user-select:none; -webkit-user-select:none; touch-action:none; overflow:hidden }
+.a3dStage{ position:absolute; inset:0 }
+.a3dStage canvas{ display:block; width:100%; height:100% }
+.a3dLoading{ position:absolute; inset:0; display:flex; flex-direction:column; gap:14px; align-items:center; justify-content:center;
+  text-align:center; font-size:16px; font-weight:800; color:var(--a3d-ind); padding:24px }
+
+/* ---- HUD chung ---- */
+.a3dHud{ position:absolute; left:0; right:0; display:flex; pointer-events:none; z-index:5 }
+.a3dHud > *, .a3dHud button{ pointer-events:auto }
+.a3dHudTop{ top:0; padding:14px 16px; justify-content:space-between; align-items:flex-start; gap:10px }
+
+.a3dQuest{ background:rgba(255,255,255,.92); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  border-radius:16px; padding:9px 14px; box-shadow:0 10px 26px -14px rgba(30,27,75,.6); border:1.5px solid rgba(255,255,255,.9); max-width:min(62vw,420px) }
+.a3dQuestTitle{ font-family:var(--font-display); font-weight:800; font-size:13px; color:var(--a3d-deep); line-height:1.2 }
+.a3dObjective{ font-size:13px; font-weight:700; color:#4b5563; margin-top:3px; line-height:1.3 }
+
+.a3dTopRight{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end }
+.a3dClueChip{ background:linear-gradient(160deg,#fff,#EDE9FE); color:var(--a3d-deep); border-radius:999px;
+  padding:8px 14px; font-weight:800; font-size:14px; box-shadow:0 6px 16px -8px rgba(99,102,241,.6); border:1.5px solid #fff; white-space:nowrap }
+.a3dClueChip b{ color:var(--a3d-vio); font-variant-numeric:tabular-nums }
+.a3dClueChip.pop{ animation:a3dPop .45s ease }
+@keyframes a3dPop{ 40%{ transform:scale(1.22) } }
+
+.a3dRound{ width:42px; height:42px; border:none; border-radius:50%; background:rgba(255,255,255,.95); color:var(--a3d-deep);
+  font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 6px 16px -8px rgba(30,27,75,.6); display:flex; align-items:center; justify-content:center;
+  transition:transform .12s ease }
+.a3dRound:hover{ transform:translateY(-2px) } .a3dRound:active{ transform:translateY(1px) }
+.a3dExit{ background:rgba(255,255,255,.95); color:#be123c }
+
+/* ---- nút Bảng điều tra ---- */
+.a3dBoardBtn{ position:absolute; top:76px; left:50%; transform:translateX(-50%); z-index:6;
+  border:none; cursor:pointer; padding:12px 22px; border-radius:999px; font-family:var(--font-display); font-weight:800; font-size:15px; color:#fff;
+  background:linear-gradient(160deg,var(--a3d-vio),var(--a3d-ind)); box-shadow:0 12px 26px -10px rgba(99,102,241,.8);
+  animation:a3dBob 1.4s ease-in-out infinite }
+.a3dBoardBtn:hover{ filter:brightness(1.05) }
+@keyframes a3dBob{ 50%{ transform:translateX(-50%) translateY(-5px) } }
+
+/* ---- khung tương tác ngữ cảnh ---- */
+.a3dPrompt{ position:absolute; bottom:112px; left:50%; transform:translateX(-50%); z-index:6;
+  background:rgba(30,27,75,.86); color:#fff; padding:9px 16px; border-radius:999px; font-size:14px; font-weight:700;
+  box-shadow:0 10px 24px -12px rgba(0,0,0,.6); white-space:nowrap; display:flex; align-items:center; gap:8px }
+.a3dPrompt b{ color:#c4b5fd }
+.a3dPKey{ display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; padding:0 6px;
+  background:#fff; color:var(--a3d-deep); border-radius:6px; font-weight:900; font-size:12px; box-shadow:0 2px 0 rgba(0,0,0,.25) }
+
+/* ---- cần gạt cảm ứng + nút hành động ---- */
+.a3dJoyZone{ position:absolute; left:0; bottom:0; width:48%; height:46%; z-index:6; touch-action:none }
+.a3dJoyBase{ position:absolute; width:116px; height:116px; margin:-58px 0 0 -58px; border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.5),rgba(255,255,255,.14)); border:2px solid rgba(255,255,255,.7);
+  opacity:0; transition:opacity .15s ease; pointer-events:none }
+.a3dJoyBase.show{ opacity:1 }
+.a3dJoyStick{ position:absolute; left:50%; top:50%; width:52px; height:52px; margin:-26px 0 0 -26px; border-radius:50%;
+  background:linear-gradient(160deg,#fff,#EDE9FE); box-shadow:0 6px 14px -4px rgba(30,27,75,.5) }
+.a3dAction{ position:absolute; right:22px; bottom:28px; z-index:7; width:76px; height:76px; border:none; border-radius:50%;
+  font-size:30px; cursor:pointer; color:#fff; background:linear-gradient(160deg,var(--a3d-vio),var(--a3d-ind));
+  box-shadow:0 14px 30px -10px rgba(99,102,241,.85), inset 0 2px 3px rgba(255,255,255,.5); transition:transform .1s ease }
+.a3dAction:active{ transform:scale(.92) }
+
+/* ---- toast mục tiêu ---- */
+.a3dToast{ position:absolute; top:74px; left:50%; transform:translate(-50%,-14px); z-index:8;
+  background:rgba(30,27,75,.92); color:#fff; padding:10px 18px; border-radius:14px; font-size:13.5px; font-weight:700; max-width:88vw; text-align:center;
+  box-shadow:0 14px 30px -12px rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease }
+.a3dToast.show{ opacity:1; transform:translate(-50%,0) }
+
+/* ---- lớp phủ (thoại / bảng / kết thúc) ---- */
+.a3dLayer{ position:absolute; inset:0; z-index:20; display:flex; align-items:center; justify-content:center;
+  padding:18px; background:rgba(30,27,75,.28); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); touch-action:auto }
+.a3dPanel, .a3dEnd, .a3dDlg{ touch-action:pan-y }
+
+/* hộp thoại */
+.a3dDlg{ width:100%; max-width:560px; background:var(--a3d-panel); border-radius:22px; padding:16px; display:flex; gap:14px; align-items:flex-start;
+  box-shadow:0 24px 50px -16px rgba(30,27,75,.6); border:2px solid #EDE9FE; animation:a3dUp .28s both }
+@keyframes a3dUp{ from{ opacity:0; transform:translateY(16px) } }
+.a3dDlgAva{ flex:0 0 auto; width:56px; height:56px; border-radius:50%; font-size:30px; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(160deg,#EDE9FE,#DDD6FE) }
+.a3dDlgBody{ flex:1; min-width:0; text-align:left }
+.a3dDlgName{ font-family:var(--font-display); font-weight:800; font-size:14px; color:var(--a3d-ind); margin-bottom:3px }
+.a3dDlgText{ font-size:15.5px; line-height:1.55; color:var(--a3d-ink) }
+.a3dCenter{ text-align:center; margin-top:12px }
+
+/* lựa chọn */
+.a3dOpts{ display:flex; flex-direction:column; gap:8px; margin-top:12px }
+.a3dOpt{ border:2px solid var(--a3d-line); background:#fff; border-radius:14px; padding:12px 14px; font-size:14.5px; font-weight:600; text-align:left;
+  cursor:pointer; color:var(--a3d-ink); box-shadow:0 3px 0 rgba(99,102,241,.16); transition:transform .12s, border-color .12s }
+.a3dOpt:hover{ transform:translateY(-2px); border-color:var(--a3d-ind) } .a3dOpt:disabled{ opacity:.6; cursor:default; transform:none }
+.a3dReply{ margin-top:12px; border-radius:12px; padding:11px 13px; font-size:14px; font-weight:600; line-height:1.5 }
+.a3dReply.good{ background:#DCFCE7; color:#166534 } .a3dReply.bad{ background:#FEF3C7; color:#92400E }
+
+/* nút chung trong game */
+.a3dBtn{ border:none; cursor:pointer; padding:11px 20px; border-radius:14px; font-family:var(--font-display); font-weight:800; font-size:15px; color:#fff;
+  background:linear-gradient(160deg,var(--a3d-vio),var(--a3d-ind)); box-shadow:0 8px 18px -8px rgba(99,102,241,.8); transition:transform .12s ease, filter .12s }
+.a3dBtn:hover{ transform:translateY(-2px); filter:brightness(1.04) } .a3dBtn:active{ transform:translateY(1px) }
+.a3dBtn.a3dLight{ background:#fff; color:var(--a3d-deep); box-shadow:0 6px 14px -8px rgba(30,27,75,.5); margin-left:8px }
+.a3dBtnBig{ padding:13px 26px; font-size:16px }
+
+/* panel chung (bảng điều tra / trợ giúp) */
+.a3dPanel{ width:100%; max-width:600px; max-height:86vh; overflow:auto; background:var(--a3d-panel); border-radius:22px; padding:18px;
+  box-shadow:0 24px 50px -16px rgba(30,27,75,.6); border:2px solid #EDE9FE; animation:a3dUp .28s both; text-align:left }
+.a3dPanelHead{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px }
+.a3dPanelHead span{ font-family:var(--font-display); font-weight:800; font-size:19px; color:var(--a3d-deep) }
+.a3dHelpList{ margin:0; padding-left:20px; line-height:1.7; font-size:14.5px }
+.a3dHelpList li{ margin-bottom:6px }
+
+/* bảng điều tra */
+.a3dBoardLead{ font-size:14.5px; line-height:1.55; margin:0 0 14px; color:#374151 }
+.a3dBoardItem{ border:2px solid #EDE9FE; border-radius:16px; padding:12px; margin-bottom:12px; background:var(--a3d-soft) }
+.a3dBoardHead{ display:flex; gap:10px; align-items:flex-start; margin-bottom:10px }
+.a3dBoardIc{ flex:0 0 auto; width:44px; height:44px; border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:24px }
+.a3dBoardName{ font-weight:800; color:var(--a3d-ink); font-size:15px }
+.a3dBoardInfo{ font-size:13.5px; line-height:1.5; color:#4b5563; margin-top:2px }
+.a3dBoardOpts{ display:flex; gap:8px; flex-wrap:wrap }
+.a3dBoardOpt{ flex:1 1 44%; border:2px solid var(--a3d-line); background:#fff; border-radius:12px; padding:10px; font-weight:700; font-size:13.5px;
+  cursor:pointer; color:var(--a3d-ink); transition:transform .1s, border-color .1s }
+.a3dBoardOpt:hover{ transform:translateY(-2px); border-color:var(--a3d-ind) }
+.a3dBoardOpt.ok{ background:#DCFCE7; border-color:#4ade80; color:#166534 }
+.a3dBoardOpt.no{ border-color:#f87171 }
+.a3dBoardOpt:disabled{ cursor:default }
+.a3dBoardFx{ margin-top:10px; border-radius:12px; padding:10px 12px; font-size:13.5px; font-weight:600; line-height:1.5 }
+.a3dBoardFx.good{ background:#DCFCE7; color:#166534 } .a3dBoardFx.bad{ background:#FEF3C7; color:#92400E }
+.a3dBoardFoot{ margin-top:6px; text-align:center }
+.a3dBoardCount{ font-weight:800; color:#64748b; margin-bottom:10px } .a3dBoardCount.ok{ color:#166534 }
+
+/* màn kết thúc */
+.a3dEnd{ width:100%; max-width:520px; background:var(--a3d-panel); border-radius:24px; padding:26px 22px; text-align:center;
+  box-shadow:0 24px 54px -16px rgba(30,27,75,.6); border:2px solid #EDE9FE; animation:a3dUp .3s both; max-height:90vh; overflow:auto }
+.a3dEndIco{ font-size:52px } .a3dEnd h2{ font-family:var(--font-display); color:var(--a3d-deep); margin:6px 0 }
+.a3dStars{ display:flex; justify-content:center; gap:8px; font-size:40px; margin:6px 0 }
+.a3dStar{ color:#e5e7eb } .a3dStar.on{ color:#fbbf24; animation:a3dStarPop .5s both }
+@keyframes a3dStarPop{ 0%{ transform:scale(0) rotate(-40deg) } 70%{ transform:scale(1.3) } 100%{ transform:scale(1) } }
+.a3dEndTier{ font-weight:800; color:var(--a3d-vio); margin:2px 0 6px }
+.a3dReward{ display:inline-block; background:#EDE9FE; color:var(--a3d-deep); font-weight:800; font-size:13.5px; border-radius:999px; padding:7px 16px; margin-bottom:12px }
+.a3dEndCard{ background:var(--a3d-soft); border-radius:16px; padding:14px; text-align:left; margin-bottom:16px }
+.a3dEndHead{ font-family:var(--font-display); font-weight:800; color:var(--a3d-ind); margin-bottom:5px }
+.a3dEndCard p{ margin:0; font-size:14.5px; line-height:1.6; color:#374151 }
+
+/* điện thoại */
+@media (max-width:640px){
+  .a3dQuestTitle{ font-size:12px } .a3dObjective{ font-size:12px }
+  .a3dQuest{ max-width:60vw; padding:7px 11px }
+  .a3dRound{ width:38px; height:38px; font-size:16px }
+  .a3dClueChip{ padding:7px 12px; font-size:13px }
+  .a3dDlgText{ font-size:15px } .a3dAction{ width:68px; height:68px; font-size:26px }
+  .a3dPrompt{ bottom:120px; font-size:13px }
+  .a3dToast{ top:108px }  /* tránh đè lên hàng nút góc phải khi xuống dòng trên máy hẹp */
+}
+/* chuột/trackpad: ẩn cần gạt & nút hành động (dùng phím + nút trên thoại) */
+@media (hover:hover) and (pointer:fine){ .a3dJoyZone{ display:none } }
+
+@media (prefers-reduced-motion:reduce){
+  .a3dBoardBtn, .a3dToast, .a3dDlg, .a3dPanel, .a3dEnd, .a3dStar.on, .a3dClueChip.pop{ animation:none !important }
+  .a3dBtn, .a3dRound, .a3dOpt{ transition:none }
+}
 
 /* =========================================================
    TRANG CHỦ — Modern Playful EdTech (redesign)

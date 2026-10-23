@@ -1,320 +1,1221 @@
 /* =========================================================
-   academy3d.js — AI Academy bản 3D (Three.js, nạp lazy)
-   Nhân vật low-poly dựng bằng code, đi trong phòng 3D, tới NPC để điều tra.
-   Ghi đè window.startAcademy (2D) khi file này nạp sau minigames.js.
-   Dùng chung #runner + Cloud + sfx/burst.
+   academy3d.js — AI Academy 3D (Three.js, nạp lazy)
+   Game giáo dục: vào vai "Thám tử AI" điều tra vụ AI khóa nhầm tài khoản bạn Minh.
+   - Thế giới low-poly ấm cúng, viewport toàn màn hình (immersive).
+   - Nhân vật có tay/chân + hoạt hình đi/đứng, camera 3/4 theo sau, va chạm thật.
+   - Vòng chơi: giao nhiệm vụ → khám phá → gặp 3 NPC → thu 3 manh mối →
+     mở Bảng điều tra → đối chiếu bằng chứng với kết luận của AI → quyết định →
+     nghe giải thích về suy luận & giới hạn của AI → hoàn thành + nhận thưởng.
+   Ghi đè window.startAcademy (bản 2D ở minigames.js). Dùng chung #runner + Cloud + sfx/burst.
    ========================================================= */
 (function () {
   "use strict";
+
+  /* ---------- Tiện ích ---------- */
   var $ = function (id) { return document.getElementById(id); };
-  function sfxSafe(n) { try { if (window.sfx && sfx[n]) sfx[n](); } catch (e) {} }
+  function sfxSafe(n) { try { if (!muted && window.sfx && sfx[n]) sfx[n](); } catch (e) {} }
   function burstSafe(n) { try { if (window.burst) burst(n); } catch (e) {} }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  var REDUCED = false;
+  try { REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  var muted = false;
+  try { muted = localStorage.getItem("a3dMuted") === "1"; } catch (e) {}
 
-  /* Nội dung Chapter 1 (giống bản 2D) */
+  /* ---------- Nội dung giáo dục (giữ nguyên cốt truyện bản cũ, mở rộng cho gameplay) ---------- */
   var AC = {
-    hook: { who: "07:42 sáng", text: "Hệ thống AI của trường vừa <span class='hl hl-pink'>khóa tài khoản</span> bạn Minh vì “gian lận”. Bạn có <span class='hl hl-orange'>30 phút</span> để <span class='hl hl-violet'>điều tra!</span>" },
-    lan: "AI chấm bài thấy điểm Minh bất thường nên kết luận gian lận. Em điều tra giúp cô nhé, Thám tử AI!",
+    brief: {
+      who: "Cô Lan",
+      lines: [
+        "Chào Thám tử AI! 07:42 sáng nay, hệ thống AI của trường vừa <span class='a3dHl a3dHl-pink'>khóa tài khoản</span> bạn Minh vì nghi <b>gian lận</b>.",
+        "Minh nói mình bị oan. Em có <span class='a3dHl a3dHl-orange'>30 phút</span> để <span class='a3dHl a3dHl-violet'>điều tra</span> và tìm ra sự thật nhé!",
+        "Cách chơi: dùng <b>WASD / phím mũi tên</b> (hoặc cần gạt trên điện thoại) để đi. Lại gần người có dấu <b>❗</b> rồi nhấn <b>E</b> (hoặc nút 💬) để nói chuyện."
+      ]
+    },
+    objExplore: "Gặp 3 nhân vật và thu thập đủ 3 manh mối",
+    objBoard: "Mở Bảng điều tra để đối chiếu bằng chứng",
+    objDecide: "Gặp Máy AI để đưa ra kết luận",
+    /* 3 manh mối — đồng thời là 3 NPC để trò chuyện */
     clues: [
-      { ic: "🖥️", label: "Nhật ký AI", info: "AI thấy bài Minh giống tài liệu trên mạng 85% → tự kết luận “chép”." },
-      { ic: "📄", label: "Bài của Minh", info: "Minh dùng nhiều câu giống dàn ý thầy phát — vì em học thuộc dàn ý đó." },
-      { ic: "📊", label: "Dữ liệu của AI", info: "AI chỉ học từ 50 bài mẫu, chưa từng thấy cách trình bày của Minh." }
+      {
+        id: "c0", ic: "🖥️", label: "Nhật ký AI",
+        npc: "Bạn trực phòng máy",
+        info: "Máy AI báo: bài của Minh <b>giống tài liệu trên mạng 85%</b> → nó tự kết luận là “chép”.",
+        /* đối chiếu với kết luận "Minh gian lận" */
+        verdict: "support",
+        why: "Đây chính là <b>căn cứ</b> khiến AI buộc tội — nhưng mới chỉ là một con số, chưa phải sự thật."
+      },
+      {
+        id: "c1", ic: "📄", label: "Bài của Minh",
+        npc: "Bạn cùng lớp",
+        info: "Minh dùng nhiều câu giống <b>dàn ý thầy phát</b> cho cả lớp — vì em học thuộc đúng dàn ý đó.",
+        verdict: "refute",
+        why: "Giống nhau có <b>lý do chính đáng</b>: cả lớp học chung dàn ý. Giống ≠ gian lận."
+      },
+      {
+        id: "c2", ic: "📊", label: "Dữ liệu của AI",
+        npc: "Bạn kỹ thuật viên",
+        info: "Máy AI chỉ được học từ <b>50 bài mẫu</b> và <b>chưa từng thấy</b> cách trình bày của Minh.",
+        verdict: "refute",
+        why: "AI học từ dữ liệu <b>quá ít &amp; lệch</b> nên dễ hiểu nhầm cái gì “lạ” thành “sai”."
+      }
     ],
-    q: "AI báo Minh gian lận với độ tin cậy 85%. Em làm gì?",
+    /* Bảng điều tra: phân loại mỗi manh mối */
+    boardQ: "Manh mối này nói gì về kết luận “Minh gian lận” của AI?",
+    boardOpts: [
+      { k: "support", t: "⚖️ Ủng hộ lời buộc tội" },
+      { k: "refute", t: "🛡️ Phản bác, minh oan cho Minh" }
+    ],
+    /* Quyết định cuối */
+    q: "Sau khi xem xét, AI vẫn báo “Minh gian lận” với độ tin cậy 85%. Em quyết định thế nào?",
     options: [
-      { t: "😮 Tin AI, khóa tài khoản luôn", good: false, reply: "Em tin ngay… Minh bị oan! Thử lại nhé." },
-      { t: "❓ Hỏi AI: “dựa vào gì mà kết luận?”", good: true, reply: "Tốt! Luôn bắt AI giải thích lý do." },
-      { t: "🔎 Tự đi kiểm chứng bằng chứng", good: true, reply: "Xuất sắc! Kiểm chứng trước khi tin." }
+      { t: "😮 Tin AI ngay, khóa tài khoản Minh", good: false, reply: "Em tin ngay mà chưa kiểm chứng… Minh bị oan mất! Thử lại nhé." },
+      { t: "❓ Yêu cầu AI giải thích “dựa vào đâu?”", good: true, reply: "Tốt lắm! Luôn bắt AI nói rõ lý do trước khi tin." },
+      { t: "🔎 Dùng 3 manh mối để minh oan cho Minh", good: true, reply: "Xuất sắc! Em để bằng chứng và con người quyết định, không phó mặc cho AI." }
     ],
-    result: "Em trình bày bằng chứng cho cô Lan. Minh được minh oan! Trường ra quy định: <b>AI chỉ GỢI Ý, con người mới QUYẾT ĐỊNH.</b>",
+    result: "Em trình bày đủ bằng chứng cho cô Lan. <b>Minh được minh oan!</b> Trường ra quy định mới: <b>AI chỉ GỢI Ý, con người mới QUYẾT ĐỊNH.</b>",
     endTitle: "Phá án thành công! 🎉",
-    lesson: "AI kết luận dựa trên <b>dữ liệu nó được học</b>. Dữ liệu ít/lệch → kết luận sai. Đừng coi AI là chân lý — hãy <b>hỏi lý do &amp; kiểm chứng</b>!"
+    lesson: "AI đưa ra kết luận dựa trên <b>dữ liệu mà nó được học</b>. Nếu dữ liệu ít hoặc lệch, kết luận có thể sai. AI rất hữu ích để <b>gợi ý</b>, nhưng đừng coi nó là chân lý — hãy luôn <b>hỏi lý do &amp; tự kiểm chứng</b>!"
   };
 
-  // vị trí NPC trong phòng (x,z); phòng ~ 16x16 tâm (0,0)
-  var NPCS = [
-    { id: "lan", emo: "👩‍🏫", name: "Cô Lan", x: -5, z: -5, color: 0xf9a8d4 },
-    { id: "c0", emo: "🖥️", name: "Nhật ký AI", x: 5, z: -5, color: 0x93c5fd },
-    { id: "c1", emo: "📄", name: "Bài của Minh", x: -5, z: 5, color: 0xfcd34d },
-    { id: "c2", emo: "📊", name: "Dữ liệu AI", x: 5, z: 5, color: 0x86efac },
-    { id: "ai", emo: "🤖", name: "Máy AI", x: 0, z: -6.5, color: 0xc4b5fd }
+  /* ---------- Cấu hình NPC/vật thể (toạ độ x,z; phòng ±7.2, tâm 0,0) ---------- */
+  var ENT = [
+    { id: "lan", kind: "teacher", name: "Cô Lan", emo: "👩‍🏫", x: -4.6, z: -4.6, color: 0xec6fb0, look: { hair: 0x5b3a29, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0xb24f86 } },
+    { id: "c0", kind: "person", name: "Trực phòng máy", emo: "🖥️", x: 4.6, z: -4.6, color: 0x5b8def, look: { hair: 0x2b2b2b, skin: 0xf1c79b, style: "short", pants: 0x3b5bdb }, prop: "computer" },
+    { id: "c1", kind: "person", name: "Bạn cùng lớp", emo: "📄", x: -4.6, z: 4.2, color: 0xf6c344, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "long", pants: 0xca8a04 }, prop: "paper" },
+    { id: "c2", kind: "person", name: "Kỹ thuật viên", emo: "📊", x: 4.6, z: 4.2, color: 0x58d898, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0ea371 }, prop: "chart" },
+    { id: "ai", kind: "robot", name: "Máy AI", emo: "🤖", x: 0, z: -5.9, color: 0xc4b5fd }
   ];
 
-  var THREE = null, ready = false;
-  var renderer, scene, camera, hero, raf = 0;
-  var keys = {}, pad = {}, dialogOpen = false, seen = {}, solved = false, wrong = 0, nearNpc = null;
-  var npcMeshes = [];
+  /* ---------- Trạng thái module ---------- */
+  var THREE = null;
+  var renderer, scene, camera, clock, hero, raf = 0, lastT = 0;
+  var npcs = [], colliders = [], interactables = [], markers = [];
+  var robotGLB = null, aiMixer = null, aiActions = null, aiCurrent = null; // Máy AI dạng GLB (CC0 RobotExpressive)
+  var keys = {}, joy = { x: 0, z: 0, active: false }, nearest = null;
+  var state = "", cluesGot = {}, boardDone = {}, wrong = 0, solved = false;
+  var dialogOpen = false, overlayOpen = false;
+  var listeners = [], visHandler = null, ro = null;
+  var vel = { x: 0, z: 0 }, walkPhase = 0, idleT = 0, facing = 0, camPos = null;
+  var _vhidden = function () { return document.hidden; };
 
+  /* ========================================================================
+     KHỞI ĐỘNG
+     ======================================================================== */
   window.startAcademy = function () {
     if (typeof runnerReturn !== "undefined") runnerReturn = "baitap";
     enterRunner(false);
-    $("starBox").classList.add("hidden");
-    var counter = $("counter"); if (counter) counter.textContent = "🎓 AI Academy 3D";
-    var bar = $("bar"); if (bar) bar.style.width = "0%";
-    seen = {}; solved = false; wrong = 0; nearNpc = null; keys = {}; pad = {};
-    $("qCard").innerHTML = '<div class="a3dLoading">⏳ Đang tải thế giới 3D…</div>';
-    import("https://esm.sh/three@0.160.0").then(function (mod) {
-      THREE = mod; ready = true; a3dBuild();
-    }).catch(function (e) {
-      $("qCard").innerHTML = '<div class="a3dLoading">😕 Không tải được 3D (cần mạng). Hãy thử lại.</div>';
-    });
+    try { localStorage.getItem; } catch (e) {}
+    // reset
+    npcs = []; colliders = []; interactables = []; markers = [];
+    keys = {}; joy = { x: 0, z: 0, active: false }; nearest = null;
+    cluesGot = {}; boardDone = {}; wrong = 0; solved = false;
+    dialogOpen = false; overlayOpen = false; vel = { x: 0, z: 0 }; walkPhase = 0; idleT = 0; facing = 0;
+    robotGLB = null; aiMixer = null; aiActions = null; aiCurrent = null;
+    listeners = [];
+
+    var runner = $("runner"); if (runner) runner.classList.add("a3dMode");
+    buildShell();
+
+    // Ưu tiên bản three.js lưu cục bộ (chạy offline, không phụ thuộc CDN).
+    // Nếu thiếu file vì lý do nào đó → mới quay sang esm.sh.
+    import("./three.module.js")
+      .catch(function () { return import("https://esm.sh/three@0.160.0"); })
+      .then(function (mod) { THREE = mod; return loadRobotGLB(); })  // nạp mô hình Máy AI (không chặn nếu lỗi)
+      .then(function () { buildWorld(); })
+      .catch(function () {
+        var st = $("a3dStage");
+        if (st) st.innerHTML = '<div class="a3dLoading">😕 Không tải được thế giới 3D. <button class="a3dBtn" onclick="startAcademy()">Thử lại</button></div>';
+      });
   };
 
-  function a3dBuild() {
-    $("qCard").innerHTML =
-      '<div class="a3dGame">' +
-        '<div class="a3dTop"><span class="rpgBadge">🔍 Manh mối: <b id="a3dClue">0</b>/3</span>' +
-          '<span class="rpgHintTxt">Mũi tên / WASD / D-pad để đi · lại gần NPC để nói chuyện</span></div>' +
-        '<div class="a3dStage" id="a3dStage"></div>' +
-        '<button class="btn a3dInteract hidden" id="a3dInteract" onclick="a3dDoInteract()"></button>' +
-        '<div class="a3dPad">' +
-          '<button class="rpgKey" data-d="U">⬆️</button>' +
-          '<div class="rpgPadRow"><button class="rpgKey" data-d="L">⬅️</button>' +
-            '<button class="rpgKey" data-d="D">⬇️</button><button class="rpgKey" data-d="R">➡️</button></div>' +
-        "</div>" +
-        '<div class="rpgDialog hidden" id="rpgDialog"></div>' +
-      "</div>";
+  /* Khung HUD (DOM) phủ toàn màn hình bên trong #runner */
+  function buildShell() {
+    var host = $("qCard");
+    if (!host) return;
+    host.classList.remove("hidden");
+    host.innerHTML =
+      '<div class="a3dRoot" id="a3dRoot">' +
+        '<div class="a3dStage" id="a3dStage"><div class="a3dLoading">⏳ Đang dựng thế giới 3D…</div></div>' +
+        /* HUD trên cùng */
+        '<div class="a3dHud a3dHudTop">' +
+          '<div class="a3dQuest">' +
+            '<div class="a3dQuestTitle">🔍 AI Academy — Vụ án của Minh</div>' +
+            '<div class="a3dObjective" id="a3dObjective">Đang tải…</div>' +
+          '</div>' +
+          '<div class="a3dTopRight">' +
+            '<div class="a3dClueChip" id="a3dClueChip"><span class="a3dClueIc">🧩</span> <b id="a3dClueN">0</b>/3</div>' +
+            '<button class="a3dRound" id="a3dHelp" title="Trợ giúp" aria-label="Trợ giúp">?</button>' +
+            '<button class="a3dRound" id="a3dMute" title="Bật/tắt âm" aria-label="Bật/tắt âm">' + (muted ? "🔇" : "🔊") + '</button>' +
+            '<button class="a3dRound a3dExit" id="a3dExit" title="Thoát" aria-label="Thoát">✕</button>' +
+          '</div>' +
+        '</div>' +
+        /* Nút Bảng điều tra (ẩn tới khi đủ manh mối) */
+        '<button class="a3dBoardBtn hidden" id="a3dBoardBtn">📋 Mở Bảng điều tra</button>' +
+        /* Khung tương tác ngữ cảnh */
+        '<div class="a3dPrompt hidden" id="a3dPrompt"></div>' +
+        /* Cần gạt + nút hành động (cảm ứng) */
+        '<div class="a3dJoyZone" id="a3dJoyZone"><div class="a3dJoyBase" id="a3dJoyBase"><div class="a3dJoyStick" id="a3dJoyStick"></div></div></div>' +
+        '<button class="a3dAction hidden" id="a3dAction" aria-label="Tương tác">💬</button>' +
+        /* Toast mục tiêu */
+        '<div class="a3dToast" id="a3dToast"></div>' +
+        /* Lớp hội thoại / bảng / kết thúc */
+        '<div class="a3dLayer hidden" id="a3dLayer"></div>' +
+      '</div>';
 
+    on($("a3dHelp"), "click", showHelp);
+    on($("a3dMute"), "click", toggleMute);
+    on($("a3dExit"), "click", quit);
+    on($("a3dBoardBtn"), "click", openBoard);
+    on($("a3dAction"), "click", doInteract);
+  }
+
+  /* ========================================================================
+     DỰNG THẾ GIỚI 3D
+     ======================================================================== */
+  function buildWorld() {
     var stage = $("a3dStage");
-    var w = stage.clientWidth || 400, h = Math.round(w * 0.66);
+    if (!stage) return;
+    stage.innerHTML = "";
+    var w = stage.clientWidth || 800, h = stage.clientHeight || 500;
+
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xe9e6ff);
-    camera = new THREE.PerspectiveCamera(52, w / h, 0.1, 100);
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setSize(w, h);
-    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    scene.background = new THREE.Color(0xe7e3ff);
+    scene.fog = new THREE.Fog(0xe7e3ff, 20, 46);
+
+    camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 120);
+    camPos = new THREE.Vector3(0, 11, 13);
+    camera.position.copy(camPos);
+
+    var lowEnd = (navigator.hardwareConcurrency || 4) <= 4 || Math.min(screen.width, screen.height) <= 500;
+    renderer = new THREE.WebGLRenderer({ antialias: !lowEnd, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowEnd ? 1.5 : 2));
+    renderer.setSize(w, h, false);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     stage.appendChild(renderer.domElement);
 
-    scene.add(new THREE.HemisphereLight(0xfff4ff, 0xcdbfff, 0.95));
-    var dir = new THREE.DirectionalLight(0xffffff, 1.0); dir.position.set(6, 13, 6);
-    dir.castShadow = true; dir.shadow.mapSize.set(1024, 1024);
-    dir.shadow.camera.left = -11; dir.shadow.camera.right = 11; dir.shadow.camera.top = 11; dir.shadow.camera.bottom = -11;
-    scene.add(dir);
-    var warm = new THREE.PointLight(0xffdca8, 0.7, 28); warm.position.set(-5, 5, -6); scene.add(warm); // nắng cửa sổ ấm
+    clock = new THREE.Clock();
 
-    // sàn + thảm + lưới
-    var floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshStandardMaterial({ color: 0xf3efff, roughness: 0.9 }));
+    buildLights();
+    buildRoom();
+    buildFurniture();
+    buildEntities();
+    buildHero();
+
+    bindInput();
+    on(window, "resize", resize);
+    // ResizeObserver: canvas luôn khớp khung (sau khi layout ổn định / xoay máy)
+    try {
+      if (window.ResizeObserver) { ro = new ResizeObserver(function () { resize(); }); ro.observe(stage); }
+    } catch (e) {}
+    visHandler = function () { if (!document.hidden && !raf) { lastT = 0; raf = requestAnimationFrame(tick); } };
+    document.addEventListener("visibilitychange", visHandler);
+
+    // Bắt đầu: giao nhiệm vụ (tự mở lời thoại của cô Lan)
+    setState("brief");
+    raf = requestAnimationFrame(tick);
+    runBrief(0);
+  }
+
+  function buildLights() {
+    var hemi = new THREE.HemisphereLight(0xfff3ff, 0xccbfff, 0.85);
+    scene.add(hemi);
+    var sun = new THREE.DirectionalLight(0xfff0d6, 1.15);
+    sun.position.set(-7, 13, -4);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(1024, 1024);
+    var c = sun.shadow.camera;
+    c.left = -11; c.right = 11; c.top = 11; c.bottom = -11; c.near = 1; c.far = 40;
+    sun.shadow.bias = -0.0004;
+    scene.add(sun);
+    var warm = new THREE.PointLight(0xffd9a0, 0.55, 26, 1.4);
+    warm.position.set(-4.8, 4.2, -6);
+    scene.add(warm);
+    var fill = new THREE.DirectionalLight(0xbcd2ff, 0.28);
+    fill.position.set(6, 6, 8);
+    scene.add(fill);
+  }
+
+  /* mặt phẳng vân gỗ / vải bằng canvas (nhẹ, không cần tải ảnh) */
+  function makeTex(draw, px) {
+    px = px || 128;
+    var cv = document.createElement("canvas"); cv.width = cv.height = px;
+    draw(cv.getContext("2d"), px);
+    var t = new THREE.CanvasTexture(cv);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 4;
+    return t;
+  }
+
+  function buildRoom() {
+    // sàn gỗ (ván dọc)
+    var floorTex = makeTex(function (x, p) {
+      x.fillStyle = "#e9dcc6"; x.fillRect(0, 0, p, p);
+      for (var i = 0; i < 6; i++) {
+        x.fillStyle = i % 2 ? "#e3d2b6" : "#ede0cc";
+        x.fillRect(i * (p / 6), 0, p / 6 - 1, p);
+      }
+      x.strokeStyle = "rgba(120,90,50,.18)"; x.lineWidth = 2;
+      for (var j = 0; j <= 6; j++) { x.beginPath(); x.moveTo(j * (p / 6), 0); x.lineTo(j * (p / 6), p); x.stroke(); }
+    }, 256);
+    floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(4, 4);
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 16),
+      new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.92 }));
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
-    var rug = new THREE.Mesh(new THREE.CircleGeometry(4.3, 36), new THREE.MeshStandardMaterial({ color: 0xede9fe }));
+
+    // thảm tròn mềm
+    var rug = new THREE.Mesh(new THREE.CircleGeometry(4.6, 48),
+      new THREE.MeshStandardMaterial({ color: 0xd9ccff, roughness: 1 }));
     rug.rotation.x = -Math.PI / 2; rug.position.y = 0.02; rug.receiveShadow = true; scene.add(rug);
-    var grid = new THREE.GridHelper(16, 16, 0xc4b5fd, 0xe6e0ff); grid.position.y = 0.013; scene.add(grid);
-    // 4 tường
-    var wallMat = new THREE.MeshStandardMaterial({ color: 0xb9a7f5, roughness: 0.95 });
-    [[0, -8, 16, 0.4], [0, 8, 16, 0.4], [-8, 0, 0.4, 16], [8, 0, 0.4, 16]].forEach(function (p) {
-      var m = new THREE.Mesh(new THREE.BoxGeometry(p[2], 2.6, p[3]), wallMat);
-      m.position.set(p[0], 1.3, p[1]); m.receiveShadow = true; scene.add(m);
-    });
-    a3dProps();
+    var rug2 = new THREE.Mesh(new THREE.RingGeometry(3.7, 4.2, 48),
+      new THREE.MeshStandardMaterial({ color: 0xc3b1f7, roughness: 1 }));
+    rug2.rotation.x = -Math.PI / 2; rug2.position.y = 0.025; scene.add(rug2);
 
-    // NPC/vật: bệ + emoji nổi + dấu "!" nhấp nháy (ẩn khi đã điều tra)
-    npcMeshes = [];
-    NPCS.forEach(function (n) {
-      var base = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.9, 0.5, 20), new THREE.MeshStandardMaterial({ color: n.color, roughness: 0.6 }));
-      base.position.set(n.x, 0.25, n.z); base.castShadow = true; base.receiveShadow = true; scene.add(base);
-      var sp = a3dEmoji(n.emo); sp.position.set(n.x, 1.5, n.z); scene.add(sp);
-      var mk = a3dEmoji("❗"); mk.scale.set(0.7, 0.7, 1); mk.position.set(n.x, 2.45, n.z); scene.add(mk);
-      npcMeshes.push({ data: n, base: base, sp: sp, mk: mk });
+    // tường + chân tường (wainscot)
+    var wallMat = new THREE.MeshStandardMaterial({ color: 0xcdbdf6, roughness: 0.96 });
+    var wainMat = new THREE.MeshStandardMaterial({ color: 0xa88fe8, roughness: 0.9 });
+    var defs = [[0, -8, 16, 0.4], [0, 8, 16, 0.4], [-8, 0, 0.4, 16], [8, 0, 0.4, 16]];
+    defs.forEach(function (p) {
+      var wall = new THREE.Mesh(new THREE.BoxGeometry(p[2], 3.2, p[3]), wallMat);
+      wall.position.set(p[0], 1.6, p[1]); wall.receiveShadow = true; scene.add(wall);
+      var wain = new THREE.Mesh(new THREE.BoxGeometry(p[2] === 0.4 ? 0.5 : p[2], 0.9, p[3] === 0.4 ? 0.5 : p[3]), wainMat);
+      wain.position.set(p[0], 0.45, p[1]); wain.receiveShadow = true; scene.add(wain);
     });
 
-    // nhân vật low-poly
-    hero = a3dHero();
-    hero.position.set(0, 0, 3);
-    scene.add(hero);
-    var sp = a3dEmoji("🧑‍🎓"); sp.position.set(0, 2.1, 0); sp.scale.set(1, 1, 1); hero.add(sp);
-
-    a3dBindInput();
-    window.addEventListener("resize", a3dResize);
-    a3dSay("🔔", AC.hook.who, AC.hook.text, a3dCloseDialog); // hook
-    raf = requestAnimationFrame(a3dTick);
-  }
-
-  function a3dHero() {
-    var g = new THREE.Group();
-    var skin = 0xffe0bd, cloth = 0x6366f1;
-    var body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.5), new THREE.MeshStandardMaterial({ color: cloth }));
-    body.position.y = 0.95; g.add(body);
-    var head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 16), new THREE.MeshStandardMaterial({ color: skin }));
-    head.position.y = 1.7; g.add(head);
-    var armMat = new THREE.MeshStandardMaterial({ color: cloth });
-    [-0.6, 0.6].forEach(function (x) { var a = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.7, 0.22), armMat); a.position.set(x, 0.95, 0); g.add(a); });
-    var legMat = new THREE.MeshStandardMaterial({ color: 0x4338ca });
-    [-0.22, 0.22].forEach(function (x) { var l = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.6, 0.28), legMat); l.position.set(x, 0.3, 0); g.add(l); });
-    g.traverse(function (o) { if (o.isMesh) o.castShadow = true; });
-    return g;
-  }
-  function a3dProps() {
-    function box(w, h, d, color, x, y, z) {
-      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color: color, roughness: 0.85 }));
-      m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; scene.add(m); return m;
+    // cửa sổ lớn (tường sau) + bầu trời + nắng
+    var skyTex = makeTex(function (x, p) {
+      var g = x.createLinearGradient(0, 0, 0, p);
+      g.addColorStop(0, "#bfe3ff"); g.addColorStop(0.6, "#e7f5ff"); g.addColorStop(1, "#fff6e6");
+      x.fillStyle = g; x.fillRect(0, 0, p, p);
+      x.fillStyle = "rgba(255,255,255,.9)";
+      [[40, 42, 22], [78, 60, 16], [95, 34, 13]].forEach(function (c) {
+        x.beginPath(); x.arc(c[0], c[1], c[2], 0, 7); x.arc(c[0] + c[2], c[1] + 3, c[2] * 0.8, 0, 7); x.fill();
+      });
+    }, 128);
+    var sky = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 2.0),
+      new THREE.MeshStandardMaterial({ map: skyTex, emissive: 0xffffff, emissiveMap: skyTex, emissiveIntensity: 0.9 }));
+    sky.position.set(-4.8, 1.9, -7.78); scene.add(sky);
+    // khung cửa sổ
+    var frameMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+    [[3.9, 0.16, 0, 3.0], [3.9, 0.16, 0, 0.78], [0.16, 2.1, -1.85, 1.9], [0.16, 2.1, 0, 1.9], [0.16, 2.1, 1.85, 1.9]].forEach(function (f) {
+      var m = new THREE.Mesh(new THREE.BoxGeometry(f[0], f[1], 0.16), frameMat);
+      m.position.set(-4.8 + f[2], f[3], -7.74); scene.add(m);
+    });
+    // vệt nắng trên sàn
+    if (!REDUCED) {
+      var beam = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 4.2),
+        new THREE.MeshBasicMaterial({ color: 0xfff3cf, transparent: true, opacity: 0.22, depthWrite: false }));
+      beam.rotation.x = -Math.PI / 2; beam.position.set(-4.8, 0.04, -4.2); scene.add(beam);
     }
-    // cửa sổ sáng (tường sau) + khung
-    var win = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 1.9), new THREE.MeshStandardMaterial({ color: 0xfff6d8, emissive: 0xffe6a8, emissiveIntensity: 0.85 }));
-    win.position.set(-5, 1.7, -7.78); scene.add(win);
-    box(3.8, 0.18, 0.18, 0xffffff, -5, 2.7, -7.74); box(3.8, 0.18, 0.18, 0xffffff, -5, 0.75, -7.74);
-    box(0.18, 1.95, 0.18, 0xffffff, -6.8, 1.7, -7.74); box(0.18, 1.95, 0.18, 0xffffff, -3.2, 1.7, -7.74);
-    // kệ sách (tường phải) + sách màu
-    box(0.5, 2.4, 3.2, 0xcd9b6a, 7.55, 1.2, 3);
-    [0, 1, 2].forEach(function (i) { box(0.55, 0.7, 0.55, [0xf87171, 0xfbbf24, 0x60a5fa][i], 7.35, 0.75 + i * 0.75, 2 + i * 0.6); });
-    // 2 chậu cây ở góc
-    [[7, -7], [-7, 7]].forEach(function (p) {
-      box(0.6, 0.55, 0.6, 0xef9a6a, p[0], 0.27, p[1]);
-      var f = new THREE.Mesh(new THREE.SphereGeometry(0.6, 12, 12), new THREE.MeshStandardMaterial({ color: 0x4ade80, roughness: 0.8 }));
-      f.position.set(p[0], 1.05, p[1]); f.castShadow = true; scene.add(f);
-    });
-    // poster tường trái
-    [[0xf472b6, -2], [0x60a5fa, 2.5]].forEach(function (p) {
-      var m = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.1), new THREE.MeshStandardMaterial({ color: p[0] }));
-      m.position.set(-7.77, 2, p[1]); m.rotation.y = Math.PI / 2; scene.add(m);
-    });
+
+    // trần nhẹ + đèn thả
+    var ceil = new THREE.Mesh(new THREE.PlaneGeometry(16, 16),
+      new THREE.MeshStandardMaterial({ color: 0xf3eeff, roughness: 1 }));
+    ceil.rotation.x = Math.PI / 2; ceil.position.y = 3.2; scene.add(ceil);
+    // đèn thả hình chụp (cone) — trông rõ là đèn treo trần, không phải quả cầu lơ lửng
+    var lamp = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.42, 18),
+      new THREE.MeshStandardMaterial({ color: 0xf4ede0, emissive: 0xffe6a8, emissiveIntensity: 0.5, side: THREE.DoubleSide }));
+    lamp.position.set(0, 2.98, 0); scene.add(lamp);
+    var bulb = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10),
+      new THREE.MeshStandardMaterial({ color: 0xfff6df, emissive: 0xffdf8f, emissiveIntensity: 1 }));
+    bulb.position.set(0, 2.82, 0); scene.add(bulb);
+    var cord = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.22, 8), matSmooth(0xb9abe0, 0.7));
+    cord.position.set(0, 3.2, 0); scene.add(cord);
   }
-  function a3dEmoji(emoji) {
+
+  function matFlat(color, rough) { return new THREE.MeshStandardMaterial({ color: color, roughness: rough == null ? 0.85 : rough, flatShading: true }); }
+  function matSmooth(color, rough) { return new THREE.MeshStandardMaterial({ color: color, roughness: rough == null ? 0.7 : rough }); }
+
+  function box(w, h, d, color, x, y, z, rot) {
+    var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), matSmooth(color, 0.85));
+    m.position.set(x, y, z); if (rot) m.rotation.y = rot; m.castShadow = true; m.receiveShadow = true; scene.add(m); return m;
+  }
+
+  function buildFurniture() {
+    // kệ sách (tường phải)
+    var shelf = box(0.55, 2.6, 3.4, 0xcf9a63, 7.45, 1.3, 2.4);
+    [0, 1, 2].forEach(function (i) {
+      [0xf87171, 0xfbbf24, 0x60a5fa, 0x34d399].forEach(function (col, j) {
+        var bk = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.62, 0.16), matSmooth(col, 0.7));
+        bk.position.set(7.25, 0.75 + i * 0.78, 1.15 + i * 0.1 + j * 0.2); bk.rotation.z = (j % 2 ? 0.08 : -0.05);
+        bk.castShadow = true; scene.add(bk);
+      });
+    });
+    colliders.push({ x: 7.45, z: 2.4, r: 1.6 });
+
+    // bàn giáo viên gần cô Lan (tường trái sau)
+    deskAt(-6.3, -6.0, 0, 0x9b6b43);
+    colliders.push({ x: -6.3, z: -6.0, r: 1.2 });
+
+    // vài bộ bàn học sinh gọn 2 bên
+    [[-2.2, 6.4, 0], [2.2, 6.4, 0]].forEach(function (p) {
+      deskAt(p[0], p[1], p[2], 0xb98a5a);
+      colliders.push({ x: p[0], z: p[1], r: 1.0 });
+    });
+
+    // 2 chậu cây ở góc
+    [[6.7, -6.7], [-6.7, 6.7]].forEach(function (p) {
+      var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.34, 0.6, 16), matSmooth(0xe08a5a, 0.8));
+      pot.position.set(p[0], 0.3, p[1]); pot.castShadow = true; scene.add(pot);
+      var leaf = new THREE.Mesh(new THREE.IcosahedronGeometry(0.72, 1), matFlat(0x5bd37a, 0.85));
+      leaf.position.set(p[0], 1.15, p[1]); leaf.castShadow = true; scene.add(leaf);
+      var leaf2 = new THREE.Mesh(new THREE.IcosahedronGeometry(0.5, 1), matFlat(0x7ee29a, 0.85));
+      leaf2.position.set(p[0] + 0.25, 1.5, p[1] - 0.1); scene.add(leaf2);
+      colliders.push({ x: p[0], z: p[1], r: 0.7 });
+    });
+
+    // poster màu trên tường trái
+    [[0xf472b6, -2.5, "AI"], [0x60a5fa, 1.5, "?"]].forEach(function (p) {
+      var pst = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 2.0), matSmooth(p[0], 0.9));
+      pst.position.set(-7.77, 2.0, p[1]); pst.rotation.y = Math.PI / 2; scene.add(pst);
+      var sp = makeEmoji(p[2] === "AI" ? "🧠" : "💡", 110);
+      sp.position.set(-7.7, 2.1, p[1]); sp.scale.set(1.1, 1.1, 1); scene.add(sp);
+    });
+
+    // bảng xanh (tường sau, phải cửa sổ)
+    var board = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.9, 0.1), matSmooth(0x2f6f57, 0.8));
+    board.position.set(3.4, 1.9, -7.7); board.receiveShadow = true; scene.add(board);
+    var bframe = new THREE.Mesh(new THREE.BoxGeometry(3.7, 2.2, 0.08), matSmooth(0xcaa06a, 0.6));
+    bframe.position.set(3.4, 1.9, -7.73); scene.add(bframe);
+    var sp2 = makeEmoji("✏️", 110); sp2.position.set(3.4, 1.9, -7.6); sp2.scale.set(1.4, 1.4, 1); scene.add(sp2);
+  }
+
+  function deskAt(x, z, rot, color) {
+    var top = box(1.6, 0.14, 0.8, color, x, 0.78, z, rot);
+    [[-0.65, -0.3], [0.65, -0.3], [-0.65, 0.3], [0.65, 0.3]].forEach(function (l) {
+      var lx = x + Math.cos(rot) * l[0] - Math.sin(rot) * l[1];
+      var lz = z + Math.sin(rot) * l[0] + Math.cos(rot) * l[1];
+      box(0.12, 0.74, 0.12, 0x7a5636, lx, 0.37, lz);
+    });
+    return top;
+  }
+
+  /* biểu tượng emoji dạng sprite (dùng cho đạo cụ & dấu ❗) */
+  function makeEmoji(emoji, px) {
+    px = px || 128;
     var cv = document.createElement("canvas"); cv.width = cv.height = 128;
-    var ctx = cv.getContext("2d"); ctx.font = "96px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(emoji, 64, 74);
-    var tex = new THREE.CanvasTexture(cv); tex.anisotropy = 2;
-    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
+    var ctx = cv.getContext("2d"); ctx.font = px + "px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(emoji, 64, 72);
+    var t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 2;
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false }));
     sp.scale.set(1.3, 1.3, 1); return sp;
   }
 
-  var moveT = 0;
-  function a3dTick() {
-    if (!renderer || !renderer.domElement.isConnected) { a3dCleanup(); return; }
-    raf = requestAnimationFrame(a3dTick);
-    if (!dialogOpen) a3dUpdateMove();
-    // camera theo sau nhân vật
-    var cx = hero.position.x, cz = hero.position.z;
-    camera.position.x += (cx - camera.position.x) * 0.1;
-    camera.position.z += (cz + 9 - camera.position.z) * 0.1;
-    camera.position.y += (9 - camera.position.y) * 0.1;
-    camera.lookAt(cx, 1, cz);
-    moveT += 0.05;
-    for (var i = 0; i < npcMeshes.length; i++) { var mk = npcMeshes[i].mk; if (mk && mk.visible) mk.position.y = 2.45 + Math.sin(moveT * 2 + i) * 0.14; }
-    renderer.render(scene, camera);
-  }
-  function a3dUpdateMove() {
-    var dx = 0, dz = 0;
-    if (keys.U || pad.U) dz -= 1; if (keys.D || pad.D) dz += 1;
-    if (keys.L || pad.L) dx -= 1; if (keys.R || pad.R) dx += 1;
-    if (dx || dz) {
-      var len = Math.hypot(dx, dz); dx /= len; dz /= len;
-      var sp = 0.12;
-      hero.position.x = Math.max(-7, Math.min(7, hero.position.x + dx * sp));
-      hero.position.z = Math.max(-7, Math.min(7, hero.position.z + dz * sp));
-      hero.rotation.y = Math.atan2(dx, dz);
-      moveT += 0.3; hero.position.y = Math.abs(Math.sin(moveT)) * 0.12; // nhún khi đi
-    } else { hero.position.y = 0; }
-    // kiểm tra gần NPC
-    var found = null;
-    for (var i = 0; i < NPCS.length; i++) {
-      var n = NPCS[i];
-      if (Math.hypot(hero.position.x - n.x, hero.position.z - n.z) < 2.1) { found = n; break; }
+  /* ---------- Nhân vật ---------- */
+  function makePerson(color, opts) {
+    opts = opts || {};
+    var hair = opts.hair == null ? 0x3a2a1a : opts.hair;
+    var skin = opts.skin == null ? 0xffd9b0 : opts.skin;
+    var style = opts.style || "short";
+    var g = new THREE.Group();
+    var torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, 0.5, 6, 12), matSmooth(color, 0.75));
+    torso.position.y = 1.02; g.add(torso);
+    var collar = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.27, 0.12, 14), matSmooth(color, 0.7));
+    collar.position.y = 1.4; g.add(collar);
+    var hipMat = matSmooth(opts.pants == null ? 0x5b5be0 : opts.pants, 0.75);
+    var head = new THREE.Mesh(new THREE.SphereGeometry(0.33, 20, 16), matSmooth(skin, 0.6));
+    head.position.y = 1.62; g.add(head);
+    // tóc theo kiểu (short / bun / long / spiky)
+    var hairMat = matSmooth(hair, 0.85);
+    var hairM = new THREE.Mesh(new THREE.SphereGeometry(0.355, 20, 16, 0, 6.3, 0, style === "short" ? 1.35 : 1.75), hairMat);
+    hairM.position.y = 1.66; g.add(hairM);
+    if (style === "bun") { var bun = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), hairMat); bun.position.set(0, 1.93, -0.12); g.add(bun); }
+    else if (style === "long") { [-0.3, 0.3].forEach(function (sx) { var s = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.32, 4, 8), hairMat); s.position.set(sx, 1.42, -0.04); g.add(s); }); }
+    else if (style === "spiky") { [[-0.13, 0.08], [0.13, 0.08], [0, 0.16]].forEach(function (p) { var sp = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.2, 6), hairMat); sp.position.set(p[0], 1.88, p[1] - 0.1); g.add(sp); }); }
+    // mắt + miệng cười
+    [-0.12, 0.12].forEach(function (ex) {
+      var eye = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), new THREE.MeshStandardMaterial({ color: 0x2b2b2b }));
+      eye.position.set(ex, 1.63, 0.3); g.add(eye);
+    });
+    var mouth = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.03, 0.02), new THREE.MeshStandardMaterial({ color: 0xb5544e }));
+    mouth.position.set(0, 1.52, 0.31); g.add(mouth);
+    // kính (ví dụ cô Lan)
+    if (opts.glasses) {
+      var gm = new THREE.MeshStandardMaterial({ color: 0x33323a, roughness: 0.4 });
+      [-0.12, 0.12].forEach(function (ex) { var r = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.016, 8, 16), gm); r.position.set(ex, 1.63, 0.31); g.add(r); });
+      var bridge = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.018, 0.02), gm); bridge.position.set(0, 1.63, 0.32); g.add(bridge);
     }
-    if (found !== nearNpc) {
-      nearNpc = found;
-      var btn = $("a3dInteract");
-      if (btn) { if (found) { btn.textContent = "💬 Nói chuyện với " + found.name; btn.classList.remove("hidden"); } else btn.classList.add("hidden"); }
+    // tay
+    var arms = [];
+    [-0.46, 0.46].forEach(function (ax) {
+      var arm = new THREE.Group();
+      var mesh = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.48, 4, 8), matSmooth(color, 0.75));
+      mesh.position.y = -0.3; arm.add(mesh);
+      var hand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), matSmooth(skin, 0.6));
+      hand.position.y = -0.56; arm.add(hand);
+      arm.position.set(ax, 1.28, 0); g.add(arm); arms.push(arm);
+    });
+    // chân + giày
+    var legs = [];
+    [-0.17, 0.17].forEach(function (lx) {
+      var leg = new THREE.Group();
+      var mesh = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.5, 4, 8), hipMat);
+      mesh.position.y = -0.3; leg.add(mesh);
+      var shoe = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.3), matSmooth(0x3b3550, 0.6));
+      shoe.position.set(0, -0.56, 0.05); leg.add(shoe);
+      leg.position.set(lx, 0.72, 0); g.add(leg); legs.push(leg);
+    });
+    g.traverse(function (o) { if (o.isMesh) { o.castShadow = true; } });
+    g.userData.rig = { arms: arms, legs: legs, head: head, person: true };
+    return g;
+  }
+
+  function makeRobot(color) {
+    var g = new THREE.Group();
+    var body = new THREE.Mesh(new THREE.CapsuleGeometry(0.4, 0.5, 6, 12), matSmooth(0xe5ddff, 0.4));
+    body.position.y = 0.95; g.add(body);
+    var head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.55, 0.55), matSmooth(color, 0.4));
+    head.position.y = 1.62; g.add(head);
+    var screen = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.34),
+      new THREE.MeshStandardMaterial({ color: 0x1b1030, emissive: 0x6d4bd0, emissiveIntensity: 0.9 }));
+    screen.position.set(0, 1.64, 0.285); g.add(screen);
+    [-0.12, 0.12].forEach(function (ex) {
+      var eye = new THREE.Mesh(new THREE.CircleGeometry(0.05, 12), new THREE.MeshStandardMaterial({ color: 0x9be7ff, emissive: 0x7fd6ff, emissiveIntensity: 1 }));
+      eye.position.set(ex, 1.66, 0.29); g.add(eye);
+    });
+    var ant = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 10), new THREE.MeshStandardMaterial({ color: 0xff7eb6, emissive: 0xff5ba3, emissiveIntensity: 0.8 }));
+    ant.position.set(0, 2.02, 0); g.add(ant);
+    box2(0.06, 0.26, 0.06, 0xbcb0e8, 0, 1.9, 0, g);
+    g.traverse(function (o) { if (o.isMesh) o.castShadow = true; });
+    g.userData.rig = { head: head, ant: ant };
+    return g;
+  }
+  function box2(w, h, d, c, x, y, z, parent) {
+    var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), matSmooth(c, 0.6));
+    m.position.set(x, y, z); parent.add(m); return m;
+  }
+
+  /* Máy AI bằng mô hình GLB: RobotExpressive (CC0 — Tomás Laulhé/Quaternius, chỉnh sửa Don McCurdy).
+     Nạp cục bộ (precache offline). Nếu lỗi → fallback makeRobot() dựng-bằng-code. */
+  function loadRobotGLB() {
+    return import("./GLTFLoader.module.js").then(function (m) {
+      return new Promise(function (res) {
+        try {
+          new m.GLTFLoader().load("./models/RobotExpressive.glb",
+            function (g) { robotGLB = g; res(); },
+            undefined,
+            function () { res(); });
+        } catch (e) { res(); }
+      });
+    }).catch(function () { /* thiếu loader → bỏ qua, dùng robot code */ });
+  }
+
+  function setupRobotGLB() {
+    var root = robotGLB.scene;
+    root.updateMatrixWorld(true);
+    root.traverse(function (o) { if (o.isMesh || o.isSkinnedMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; } });
+    // chuẩn hoá kích thước bằng WRAPPER (không scale trực tiếp gltf.scene — sẽ vỡ skeleton/skinning)
+    var box = new THREE.Box3().setFromObject(root);
+    var h = (box.max.y - box.min.y) || 1;
+    var s = 1.8 / h;
+    root.position.y = -box.min.y;        // chân về 0 ở hệ gốc (chưa scale)
+    var g = new THREE.Group(); g.add(root);
+    g.scale.setScalar(s);                 // scale wrapper → skeleton bên trong giữ bind gốc
+    aiMixer = new THREE.AnimationMixer(root);
+    aiActions = {};
+    ["Idle", "Wave"].forEach(function (n) {
+      var c = THREE.AnimationClip.findByName(robotGLB.animations, n);
+      if (c) aiActions[n] = aiMixer.clipAction(c);
+    });
+    if (aiActions.Idle) { aiActions.Idle.play(); aiCurrent = aiActions.Idle; }
+    g.userData.rig = { robotGLB: true };
+    return g;
+  }
+
+  function playAI(name) {
+    if (!aiMixer || !aiActions || !aiActions[name] || aiCurrent === aiActions[name]) return;
+    var next = aiActions[name];
+    next.reset().fadeIn(0.3).play();
+    if (aiCurrent) aiCurrent.fadeOut(0.3);
+    aiCurrent = next;
+  }
+
+  function buildEntities() {
+    npcs = [];
+    ENT.forEach(function (e) {
+      var g = e.kind === "robot" ? (robotGLB ? setupRobotGLB() : makeRobot(e.color)) : makePerson(e.color, e.look);
+      g.position.set(e.x, 0, e.z);
+      // quay mặt về giữa phòng
+      g.rotation.y = Math.atan2(-e.x, -e.z);
+      scene.add(g);
+
+      // bệ tròn dưới chân
+      var pad = new THREE.Mesh(new THREE.CylinderGeometry(0.78, 0.86, 0.12, 24),
+        matSmooth(e.color, 0.5));
+      pad.position.set(e.x, 0.06, e.z); pad.receiveShadow = true; scene.add(pad);
+
+      // vòng sáng chỉ dẫn (ẩn/hiện theo trạng thái)
+      var ring = new THREE.Mesh(new THREE.RingGeometry(0.92, 1.1, 32),
+        new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.0, depthWrite: false }));
+      ring.rotation.x = -Math.PI / 2; ring.position.set(e.x, 0.05, e.z); scene.add(ring);
+
+      // marker nổi: NPC manh mối hiện biểu tượng manh mối (🖥️/📄/📊) cho dễ nhận;
+      // cô Lan / Máy AI dùng dấu ❗.
+      var markEmo = "❗", markSc = 0.7;
+      if (e.id.charAt(0) === "c") { var _c = clueById(e.id); if (_c) { markEmo = _c.ic; markSc = 0.95; } }
+      var mk = makeEmoji(markEmo, 100); mk.scale.set(markSc, markSc, 1); mk.position.set(e.x, 2.55, e.z); scene.add(mk);
+      markers.push(mk);
+
+      // đạo cụ cạnh NPC manh mối
+      if (e.prop) buildProp(e.prop, e.x, e.z);
+
+      colliders.push({ x: e.x, z: e.z, r: 0.75 });
+      var rec = { data: e, group: g, ring: ring, mk: mk };
+      npcs.push(rec);
+      interactables.push(rec);
+    });
+    updateMarkers();
+  }
+
+  function buildProp(kind, x, z) {
+    // đặt đạo cụ lệch ra phía giữa phòng một chút
+    var ox = x * 0.78, oz = z * 0.78;
+    if (kind === "computer") {
+      box(0.7, 0.14, 0.5, 0x8a7bb5, ox, 0.6, oz);                 // bàn nhỏ
+      var mon = box(0.62, 0.42, 0.06, 0x2b2b3a, ox, 0.95, oz - 0.1);
+      mon.material = new THREE.MeshStandardMaterial({ color: 0x1b2340, emissive: 0x3b82f6, emissiveIntensity: 0.6 });
+    } else if (kind === "paper") {
+      box(0.7, 0.14, 0.5, 0xb98a5a, ox, 0.6, oz);
+      var pp = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.04, 0.5), matSmooth(0xffffff, 0.8));
+      pp.position.set(ox, 0.69, oz); pp.rotation.y = 0.2; pp.castShadow = true; scene.add(pp);
+    } else if (kind === "chart") {
+      var stand = box(0.9, 1.1, 0.08, 0xffffff, ox, 0.85, oz);
+      var sp = makeEmoji("📊", 90); sp.position.set(ox, 1.0, oz + 0.08); sp.scale.set(0.8, 0.8, 1); scene.add(sp);
     }
   }
 
-  function a3dBindInput() {
-    document.addEventListener("keydown", a3dKey);
-    document.addEventListener("keyup", a3dKeyUp);
-    document.querySelectorAll(".a3dPad .rpgKey").forEach(function (b) {
-      var d = b.getAttribute("data-d");
-      var on = function (e) { e.preventDefault(); pad[d] = true; };
-      var off = function () { pad[d] = false; };
-      b.addEventListener("pointerdown", on); b.addEventListener("pointerup", off);
-      b.addEventListener("pointerleave", off); b.addEventListener("pointercancel", off);
-    });
+  function buildHero() {
+    hero = makePerson(0x6366f1, { hair: 0x2a1c12, skin: 0xffe0bd, style: "short", pants: 0x4338ca });
+    // mũ thám tử nhỏ cho khác NPC
+    var cap = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.12, 16), matSmooth(0x4338ca, 0.7));
+    cap.position.y = 1.86; hero.add(cap);
+    var brim = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.05, 16), matSmooth(0x4338ca, 0.7));
+    brim.position.set(0, 1.8, 0.1); hero.add(brim);
+    hero.position.set(0, 0, 3.4);
+    facing = Math.PI;
+    hero.rotation.y = facing;
+    scene.add(hero);
   }
-  function a3dKey(e) {
-    if (!renderer || !renderer.domElement.isConnected) { document.removeEventListener("keydown", a3dKey); return; }
-    if (dialogOpen) { if (e.key === "Enter" || e.key === " ") { var b = document.querySelector("#rpgDialog .rpgDlgNext"); if (b) { e.preventDefault(); b.click(); } } return; }
+
+  /* ========================================================================
+     INPUT (bàn phím + cần gạt cảm ứng)
+     ======================================================================== */
+  function on(el, ev, fn, opts) { if (!el) return; el.addEventListener(ev, fn, opts); listeners.push([el, ev, fn, opts]); }
+
+  function bindInput() {
+    on(document, "keydown", onKey);
+    on(document, "keyup", onKeyUp);
+    bindJoystick();
+  }
+
+  function onKey(e) {
+    if (overlayOpen) return;
     var k = e.key.toLowerCase();
+    if (dialogOpen) {
+      if (k === "enter" || k === " ") {
+        var b = $("a3dLayer") && $("a3dLayer").querySelector(".a3dNext");
+        if (b) { e.preventDefault(); b.click(); }
+      }
+      return;
+    }
     if (k === "arrowup" || k === "w") { keys.U = 1; e.preventDefault(); }
     else if (k === "arrowdown" || k === "s") { keys.D = 1; e.preventDefault(); }
     else if (k === "arrowleft" || k === "a") { keys.L = 1; e.preventDefault(); }
     else if (k === "arrowright" || k === "d") { keys.R = 1; e.preventDefault(); }
-    else if (k === "enter" || k === " ") { if (nearNpc) { e.preventDefault(); a3dDoInteract(); } }
+    else if (k === "e" || k === "enter" || k === " ") { if (nearest) { e.preventDefault(); doInteract(); } }
+    else if (k === "escape") { quit(); }
   }
-  function a3dKeyUp(e) {
+  function onKeyUp(e) {
     var k = e.key.toLowerCase();
-    if (k === "arrowup" || k === "w") keys.U = 0; else if (k === "arrowdown" || k === "s") keys.D = 0;
-    else if (k === "arrowleft" || k === "a") keys.L = 0; else if (k === "arrowright" || k === "d") keys.R = 0;
-  }
-  function a3dResize() {
-    var stage = $("a3dStage"); if (!stage || !renderer) return;
-    var w = stage.clientWidth || 400, h = Math.round(w * 0.66);
-    renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+    if (k === "arrowup" || k === "w") keys.U = 0;
+    else if (k === "arrowdown" || k === "s") keys.D = 0;
+    else if (k === "arrowleft" || k === "a") keys.L = 0;
+    else if (k === "arrowright" || k === "d") keys.R = 0;
   }
 
-  /* ---- Hộp thoại (dùng lại CSS rpgDialog) ---- */
-  function a3dDlg(html) { dialogOpen = true; var d = $("rpgDialog"); if (!d) return; d.innerHTML = html; d.classList.remove("hidden"); d.classList.add("show"); }
-  window.a3dCloseDialog = function () { dialogOpen = false; var d = $("rpgDialog"); if (d) { d.classList.add("hidden"); d.innerHTML = ""; } };
-  function a3dSay(av, who, text, onNext) {
-    window._a3dNext = onNext || window.a3dCloseDialog;
-    a3dDlg('<div class="rpgRow"><div class="rpgAva">' + av + "</div><div class=\"rpgSpeech\">" +
-      (who ? '<div class="rpgWho">' + esc(who) + "</div>" : "") + '<div class="rpgText">' + text + "</div>" +
-      '<div class="center"><button class="btn rpgDlgNext" onclick="_a3dNext()">Tiếp ➜</button></div></div></div>');
-  }
-  window.a3dDoInteract = function () {
-    if (!nearNpc || dialogOpen) return;
-    var n = nearNpc;
-    function hideMk(id) { for (var i = 0; i < npcMeshes.length; i++) if (npcMeshes[i].data.id === id && npcMeshes[i].mk) npcMeshes[i].mk.visible = false; }
-    if (n.id === "lan") { hideMk("lan"); a3dSay("👩‍🏫", "Cô Lan", AC.lan, window.a3dCloseDialog); }
-    else if (n.id === "c0" || n.id === "c1" || n.id === "c2") {
-      var idx = +n.id.slice(1), cl = AC.clues[idx];
-      seen[n.id] = true; var cEl = $("a3dClue"); if (cEl) cEl.textContent = a3dSeen();
-      hideMk(n.id); sfxSafe("correct"); burstSafe(3);
-      a3dSay(cl.ic, cl.label, esc(cl.info), window.a3dCloseDialog);
-    } else if (n.id === "ai") {
-      if (a3dSeen() < 3) { a3dSay("🤖", "Máy AI", "Hãy xem đủ <b>3 manh mối</b> (🖥️ 📄 📊) rồi hãy quyết định nhé!", window.a3dCloseDialog); return; }
-      if (solved) { a3dSay("🤖", "Máy AI", "Vụ án đã khép lại — làm tốt lắm, Thám tử! 🎉", window.a3dCloseDialog); return; }
-      a3dDecision();
+  function bindJoystick() {
+    var zone = $("a3dJoyZone"), base = $("a3dJoyBase"), stick = $("a3dJoyStick");
+    if (!zone) return;
+    var cx = 0, cy = 0, R = 46, id = null;
+    function start(e) {
+      if (dialogOpen || overlayOpen) return;
+      var t = e.changedTouches ? e.changedTouches[0] : e; id = e.pointerId != null ? e.pointerId : 0;
+      var r = zone.getBoundingClientRect();
+      cx = t.clientX; cy = t.clientY;
+      // đặt cần gạt tại điểm chạm
+      base.style.left = (cx - r.left) + "px"; base.style.top = (cy - r.top) + "px";
+      base.classList.add("show"); joy.active = true;
+      try { if (e.pointerId != null) zone.setPointerCapture(e.pointerId); } catch (ex) {}
+      move(e);
     }
-  };
-  function a3dSeen() { return Object.keys(seen).length; }
-  function a3dDecision() {
-    var opts = AC.options.map(function (o, i) { return '<button class="rpgOpt" onclick="a3dPick(' + i + ')">' + esc(o.t) + "</button>"; }).join("");
-    a3dDlg('<div class="rpgRow"><div class="rpgAva">🤖</div><div class="rpgSpeech"><div class="rpgWho">Máy AI</div>' +
-      '<div class="rpgText">' + esc(AC.q) + '</div><div class="rpgOpts" id="rpgOpts">' + opts + "</div>" +
-      '<div class="rpgReply hidden" id="rpgReply"></div></div></div>');
+    function move(e) {
+      if (!joy.active) return;
+      var t = e.changedTouches ? e.changedTouches[0] : e;
+      var dx = t.clientX - cx, dy = t.clientY - cy;
+      var d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; }
+      stick.style.transform = "translate(" + dx + "px," + dy + "px)";
+      joy.x = dx / R; joy.z = dy / R;
+      if (e.cancelable) e.preventDefault();
+    }
+    function end() {
+      joy.active = false; joy.x = 0; joy.z = 0; id = null;
+      stick.style.transform = "translate(0,0)"; base.classList.remove("show");
+    }
+    on(zone, "pointerdown", start);
+    on(zone, "pointermove", move);
+    on(zone, "pointerup", end);
+    on(zone, "pointercancel", end);
+    on(zone, "pointerleave", end);
   }
-  window.a3dPick = function (i) {
-    var o = AC.options[i], box = $("rpgReply"), ok = !!o.good;
-    if (ok) sfxSafe("correct"); else { sfxSafe("wrong"); wrong++; }
-    if (box) { box.className = "rpgReply " + (ok ? "good" : "bad"); box.innerHTML = (ok ? "👍 " : "🤔 ") + esc(o.reply); box.classList.remove("hidden"); }
+
+  /* ========================================================================
+     VÒNG LẶP
+     ======================================================================== */
+  function tick() {
+    if (!renderer || !renderer.domElement.isConnected) { cleanup(); return; }
+    if (document.hidden) { raf = 0; return; } // tạm dừng khi ẩn tab (tiết kiệm pin)
+    raf = requestAnimationFrame(tick);
+    var dt = clock ? Math.min(clock.getDelta(), 0.05) : 0.016;
+
+    if (!dialogOpen && !overlayOpen) updateMove(dt);
+    else { vel.x = lerp(vel.x, 0, 0.2); vel.z = lerp(vel.z, 0, 0.2); animateHero(dt, 0); }
+
+    animateNpcs(dt);
+    if (aiMixer) aiMixer.update(dt);
+    updateCamera(dt);
+    renderer.render(scene, camera);
+  }
+
+  function updateMove(dt) {
+    var ix = 0, iz = 0;
+    if (keys.U) iz -= 1; if (keys.D) iz += 1; if (keys.L) ix -= 1; if (keys.R) ix += 1;
+    if (joy.active) { ix += joy.x; iz += joy.z; }
+    var mag = Math.hypot(ix, iz);
+    if (mag > 1) { ix /= mag; iz /= mag; mag = 1; }
+
+    var speed = 4.2;
+    vel.x = lerp(vel.x, ix * speed, 0.22);
+    vel.z = lerp(vel.z, iz * speed, 0.22);
+
+    var nx = hero.position.x + vel.x * dt;
+    var nz = hero.position.z + vel.z * dt;
+    var r = resolve(nx, nz, 0.42);
+    hero.position.x = r[0]; hero.position.z = r[1];
+
+    var moving = mag > 0.08 && (Math.abs(vel.x) + Math.abs(vel.z)) > 0.2;
+    if (moving) {
+      var want = Math.atan2(vel.x, vel.z);
+      facing = angLerp(facing, want, 0.25);
+    }
+    hero.rotation.y = facing;
+    animateHero(dt, moving ? Math.min(1, (Math.abs(vel.x) + Math.abs(vel.z)) / speed) : 0);
+
+    updateNearest();
+  }
+
+  function angLerp(a, b, t) {
+    var d = ((b - a + Math.PI) % (2 * Math.PI)) - Math.PI;
+    if (d < -Math.PI) d += 2 * Math.PI;
+    return a + d * t;
+  }
+
+  function resolve(px, pz, r) {
+    for (var i = 0; i < colliders.length; i++) {
+      var c = colliders[i], dx = px - c.x, dz = pz - c.z, d = Math.hypot(dx, dz), min = r + c.r;
+      if (d < min) {
+        if (d > 1e-4) { px = c.x + dx / d * min; pz = c.z + dz / d * min; }
+        else { px = c.x + min; }
+      }
+    }
+    return [clamp(px, -7.2, 7.2), clamp(pz, -7.2, 7.2)];
+  }
+
+  function animateHero(dt, speed) {
+    var rig = hero.userData.rig; if (!rig) return;
+    if (REDUCED) { if (rig.arms) rig.arms.forEach(function (a) { a.rotation.x = 0; }); if (rig.legs) rig.legs.forEach(function (l) { l.rotation.x = 0; }); hero.position.y = 0; return; }
+    if (speed > 0.05) {
+      walkPhase += dt * 10 * (0.5 + speed);
+      var sw = 0.6 * speed;
+      if (rig.legs) { rig.legs[0].rotation.x = Math.sin(walkPhase) * sw; rig.legs[1].rotation.x = -Math.sin(walkPhase) * sw; }
+      if (rig.arms) { rig.arms[0].rotation.x = -Math.sin(walkPhase) * sw * 0.8; rig.arms[1].rotation.x = Math.sin(walkPhase) * sw * 0.8; }
+      hero.position.y = Math.abs(Math.sin(walkPhase)) * 0.06 * speed;
+    } else {
+      idleT += dt;
+      var e = 0.12;
+      if (rig.legs) { rig.legs[0].rotation.x = lerp(rig.legs[0].rotation.x, 0, e); rig.legs[1].rotation.x = lerp(rig.legs[1].rotation.x, 0, e); }
+      if (rig.arms) { rig.arms[0].rotation.x = lerp(rig.arms[0].rotation.x, 0, e); rig.arms[1].rotation.x = lerp(rig.arms[1].rotation.x, 0, e); }
+      hero.position.y = lerp(hero.position.y, Math.sin(idleT * 2) * 0.012, 0.1);
+    }
+  }
+
+  function animateNpcs(dt) {
+    if (REDUCED) return;
+    idleT += dt;
+    for (var i = 0; i < npcs.length; i++) {
+      var n = npcs[i];
+      if (n.group.userData.rig && n.group.userData.rig.head) {
+        n.group.userData.rig.head.position.y = (n.data.kind === "robot" ? 1.62 : 1.62) + Math.sin(idleT * 1.5 + i) * 0.015;
+      }
+      if (n.data.kind === "robot" && n.group.userData.rig.ant) {
+        n.group.userData.rig.ant.position.y = 2.02 + Math.sin(idleT * 3) * 0.03;
+      }
+      if (n.mk && n.mk.visible) n.mk.position.y = 2.55 + Math.sin(idleT * 2 + i) * 0.12;
+      if (n.ring && nearest === n) n.ring.material.opacity = 0.45 + Math.sin(idleT * 3.2) * 0.22;
+      // vẫy tay chào khi người chơi lại gần
+      var rig = n.group.userData.rig;
+      if (rig && rig.person && rig.arms) {
+        var a = rig.arms[1];
+        if (nearest === n && !dialogOpen && !overlayOpen) {
+          a.rotation.z = lerp(a.rotation.z, -1.5, 0.15);
+          a.rotation.x = Math.sin(idleT * 7) * 0.45;
+        } else {
+          a.rotation.z = lerp(a.rotation.z, 0, 0.12);
+          a.rotation.x = lerp(a.rotation.x, 0, 0.12);
+        }
+      }
+    }
+  }
+
+  function updateCamera(dt) {
+    var tx = hero.position.x, tz = hero.position.z;
+    var want = { x: tx * 0.6, y: 11, z: tz * 0.6 + 11 };
+    var k = REDUCED ? 1 : 1 - Math.pow(0.0001, dt);
+    camera.position.x = lerp(camera.position.x, want.x, k);
+    camera.position.y = lerp(camera.position.y, want.y, k);
+    camera.position.z = lerp(camera.position.z, want.z, k);
+    camera.lookAt(tx, 1.1, tz - 0.3);
+  }
+
+  /* ========================================================================
+     TƯƠNG TÁC
+     ======================================================================== */
+  function updateNearest() {
+    var found = null, best = 2.1;
+    for (var i = 0; i < interactables.length; i++) {
+      var rec = interactables[i], e = rec.data;
+      var d = Math.hypot(hero.position.x - e.x, hero.position.z - e.z);
+      if (d < best) { best = d; found = rec; }
+    }
+    if (found !== nearest) {
+      nearest = found;
+      playAI(found && found.data.id === "ai" && !REDUCED ? "Wave" : "Idle"); // Máy AI vẫy tay khi lại gần
+      var prompt = $("a3dPrompt"), action = $("a3dAction");
+      // tắt mọi vòng sáng
+      for (var j = 0; j < npcs.length; j++) if (npcs[j].ring) npcs[j].ring.material.opacity = 0;
+      if (found) {
+        prompt.innerHTML = '<span class="a3dPKey">E</span> Nói chuyện với <b>' + esc(found.data.name) + '</b>';
+        prompt.classList.remove("hidden");
+        action.classList.remove("hidden");
+        if (found.ring) found.ring.material.opacity = 0.6;
+      } else {
+        prompt.classList.add("hidden");
+        action.classList.add("hidden");
+      }
+    }
+  }
+
+  function doInteract() {
+    if (!nearest || dialogOpen || overlayOpen) return;
+    var id = nearest.data.id;
+    if (id === "lan") {
+      if (state === "brief") { runBrief(0); return; }
+      say("👩‍🏫", "Cô Lan", hintLine(), null, close);
+      return;
+    }
+    if (id === "ai") {
+      if (seenCount() < 3) { say("🤖", "Máy AI", "Hãy xem đủ <b>3 manh mối</b> (🖥️ 📄 📊) trước khi quyết định nhé!", null, close); return; }
+      if (!allBoardDone()) { say("🤖", "Máy AI", "Em đã có đủ manh mối rồi! Hãy mở <b>📋 Bảng điều tra</b> để đối chiếu từng bằng chứng trước đã.", null, close); return; }
+      if (solved) { say("🤖", "Máy AI", "Vụ án đã khép lại — làm tốt lắm, Thám tử! 🎉", null, close); return; }
+      runDecision();
+      return;
+    }
+    // NPC manh mối
+    var cl = clueById(id);
+    if (!cl) return;
+    var first = !cluesGot[id];
+    if (first) { cluesGot[id] = true; sfxSafe("correct"); burstSafe(3); popClue(cl); }
+    hideMarker(id);
+    var pre = first ? '<span class="a3dHl a3dHl-violet">Manh mối mới!</span> ' : "";
+    say(cl.ic, nearest.data.name, pre + cl.info, null, function () {
+      close();
+      refreshClueState();
+    });
+  }
+
+  function clueById(id) { for (var i = 0; i < AC.clues.length; i++) if (AC.clues[i].id === id) return AC.clues[i]; return null; }
+  function seenCount() { return Object.keys(cluesGot).length; }
+  function allBoardDone() { return Object.keys(boardDone).length >= 3; }
+
+  function hintLine() {
+    if (seenCount() < 3) return "Em đã thu <b>" + seenCount() + "/3</b> manh mối. Hãy tìm các bạn có dấu <b>❗</b> để hỏi thêm nhé!";
+    if (!allBoardDone()) return "Đủ 3 manh mối rồi! Mở <b>📋 Bảng điều tra</b> để sắp xếp bằng chứng.";
+    return "Em đã sẵn sàng! Tới gặp <b>🤖 Máy AI</b> để đưa ra kết luận nhé.";
+  }
+
+  function hideMarker(id) {
+    for (var i = 0; i < npcs.length; i++) if (npcs[i].data.id === id && npcs[i].mk) npcs[i].mk.visible = false;
+  }
+
+  function updateMarkers() {
+    // hiện ❗ tùy trạng thái nhiệm vụ
+    for (var i = 0; i < npcs.length; i++) {
+      var n = npcs[i], id = n.data.id, show = false;
+      if (state === "brief") show = (id === "lan");
+      else if (seenCount() < 3) show = (id.charAt(0) === "c" && !cluesGot[id]);
+      else if (!allBoardDone()) show = false;
+      else show = (id === "ai" && !solved);
+      if (n.mk) n.mk.visible = show;
+    }
+  }
+
+  /* ========================================================================
+     TRẠNG THÁI NHIỆM VỤ
+     ======================================================================== */
+  function setState(s) {
+    state = s;
+    var obj = $("a3dObjective");
+    if (s === "brief") setObjective("🎧 Nghe cô Lan giao nhiệm vụ");
+    else if (s === "explore") setObjective("🔎 " + AC.objExplore);
+    else if (s === "board") setObjective("📋 " + AC.objBoard);
+    else if (s === "decide") setObjective("🤖 " + AC.objDecide);
+    else if (s === "done") setObjective("✅ Hoàn thành!");
+    updateMarkers();
+    var bb = $("a3dBoardBtn");
+    if (bb) bb.classList.toggle("hidden", !(s === "board"));
+  }
+
+  function setObjective(text, toast) {
+    var o = $("a3dObjective"); if (o) o.innerHTML = text;
+    if (toast !== false) showToast(text);
+  }
+
+  function refreshClueState() {
+    var n = seenCount();
+    var chip = $("a3dClueN"); if (chip) chip.textContent = n;
+    var chipBox = $("a3dClueChip");
+    if (chipBox && !REDUCED) { chipBox.classList.remove("pop"); void chipBox.offsetWidth; chipBox.classList.add("pop"); }
+    if (n >= 3 && state === "explore") { setState("board"); }
+    updateMarkers();
+  }
+
+  function runBrief(i) {
+    if (i >= AC.brief.lines.length) {
+      close();
+      setState("explore");
+      return;
+    }
+    say("👩‍🏫", AC.brief.who, AC.brief.lines[i], null, function () { runBrief(i + 1); });
+  }
+
+  /* ========================================================================
+     BẢNG ĐIỀU TRA (đối chiếu bằng chứng ↔ kết luận của AI)
+     ======================================================================== */
+  function openBoard() {
+    if (seenCount() < 3) return;
+    overlayOpen = true;
+    var items = AC.clues.map(function (cl, i) {
+      var done = !!boardDone[i];
+      var optsHtml = AC.boardOpts.map(function (o) {
+        var cls = "a3dBoardOpt" + (done && o.k === cl.verdict ? " ok sel" : "");
+        return '<button class="' + cls + '" data-i="' + i + '" data-k="' + o.k + '"' + (done ? " disabled" : "") + '>' + esc(o.t) + '</button>';
+      }).join("");
+      var fxHtml = done ? '<div class="a3dBoardFx good">✅ ' + cl.why + '</div>' : '<div class="a3dBoardFx hidden"></div>';
+      return '<div class="a3dBoardItem" data-i="' + i + '">' +
+        '<div class="a3dBoardHead"><span class="a3dBoardIc">' + cl.ic + '</span>' +
+          '<div><div class="a3dBoardName">' + esc(cl.label) + '</div><div class="a3dBoardInfo">' + cl.info + '</div></div></div>' +
+        '<div class="a3dBoardOpts">' + optsHtml + '</div>' + fxHtml +
+      '</div>';
+    }).join("");
+    var layer = $("a3dLayer");
+    layer.innerHTML =
+      '<div class="a3dPanel a3dBoardPanel">' +
+        '<div class="a3dPanelHead"><span>📋 Bảng điều tra</span>' +
+          '<button class="a3dRound" id="a3dBoardClose" aria-label="Đóng">✕</button></div>' +
+        '<p class="a3dBoardLead">Máy AI kết luận <b>“Minh gian lận”</b>. Với mỗi bằng chứng, hãy chọn: nó <b>ủng hộ</b> hay <b>phản bác</b> lời buộc tội đó?</p>' +
+        items +
+        '<div class="a3dBoardFoot" id="a3dBoardFoot"></div>' +
+      '</div>';
+    layer.classList.remove("hidden");
+    on($("a3dBoardClose"), "click", closeOverlay);
+    var btns = layer.querySelectorAll(".a3dBoardOpt");
+    for (var b = 0; b < btns.length; b++) on(btns[b], "click", onBoardPick);
+    renderBoardFoot();
+  }
+
+  function onBoardPick(e) {
+    var btn = e.currentTarget, i = +btn.getAttribute("data-i"), k = btn.getAttribute("data-k");
+    if (boardDone[i]) return;
+    var cl = AC.clues[i], ok = (k === cl.verdict);
+    var item = btn.closest(".a3dBoardItem");
+    var opts = item.querySelectorAll(".a3dBoardOpt");
+    for (var j = 0; j < opts.length; j++) { opts[j].classList.remove("sel", "ok", "no"); }
+    btn.classList.add("sel", ok ? "ok" : "no");
+    var fx = item.querySelector(".a3dBoardFx");
     if (ok) {
-      document.querySelectorAll("#rpgOpts .rpgOpt").forEach(function (b) { b.disabled = true; }); burstSafe(6);
-      window._a3dNext = function () { a3dSay("🎉", "Kết quả", AC.result, function () { solved = true; a3dEnd(); }); };
-      box.innerHTML += '<div class="center" style="margin-top:8px"><button class="btn rpgDlgNext" onclick="_a3dNext()">Tiếp ➜</button></div>';
+      sfxSafe("correct");
+      if (!boardDone[i]) boardDone[i] = true;
+      for (var m = 0; m < opts.length; m++) opts[m].disabled = true;
+      fx.className = "a3dBoardFx good"; fx.innerHTML = "✅ " + cl.why;
+    } else {
+      sfxSafe("wrong"); wrong++;
+      fx.className = "a3dBoardFx bad"; fx.innerHTML = "🤔 Chưa đúng. Đọc kỹ bằng chứng rồi thử lại nhé.";
+      btn.classList.remove("sel");
     }
-  };
-  function a3dEnd() {
-    a3dCleanup();
+    fx.classList.remove("hidden");
+    renderBoardFoot();
+  }
+
+  function renderBoardFoot() {
+    var foot = $("a3dBoardFoot"); if (!foot) return;
+    var done = Object.keys(boardDone).length;
+    if (done < 3) {
+      foot.innerHTML = '<div class="a3dBoardCount">Đã đối chiếu <b>' + done + '/3</b> bằng chứng</div>';
+    } else {
+      foot.innerHTML = '<div class="a3dBoardCount ok">🎯 Đã rõ: 1 bằng chứng ủng hộ AI, 2 bằng chứng minh oan cho Minh!</div>' +
+        '<button class="a3dBtn a3dBtnBig" id="a3dBoardGo">Tới gặp Máy AI để kết luận ➜</button>';
+      on($("a3dBoardGo"), "click", function () { closeOverlay(); setState("decide"); say("🤖", "Máy AI", "Em đã nắm chắc các bằng chứng. Lại gần tôi (🤖) và nhấn <b>E</b> để đưa ra quyết định cuối cùng nhé!", null, close); });
+    }
+  }
+
+  /* ========================================================================
+     QUYẾT ĐỊNH + GIẢI THÍCH + KẾT THÚC
+     ======================================================================== */
+  function runDecision() {
+    dialogOpen = true;
+    var opts = AC.options.map(function (o, i) { return '<button class="a3dOpt" data-i="' + i + '">' + esc(o.t) + '</button>'; }).join("");
+    var layer = $("a3dLayer");
+    layer.innerHTML =
+      '<div class="a3dDlg">' +
+        '<div class="a3dDlgAva">🤖</div>' +
+        '<div class="a3dDlgBody">' +
+          '<div class="a3dDlgName">Máy AI</div>' +
+          '<div class="a3dDlgText">' + esc(AC.q) + '</div>' +
+          '<div class="a3dOpts" id="a3dOpts">' + opts + '</div>' +
+          '<div class="a3dReply hidden" id="a3dReply"></div>' +
+        '</div>' +
+      '</div>';
+    layer.classList.remove("hidden");
+    var btns = layer.querySelectorAll(".a3dOpt");
+    for (var b = 0; b < btns.length; b++) on(btns[b], "click", onDecide);
+  }
+
+  function onDecide(e) {
+    var i = +e.currentTarget.getAttribute("data-i"), o = AC.options[i], box = $("a3dReply"), ok = !!o.good;
+    if (ok) sfxSafe("correct"); else { sfxSafe("wrong"); wrong++; }
+    box.className = "a3dReply " + (ok ? "good" : "bad");
+    box.innerHTML = (ok ? "👍 " : "🤔 ") + esc(o.reply);
+    box.classList.remove("hidden");
+    if (ok) {
+      var btns = document.querySelectorAll("#a3dOpts .a3dOpt");
+      for (var b = 0; b < btns.length; b++) btns[b].disabled = true;
+      burstSafe(6);
+      box.innerHTML += '<div class="a3dCenter"><button class="a3dBtn a3dNext" id="a3dResNext">Xem kết quả ➜</button></div>';
+      on($("a3dResNext"), "click", function () {
+        say("🎉", "Kết quả", AC.result, null, function () {
+          say("🧠", "Vì sao AI sai?", AC.lesson, null, function () { close(); solved = true; endGame(); });
+        });
+      });
+    }
+  }
+
+  function endGame() {
+    // ẩn các lớp HUD còn sót (prompt/nút hành động/nút bảng) trước màn kết thúc
+    ["a3dPrompt", "a3dAction", "a3dBoardBtn"].forEach(function (id) { var el = $(id); if (el) el.classList.add("hidden"); });
+    cleanup(true); // giữ DOM shell để hiện màn kết thúc
     var stars = wrong === 0 ? 3 : wrong <= 2 ? 2 : 1;
-    var starRow = '<div class="mzStarRow">' + [1, 2, 3].map(function (n) { return '<span class="mzStar' + (n <= stars ? " on" : "") + '" style="animation-delay:' + (n * 0.12) + 's">★</span>'; }).join("") + "</div>";
-    $("runnerTop").classList.add("hidden"); $("qCard").classList.add("hidden");
-    $("resultCard").innerHTML =
-      '<div class="mgResultIco">🎓</div><h2 style="margin-top:6px">' + esc(AC.endTitle) + "</h2>" +
-      starRow + '<div class="plTier">Bạn là một Thám tử AI tài ba!</div>' +
-      '<div class="plRec"><div class="plRecHead">💡 Em vừa học</div><p>' + AC.lesson + "</p></div>" +
-      '<div class="center"><button class="btn" onclick="startAcademy()">Chơi lại 🔄</button>' +
-        '<button class="btn light" onclick="exitRunner()" style="margin-left:8px">Về Bài tập ✏️</button></div>';
-    $("resultCard").classList.remove("hidden"); $("runner").scrollTo({ top: 0 });
-    burstSafe(20); sfxSafe("win");
+    var starRow = '<div class="a3dStars">' + [1, 2, 3].map(function (n) {
+      return '<span class="a3dStar' + (n <= stars ? " on" : "") + '" style="animation-delay:' + (n * 0.12) + 's">★</span>';
+    }).join("") + "</div>";
+    var layer = $("a3dLayer");
+    if (layer) {
+      layer.innerHTML =
+        '<div class="a3dEnd">' +
+          '<div class="a3dEndIco">🎓</div>' +
+          '<h2>' + esc(AC.endTitle) + '</h2>' +
+          starRow +
+          '<div class="a3dEndTier">Bạn là một Thám tử AI tài ba!</div>' +
+          '<div class="a3dReward">+15 ⭐ · Mở khóa huy hiệu “Điều tra viên AI”</div>' +
+          '<div class="a3dEndCard"><div class="a3dEndHead">💡 Em vừa học</div><p>' + AC.lesson + '</p></div>' +
+          '<div class="a3dCenter">' +
+            '<button class="a3dBtn a3dBtnBig" id="a3dReplay">Chơi lại 🔄</button>' +
+            '<button class="a3dBtn a3dLight" id="a3dBackEx">Về Bài tập ✏️</button>' +
+          '</div>' +
+        '</div>';
+      layer.classList.remove("hidden");
+      on($("a3dReplay"), "click", window.startAcademy);
+      on($("a3dBackEx"), "click", quit);
+    }
+    burstSafe(22); sfxSafe("win");
     if (window.Cloud) {
       var pct = stars >= 3 ? 100 : stars >= 2 ? 75 : 50;
-      Cloud.saveQuizResult({ mode: "practice", score: stars, total: 3, percent: pct, stars: stars });
-      Cloud.aiRecord({ xp: 15, lesson: "ai:game:academy1", quiz: true, percent: pct, stars: stars });
+      try {
+        Cloud.saveQuizResult({ mode: "practice", score: stars, total: 3, percent: pct, stars: stars });
+        Cloud.aiRecord({ xp: 15, lesson: "ai:game:academy1", quiz: true, percent: pct, stars: stars });
+      } catch (e) {}
     }
   }
-  function a3dCleanup() {
+
+  /* ========================================================================
+     HỘP THOẠI + OVERLAY + TOAST + HELP
+     ======================================================================== */
+  function say(av, who, html, choices, onNext) {
+    dialogOpen = true;
+    var layer = $("a3dLayer");
+    layer.innerHTML =
+      '<div class="a3dDlg">' +
+        '<div class="a3dDlgAva">' + av + '</div>' +
+        '<div class="a3dDlgBody">' +
+          (who ? '<div class="a3dDlgName">' + esc(who) + '</div>' : '') +
+          '<div class="a3dDlgText">' + html + '</div>' +
+          '<div class="a3dCenter"><button class="a3dBtn a3dNext" id="a3dSayNext">Tiếp ➜</button></div>' +
+        '</div>' +
+      '</div>';
+    layer.classList.remove("hidden");
+    on($("a3dSayNext"), "click", onNext || close);
+  }
+  function close() {
+    dialogOpen = false;
+    var layer = $("a3dLayer"); if (layer) { layer.classList.add("hidden"); layer.innerHTML = ""; }
+  }
+  function closeOverlay() {
+    overlayOpen = false;
+    var layer = $("a3dLayer"); if (layer) { layer.classList.add("hidden"); layer.innerHTML = ""; }
+  }
+
+  function showToast(text) {
+    var t = $("a3dToast"); if (!t) return;
+    t.innerHTML = text;
+    t.classList.remove("show"); void t.offsetWidth; t.classList.add("show");
+    clearTimeout(t._tm); t._tm = setTimeout(function () { t.classList.remove("show"); }, 3200);
+  }
+
+  function popClue(cl) {
+    showToast('<span class="a3dHl a3dHl-violet">🧩 Manh mối mới:</span> ' + esc(cl.label));
+  }
+
+  function showHelp() {
+    overlayOpen = true;
+    var layer = $("a3dLayer");
+    layer.innerHTML =
+      '<div class="a3dPanel">' +
+        '<div class="a3dPanelHead"><span>❓ Trợ giúp</span><button class="a3dRound" id="a3dHelpClose" aria-label="Đóng">✕</button></div>' +
+        '<ul class="a3dHelpList">' +
+          '<li><b>Di chuyển:</b> W A S D hoặc phím mũi tên · trên điện thoại: giữ &amp; kéo cần gạt.</li>' +
+          '<li><b>Nói chuyện:</b> lại gần người có dấu <b>❗</b>, nhấn <b>E</b> hoặc nút 💬.</li>' +
+          '<li><b>Mục tiêu:</b> ' + esc(stripHtml(hintLine())) + '</li>' +
+          '<li><b>Bảng điều tra:</b> nút 📋 hiện khi em đủ 3 manh mối.</li>' +
+        '</ul>' +
+        '<div class="a3dCenter"><button class="a3dBtn" id="a3dHelpOk">Đã hiểu!</button></div>' +
+      '</div>';
+    layer.classList.remove("hidden");
+    on($("a3dHelpClose"), "click", closeOverlay);
+    on($("a3dHelpOk"), "click", closeOverlay);
+  }
+  function stripHtml(s) { var d = document.createElement("div"); d.innerHTML = s; return d.textContent || ""; }
+
+  function toggleMute() {
+    muted = !muted;
+    try { localStorage.setItem("a3dMuted", muted ? "1" : "0"); } catch (e) {}
+    var b = $("a3dMute"); if (b) b.textContent = muted ? "🔇" : "🔊";
+  }
+
+  /* ========================================================================
+     THOÁT + DỌN DẸP
+     ======================================================================== */
+  function quit() {
+    cleanup();
+    var runner = $("runner"); if (runner) runner.classList.remove("a3dMode");
+    if (typeof exitRunner === "function") exitRunner();
+  }
+
+  function cleanup(keepShell) {
     if (raf) cancelAnimationFrame(raf); raf = 0;
-    document.removeEventListener("keydown", a3dKey); document.removeEventListener("keyup", a3dKeyUp);
-    window.removeEventListener("resize", a3dResize);
-    try { if (renderer) { renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss(); } } catch (e) {}
-    renderer = null; scene = null; camera = null; hero = null;
+    for (var i = 0; i < listeners.length; i++) {
+      var L = listeners[i];
+      // giữ lại listener của các nút màn kết thúc khi keepShell
+      if (keepShell && L[0] && L[0].id && /^(a3dReplay|a3dBackEx|a3dExit|a3dMute)$/.test(L[0].id)) continue;
+      try { L[0].removeEventListener(L[1], L[2], L[3]); } catch (e) {}
+    }
+    if (!keepShell) listeners = [];
+    else listeners = listeners.filter(function (L) { return L[0] && L[0].id && /^(a3dReplay|a3dBackEx|a3dExit|a3dMute)$/.test(L[0].id); });
+    if (visHandler) { document.removeEventListener("visibilitychange", visHandler); if (!keepShell) visHandler = null; }
+    if (ro) { try { ro.disconnect(); } catch (e) {} ro = null; }
+
+    // dispose geometry/material/texture
+    try {
+      if (scene) scene.traverse(function (o) {
+        if (o.geometry) o.geometry.dispose();
+        var mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+        mats.forEach(function (m) {
+          for (var k in m) { var v = m[k]; if (v && v.isTexture) v.dispose(); }
+          m.dispose();
+        });
+      });
+    } catch (e) {}
+    try { if (renderer) { renderer.dispose(); if (renderer.forceContextLoss) renderer.forceContextLoss(); } } catch (e) {}
+    renderer = null; scene = null; camera = null; hero = null; clock = null;
+    npcs = []; colliders = []; interactables = []; markers = [];
+    if (aiMixer) { try { aiMixer.stopAllAction(); } catch (e) {} }
+    aiMixer = null; aiActions = null; aiCurrent = null; robotGLB = null;
+  }
+
+  function resize() {
+    var stage = $("a3dStage"); if (!stage || !renderer) return;
+    var w = stage.clientWidth || 800, h = stage.clientHeight || 500;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+
+  // Giữ các hàm cũ để onclick cũ (nếu còn) không lỗi
+  window.a3dDoInteract = doInteract;
+  window.a3dCloseDialog = close;
+
+  /* ---------- Hook chẩn đoán cho kiểm thử tự động (Playwright) ----------
+     CHỈ bật trong môi trường test: URL có ?qa=1 (hoặc localStorage a3dQA="1").
+     Production bình thường KHÔNG tạo window.__a3d → không lộ điều khiển "gian lận".
+     - Nhóm getter: chỉ đọc trạng thái (an toàn).
+     - Nhóm hàm press/interact/teleport/goTo: chỉ có khi A3D_QA bật. */
+  var A3D_QA = false;
+  try { A3D_QA = /[?&](qa|test)=1\b/.test(location.search) || (window.localStorage && localStorage.getItem("a3dQA") === "1"); } catch (e) {}
+  if (A3D_QA) {
+    window.__a3d = {
+      get ready() { return !!renderer; },
+      get state() { return state; },
+      get clues() { return seenCount(); },
+      get board() { return Object.keys(boardDone).length; },
+      get wrong() { return wrong; },
+      get solved() { return solved; },
+      get dialogOpen() { return dialogOpen; },
+      get overlayOpen() { return overlayOpen; },
+      get nearest() { return nearest ? nearest.data.id : null; },
+      get glbRobot() { return !!robotGLB; },
+      get aiInfo() {
+        var rec = null; for (var i = 0; i < npcs.length; i++) if (npcs[i].data.id === "ai") rec = npcs[i];
+        if (!rec || !rec.group || !THREE) return null;
+        var g = rec.group, b = new THREE.Box3().setFromObject(g);
+        var meshes = [];
+        g.traverse(function (o) { if (o.isMesh || o.isSkinnedMesh) { var wp = new THREE.Vector3(); o.getWorldPosition(wp); meshes.push({ sk: !!o.isSkinnedMesh, vis: o.visible, mat: o.material && o.material.type, op: o.material && o.material.opacity, tr: o.material && o.material.transparent, wp: [+wp.x.toFixed(1), +wp.y.toFixed(1), +wp.z.toFixed(1)] }); } });
+        return { glb: !!robotGLB, visible: g.visible, pos: [+g.position.x.toFixed(2), +g.position.y.toFixed(2), +g.position.z.toFixed(2)], size: [+(b.max.x - b.min.x).toFixed(2), +(b.max.y - b.min.y).toFixed(2), +(b.max.z - b.min.z).toFixed(2)], minY: +b.min.y.toFixed(2), meshCount: meshes.length, meshes: meshes };
+      },
+      get hero() { return hero ? { x: +hero.position.x.toFixed(2), z: +hero.position.z.toFixed(2) } : null; },
+      press: function (dir, on) { if (/^[UDLR]$/.test(dir)) keys[dir] = on ? 1 : 0; },
+      interact: function () { doInteract(); },
+      teleport: function (x, z) { if (hero) { hero.position.x = x; hero.position.z = z; updateNearest(); } },
+      hideHero: function (hide) { if (hero) hero.visible = !hide; },
+      // đưa nhân vật tới trước mặt một NPC (trong tầm tương tác) để QA gọi interact()
+      goTo: function (id) {
+        for (var i = 0; i < ENT.length; i++) {
+          if (ENT[i].id === id && hero) {
+            hero.position.x = ENT[i].x; hero.position.z = ENT[i].z + 1.3; updateNearest(); return true;
+          }
+        }
+        return false;
+      }
+    };
   }
 })();
