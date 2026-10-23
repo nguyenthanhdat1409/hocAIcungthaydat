@@ -2509,6 +2509,16 @@ html,body{ overflow-x:hidden }
 .a3dRound:hover{ transform:translateY(-2px) } .a3dRound:active{ transform:translateY(1px) }
 .a3dExit{ background:rgba(255,255,255,.95); color:#be123c }
 
+/* menu chọn góc nhìn camera */
+.a3dCamMenu{ position:absolute; top:64px; right:16px; z-index:9; display:flex; flex-direction:column; gap:6px;
+  background:rgba(255,255,255,.97); border-radius:14px; padding:8px; box-shadow:0 14px 30px -12px rgba(30,27,75,.5); border:1.5px solid #EDE9FE }
+.a3dCamMenu button{ display:flex; align-items:center; justify-content:space-between; gap:12px; border:2px solid transparent; background:#F5F3FF;
+  color:var(--a3d-ink); border-radius:10px; padding:9px 12px; font-weight:700; font-size:13.5px; cursor:pointer; white-space:nowrap; text-align:left; transition:background .12s }
+.a3dCamMenu button:hover{ background:#EDE9FE }
+.a3dCamMenu button.on{ border-color:var(--a3d-ind); background:#EDE9FE }
+.a3dCamMenu button span{ font-size:11px; color:#fff; background:var(--a3d-ind); border-radius:5px; padding:1px 6px; font-weight:800 }
+@media (max-width:640px){ .a3dCamMenu{ top:58px; right:12px } }
+
 /* ---- nút Bảng điều tra ---- */
 .a3dBoardBtn{ position:absolute; top:76px; left:50%; transform:translateX(-50%); z-index:6;
   border:none; cursor:pointer; padding:12px 22px; border-radius:999px; font-family:var(--font-display); font-weight:800; font-size:15px; color:#fff;

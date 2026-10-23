@@ -24,69 +24,100 @@
   try { muted = localStorage.getItem("a3dMuted") === "1"; } catch (e) {}
 
   /* ---------- Nội dung giáo dục (giữ nguyên cốt truyện bản cũ, mở rộng cho gameplay) ---------- */
-  var AC = {
-    brief: {
-      who: "Cô Lan",
-      lines: [
-        "Chào Thám tử AI! 07:42 sáng nay, hệ thống AI của trường vừa <span class='a3dHl a3dHl-pink'>khóa tài khoản</span> bạn Minh vì nghi <b>gian lận</b>.",
-        "Minh nói mình bị oan. Em có <span class='a3dHl a3dHl-orange'>30 phút</span> để <span class='a3dHl a3dHl-violet'>điều tra</span> và tìm ra sự thật nhé!",
-        "Cách chơi: dùng <b>WASD / phím mũi tên</b> (hoặc cần gạt trên điện thoại) để đi. Lại gần người có dấu <b>❗</b> rồi nhấn <b>E</b> (hoặc nút 💬) để nói chuyện."
-      ]
+  /* ---------- Dữ liệu màn chơi: nạp từ academy3d.data.js (TÁCH data khỏi logic) ---------- */
+  var LEVEL = null, AC = null, ENT = null;
+
+  // Adapter: dựng object AC (tương thích code UI cũ) từ dữ liệu quest của màn
+  function buildAC(level) {
+    var q = {}; (level.quests || []).forEach(function (x) { q[x.id] = x; });
+    var brief = q.brief || {}, collect = q.collect || {}, inv = q.investigate || {}, dec = q.decision || {};
+    return {
+      brief: { who: brief.who || "", lines: brief.lines || [], avatar: brief.avatar || "👩‍🏫" },
+      clues: collect.items || [],
+      need: (collect.need != null ? collect.need : (collect.items ? collect.items.length : 0)),
+      boardOpts: inv.opts || [], boardLead: inv.lead || "", boardSummary: inv.summary || "",
+      q: dec.question || "", options: dec.options || [], result: dec.result || "",
+      explainTitle: dec.explainTitle || "Giải thích", avatarAI: dec.avatar || "🤖", whoAI: dec.who || "Máy AI",
+      endTitle: level.endTitle || "Hoàn thành!", endTier: level.endTier || "", lesson: level.lesson || "",
+      reward: level.reward || {}
+    };
+  }
+
+  /* ---------- QuestEngine: độc lập scene, chạy theo dữ liệu, CHẶN sai điều kiện ---------- */
+  var Engine = {
+    level: null, quests: [], byId: {}, done: {}, inv: {}, cbs: {},
+    load: function (level) { this.level = level; this.quests = level.quests || []; this.byId = {}; var s = this; this.quests.forEach(function (q) { s.byId[q.id] = q; }); this.reset(); },
+    reset: function () { this.done = {}; this.inv = {}; },
+    on: function (ev, cb) { (this.cbs[ev] = this.cbs[ev] || []).push(cb); },
+    emit: function (ev, d) { (this.cbs[ev] || []).forEach(function (c) { try { c(d); } catch (e) {} }); },
+    invCount: function () { return Object.keys(this.inv).length; },
+    reqMet: function (q) {
+      var r = (q && q.requires) || {};
+      if (r.quest && !this.done[r.quest]) return false;
+      if (r.quests) for (var i = 0; i < r.quests.length; i++) if (!this.done[r.quests[i]]) return false;
+      if (r.items != null && this.invCount() < r.items) return false;
+      return true;
     },
-    objExplore: "Gặp 3 nhân vật và thu thập đủ 3 manh mối",
-    objBoard: "Mở Bảng điều tra để đối chiếu bằng chứng",
-    objDecide: "Gặp Máy AI để đưa ra kết luận",
-    /* 3 manh mối — đồng thời là 3 NPC để trò chuyện */
-    clues: [
-      {
-        id: "c0", ic: "🖥️", label: "Nhật ký AI",
-        npc: "Bạn trực phòng máy",
-        info: "Máy AI báo: bài của Minh <b>giống tài liệu trên mạng 85%</b> → nó tự kết luận là “chép”.",
-        /* đối chiếu với kết luận "Minh gian lận" */
-        verdict: "support",
-        why: "Đây chính là <b>căn cứ</b> khiến AI buộc tội — nhưng mới chỉ là một con số, chưa phải sự thật."
-      },
-      {
-        id: "c1", ic: "📄", label: "Bài của Minh",
-        npc: "Bạn cùng lớp",
-        info: "Minh dùng nhiều câu giống <b>dàn ý thầy phát</b> cho cả lớp — vì em học thuộc đúng dàn ý đó.",
-        verdict: "refute",
-        why: "Giống nhau có <b>lý do chính đáng</b>: cả lớp học chung dàn ý. Giống ≠ gian lận."
-      },
-      {
-        id: "c2", ic: "📊", label: "Dữ liệu của AI",
-        npc: "Bạn kỹ thuật viên",
-        info: "Máy AI chỉ được học từ <b>50 bài mẫu</b> và <b>chưa từng thấy</b> cách trình bày của Minh.",
-        verdict: "refute",
-        why: "AI học từ dữ liệu <b>quá ít &amp; lệch</b> nên dễ hiểu nhầm cái gì “lạ” thành “sai”."
-      }
-    ],
-    /* Bảng điều tra: phân loại mỗi manh mối */
-    boardQ: "Manh mối này nói gì về kết luận “Minh gian lận” của AI?",
-    boardOpts: [
-      { k: "support", t: "⚖️ Ủng hộ lời buộc tội" },
-      { k: "refute", t: "🛡️ Phản bác, minh oan cho Minh" }
-    ],
-    /* Quyết định cuối */
-    q: "Sau khi xem xét, AI vẫn báo “Minh gian lận” với độ tin cậy 85%. Em quyết định thế nào?",
-    options: [
-      { t: "😮 Tin AI ngay, khóa tài khoản Minh", good: false, reply: "Em tin ngay mà chưa kiểm chứng… Minh bị oan mất! Thử lại nhé." },
-      { t: "❓ Yêu cầu AI giải thích “dựa vào đâu?”", good: true, reply: "Tốt lắm! Luôn bắt AI nói rõ lý do trước khi tin." },
-      { t: "🔎 Dùng 3 manh mối để minh oan cho Minh", good: true, reply: "Xuất sắc! Em để bằng chứng và con người quyết định, không phó mặc cho AI." }
-    ],
-    result: "Em trình bày đủ bằng chứng cho cô Lan. <b>Minh được minh oan!</b> Trường ra quy định mới: <b>AI chỉ GỢI Ý, con người mới QUYẾT ĐỊNH.</b>",
-    endTitle: "Phá án thành công! 🎉",
-    lesson: "AI đưa ra kết luận dựa trên <b>dữ liệu mà nó được học</b>. Nếu dữ liệu ít hoặc lệch, kết luận có thể sai. AI rất hữu ích để <b>gợi ý</b>, nhưng đừng coi nó là chân lý — hãy luôn <b>hỏi lý do &amp; tự kiểm chứng</b>!"
+    status: function (id) { if (this.done[id]) return "done"; var q = this.byId[id]; if (!q) return "none"; return this.reqMet(q) ? "active" : "locked"; },
+    active: function () { for (var i = 0; i < this.quests.length; i++) { var q = this.quests[i]; if (!this.done[q.id] && this.reqMet(q)) return q; } return null; },
+    collect: function (id) { if (!this.inv[id]) { this.inv[id] = true; this.emit("collect", id); } },
+    complete: function (id) { if (this.byId[id] && !this.done[id]) { this.done[id] = true; this.emit("quest:complete", this.byId[id]); } this.emit("advance", this.active()); },
+    allDone: function () { for (var i = 0; i < this.quests.length; i++) if (!this.done[this.quests[i].id]) return false; return true; }
   };
 
-  /* ---------- Cấu hình NPC/vật thể (toạ độ x,z; phòng ±7.2, tâm 0,0) ---------- */
-  var ENT = [
-    { id: "lan", kind: "teacher", name: "Cô Lan", emo: "👩‍🏫", x: -4.6, z: -4.6, color: 0xec6fb0, look: { hair: 0x5b3a29, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0xb24f86 } },
-    { id: "c0", kind: "person", name: "Trực phòng máy", emo: "🖥️", x: 4.6, z: -4.6, color: 0x5b8def, look: { hair: 0x2b2b2b, skin: 0xf1c79b, style: "short", pants: 0x3b5bdb }, prop: "computer" },
-    { id: "c1", kind: "person", name: "Bạn cùng lớp", emo: "📄", x: -4.6, z: 4.2, color: 0xf6c344, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "long", pants: 0xca8a04 }, prop: "paper" },
-    { id: "c2", kind: "person", name: "Kỹ thuật viên", emo: "📊", x: 4.6, z: 4.2, color: 0x58d898, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0ea371 }, prop: "chart" },
-    { id: "ai", kind: "robot", name: "Máy AI", emo: "🤖", x: 0, z: -5.9, color: 0xc4b5fd }
-  ];
+  /* ---------- QuestionBank: BỌC ngân hàng câu hỏi có sẵn của web (window.BANK) ---------- */
+  var QBank = {
+    used: {},
+    init: function () { try { this.used = JSON.parse(localStorage.getItem("a3dQused") || "{}") || {}; } catch (e) { this.used = {}; } },
+    save: function () { try { localStorage.setItem("a3dQused", JSON.stringify(this.used)); } catch (e) {} },
+    resetUsed: function () { this.used = {}; this.save(); },
+    _rnd: function () { try { return Math.random(); } catch (e) { return 0.5; } },
+    _shuffle: function (a) { for (var i = a.length - 1; i > 0; i--) { var j = (this._rnd() * (i + 1)) | 0; var t = a[i]; a[i] = a[j]; a[j] = t; } return a; },
+    _key: function (d, i) { return d + ":" + i; },
+    pick: function (cfg) {
+      cfg = cfg || {}; var src = getBank(); if (!src) return [];
+      var count = cfg.count || 1, topics = cfg.topics, diff = cfg.difficulty || 1, self = this, pool = [];
+      function gather(d) { (src[d] || []).forEach(function (q, i) { if (!topics || topics.indexOf(q.topic) >= 0) pool.push({ d: d, i: i, q: q }); }); }
+      gather(diff);
+      var fresh = pool.filter(function (p) { return !self.used[self._key(p.d, p.i)]; });
+      if (fresh.length < count) { [1, 2, 3].forEach(function (d) { if (d !== diff) gather(d); }); fresh = pool.filter(function (p) { return !self.used[self._key(p.d, p.i)]; }); }
+      var use = fresh.length >= count ? fresh : pool;             // ngân hàng cạn → cho dùng lại (không kẹt)
+      this._shuffle(use);
+      var picked = use.slice(0, Math.min(count, use.length));
+      return picked.map(function (p) { self.used[self._key(p.d, p.i)] = true; return self._norm(p.q); });
+    },
+    _norm: function (q) {
+      var pairs = q.opts.map(function (o, i) { return [o, i === q.a]; });
+      this._shuffle(pairs);                                       // xáo đáp án, vẫn giữ đúng khóa
+      return { q: q.q, opts: pairs.map(function (p) { return p[0]; }), correct: pairs.map(function (p) { return p[1]; }).indexOf(true), topic: q.topic };
+    }
+  };
+
+  // Ngân hàng câu hỏi của web: app.js khai báo `const BANK` (biến này KHÔNG nằm trên window,
+  // nhưng dùng chung global-lexical-environment giữa các script thường) → tham chiếu trực tiếp.
+  function getBank() { try { if (typeof BANK !== "undefined" && BANK) return BANK; } catch (e) {} return (window.BANK || null); }
+
+  /* ---------- Kiểm tra schema dữ liệu màn (chống dữ liệu hỏng) ---------- */
+  function hasQuest(level, id) { return (level.quests || []).some(function (q) { return q.id === id; }); }
+  function validateLevel(level) {
+    var errs = [];
+    if (!level) return { ok: false, errors: ["level null"] };
+    if (!level.id) errs.push("level thiếu id");
+    var npc = {}; (level.npcs || []).forEach(function (n) { if (npc[n.id]) errs.push("NPC trùng id: " + n.id); npc[n.id] = true; });
+    var qid = {};
+    (level.quests || []).forEach(function (q) {
+      if (!q.id) errs.push("quest thiếu id");
+      if (qid[q.id]) errs.push("quest trùng id: " + q.id); qid[q.id] = true;
+      if (!q.type) errs.push("quest " + q.id + " thiếu type");
+      if ((q.type === "talk" || q.type === "decision") && q.npc && !npc[q.npc]) errs.push("quest " + q.id + " trỏ NPC không tồn tại: " + q.npc);
+      if (q.type === "collect") { if (!(q.items || []).length) errs.push("collect " + q.id + " không có item"); (q.items || []).forEach(function (it) { if (it.npc && !npc[it.npc]) errs.push("manh mối " + it.id + " trỏ NPC không tồn tại: " + it.npc); }); }
+      if (q.type === "decision") { if (!q.question) errs.push("decision " + q.id + " thiếu câu hỏi"); if (!(q.options || []).some(function (o) { return o.good; })) errs.push("decision " + q.id + " không có đáp án đúng"); }
+      if (q.type === "quiz" && (!q.pool || !(q.pool.count > 0))) errs.push("quiz " + q.id + " thiếu pool/count");
+      if (q.requires && q.requires.quest && !hasQuest(level, q.requires.quest)) errs.push("quest " + q.id + " requires quest không tồn tại: " + q.requires.quest);
+    });
+    if (!(level.quests || []).length) errs.push("level không có nhiệm vụ nào");
+    return { ok: errs.length === 0, errors: errs };
+  }
 
   /* ---------- Trạng thái module ---------- */
   var THREE = null;
@@ -98,7 +129,10 @@
   var dialogOpen = false, overlayOpen = false;
   var listeners = [], visHandler = null, ro = null;
   var vel = { x: 0, z: 0 }, walkPhase = 0, idleT = 0, facing = 0, camPos = null;
-  var _vhidden = function () { return document.hidden; };
+  // ---- Camera System V2 ----
+  var camMode = "third", yaw = Math.PI, pitch = 0.0, thirdDist = 7.2, isoZoom = 1, heroHidden = false;
+  var dragging = false, dragPId = null, dragLX = 0, dragLY = 0, pointerLocked = false, camMenuOpen = false;
+  try { var _cm = localStorage.getItem("a3dCam"); if (_cm === "first" || _cm === "third" || _cm === "iso") camMode = _cm; } catch (e) {}
 
   /* ========================================================================
      KHỞI ĐỘNG
@@ -113,10 +147,23 @@
     cluesGot = {}; boardDone = {}; wrong = 0; solved = false;
     dialogOpen = false; overlayOpen = false; vel = { x: 0, z: 0 }; walkPhase = 0; idleT = 0; facing = 0;
     robotGLB = null; aiMixer = null; aiActions = null; aiCurrent = null;
+    yaw = Math.PI; pitch = 0; thirdDist = 7.2; isoZoom = 1; heroHidden = false;
+    dragging = false; dragPId = null; pointerLocked = false; camMenuOpen = false;
     listeners = [];
+
+    // Nạp dữ liệu màn (tách khỏi logic). Kiểm tra schema trước khi chơi.
+    LEVEL = (window.A3D_DATA && A3D_DATA.levels && A3D_DATA.levels.academy1) || null;
+    if (LEVEL) {
+      var vr = validateLevel(LEVEL);
+      if (!vr.ok) { try { console.warn("[A3D] Dữ liệu màn có vấn đề:", vr.errors); } catch (e) {} }
+      AC = buildAC(LEVEL); ENT = LEVEL.npcs; Engine.load(LEVEL); QBank.init();
+      if (LEVEL.spawn && LEVEL.spawn.yaw != null) yaw = LEVEL.spawn.yaw;
+    }
 
     var runner = $("runner"); if (runner) runner.classList.add("a3dMode");
     buildShell();
+
+    if (!LEVEL) { var st0 = $("a3dStage"); if (st0) st0.innerHTML = '<div class="a3dLoading">😕 Thiếu dữ liệu màn chơi (academy3d.data.js).</div>'; return; }
 
     // Ưu tiên bản three.js lưu cục bộ (chạy offline, không phụ thuộc CDN).
     // Nếu thiếu file vì lý do nào đó → mới quay sang esm.sh.
@@ -141,15 +188,22 @@
         /* HUD trên cùng */
         '<div class="a3dHud a3dHudTop">' +
           '<div class="a3dQuest">' +
-            '<div class="a3dQuestTitle">🔍 AI Academy — Vụ án của Minh</div>' +
+            '<div class="a3dQuestTitle">' + ((LEVEL && LEVEL.questTitle) ? LEVEL.questTitle : "🔍 AI Academy") + '</div>' +
             '<div class="a3dObjective" id="a3dObjective">Đang tải…</div>' +
           '</div>' +
           '<div class="a3dTopRight">' +
-            '<div class="a3dClueChip" id="a3dClueChip"><span class="a3dClueIc">🧩</span> <b id="a3dClueN">0</b>/3</div>' +
+            '<div class="a3dClueChip" id="a3dClueChip"><span class="a3dClueIc">🧩</span> <b id="a3dClueN">0</b>/<b id="a3dClueTot">' + (AC ? AC.need : 3) + '</b></div>' +
+            '<button class="a3dRound" id="a3dCamBtn" title="Góc nhìn (V)" aria-label="Góc nhìn">🎬</button>' +
             '<button class="a3dRound" id="a3dHelp" title="Trợ giúp" aria-label="Trợ giúp">?</button>' +
             '<button class="a3dRound" id="a3dMute" title="Bật/tắt âm" aria-label="Bật/tắt âm">' + (muted ? "🔇" : "🔊") + '</button>' +
             '<button class="a3dRound a3dExit" id="a3dExit" title="Thoát" aria-label="Thoát">✕</button>' +
           '</div>' +
+        '</div>' +
+        /* Menu chọn góc nhìn */
+        '<div class="a3dCamMenu hidden" id="a3dCamMenu">' +
+          '<button data-cam="third">🎬 Góc nhìn thứ 3 <span>V</span></button>' +
+          '<button data-cam="first">👁️ Góc nhìn thứ 1 <span>V</span></button>' +
+          '<button data-cam="iso">🗺️ Toàn cảnh</button>' +
         '</div>' +
         /* Nút Bảng điều tra (ẩn tới khi đủ manh mối) */
         '<button class="a3dBoardBtn hidden" id="a3dBoardBtn">📋 Mở Bảng điều tra</button>' +
@@ -217,7 +271,7 @@
     document.addEventListener("visibilitychange", visHandler);
 
     // Bắt đầu: giao nhiệm vụ (tự mở lời thoại của cô Lan)
-    setState("brief");
+    syncQuestUI();
     raf = requestAnimationFrame(tick);
     runBrief(0);
   }
@@ -596,8 +650,9 @@
     cap.position.y = 1.86; hero.add(cap);
     var brim = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.05, 16), matSmooth(0x4338ca, 0.7));
     brim.position.set(0, 1.8, 0.1); hero.add(brim);
-    hero.position.set(0, 0, 3.4);
-    facing = Math.PI;
+    var sp = (LEVEL && LEVEL.spawn) ? LEVEL.spawn : { x: 0, z: 3.4, yaw: Math.PI };
+    hero.position.set(sp.x || 0, 0, sp.z || 3.4);
+    facing = (sp.yaw != null ? sp.yaw : Math.PI);
     hero.rotation.y = facing;
     scene.add(hero);
   }
@@ -611,6 +666,50 @@
     on(document, "keydown", onKey);
     on(document, "keyup", onKeyUp);
     bindJoystick();
+    bindCamera();
+  }
+
+  function bindCamera() {
+    var cv = renderer.domElement;
+    on(cv, "pointerdown", camDown);
+    on(cv, "pointermove", camMove);
+    on(cv, "pointerup", camUp);
+    on(cv, "pointercancel", camUp);
+    on(cv, "wheel", camWheel, { passive: false });
+    on(cv, "click", camClick);
+    on(document, "pointerlockchange", onLockChange);
+    on(document, "mousemove", onMouseLook);
+    on($("a3dCamBtn"), "click", toggleCamMenu);
+    var menu = $("a3dCamMenu");
+    if (menu) menu.querySelectorAll("[data-cam]").forEach(function (b) {
+      on(b, "click", function () { setCamMode(b.getAttribute("data-cam")); closeCamMenu(); });
+    });
+    updateCamUI();
+  }
+  function camDown(e) {
+    if (dialogOpen || overlayOpen || pointerLocked) return;
+    dragging = true; dragPId = e.pointerId; dragLX = e.clientX; dragLY = e.clientY;
+    try { renderer.domElement.setPointerCapture(e.pointerId); } catch (ex) {}
+  }
+  function camMove(e) {
+    if (!dragging || e.pointerId !== dragPId) return;
+    var dx = e.clientX - dragLX, dy = e.clientY - dragLY; dragLX = e.clientX; dragLY = e.clientY;
+    yaw -= dx * 0.005;
+    if (camMode === "first") pitch = clamp(pitch - dy * 0.005, -1.2, 1.2);
+  }
+  function camUp(e) { if (e.pointerId === dragPId) { dragging = false; dragPId = null; } }
+  function camWheel(e) {
+    if (dialogOpen || overlayOpen) return;
+    if (e.cancelable) e.preventDefault();
+    if (camMode === "iso") isoZoom = clamp(isoZoom + e.deltaY * 0.0015, 0.6, 1.8);
+    else if (camMode === "third") thirdDist = clamp(thirdDist + e.deltaY * 0.01, 4.5, 11);
+  }
+  function camClick() { if (camMode === "first" && !pointerLocked && !dialogOpen && !overlayOpen) maybeLockPointer(); }
+  function onLockChange() { pointerLocked = (document.pointerLockElement === (renderer && renderer.domElement)); }
+  function onMouseLook(e) {
+    if (!pointerLocked || dialogOpen || overlayOpen) return;
+    yaw -= (e.movementX || 0) * 0.0022;
+    pitch = clamp(pitch - (e.movementY || 0) * 0.0022, -1.2, 1.2);
   }
 
   function onKey(e) {
@@ -628,7 +727,8 @@
     else if (k === "arrowleft" || k === "a") { keys.L = 1; e.preventDefault(); }
     else if (k === "arrowright" || k === "d") { keys.R = 1; e.preventDefault(); }
     else if (k === "e" || k === "enter" || k === " ") { if (nearest) { e.preventDefault(); doInteract(); } }
-    else if (k === "escape") { quit(); }
+    else if (k === "v") { setCamMode(camMode === "first" ? "third" : "first"); }
+    else if (k === "escape") { if (camMenuOpen) closeCamMenu(); }
   }
   function onKeyUp(e) {
     var k = e.key.toLowerCase();
@@ -682,6 +782,7 @@
     raf = requestAnimationFrame(tick);
     var dt = clock ? Math.min(clock.getDelta(), 0.05) : 0.016;
 
+    if ((dialogOpen || overlayOpen) && pointerLocked) { try { document.exitPointerLock(); } catch (e) {} }
     if (!dialogOpen && !overlayOpen) updateMove(dt);
     else { vel.x = lerp(vel.x, 0, 0.2); vel.z = lerp(vel.z, 0, 0.2); animateHero(dt, 0); }
 
@@ -692,29 +793,33 @@
   }
 
   function updateMove(dt) {
-    var ix = 0, iz = 0;
-    if (keys.U) iz -= 1; if (keys.D) iz += 1; if (keys.L) ix -= 1; if (keys.R) ix += 1;
-    if (joy.active) { ix += joy.x; iz += joy.z; }
-    var mag = Math.hypot(ix, iz);
-    if (mag > 1) { ix /= mag; iz /= mag; mag = 1; }
+    // input: f = tiến/lùi, r = phải/trái
+    var f = (keys.U ? 1 : 0) - (keys.D ? 1 : 0);
+    var r = (keys.R ? 1 : 0) - (keys.L ? 1 : 0);
+    if (joy.active) { f += -joy.z; r += joy.x; }
+    // di chuyển THEO HƯỚNG CAMERA (yaw) để không bao giờ "sai hướng"
+    // forward = (sin,cos); right = (-cos, sin)
+    var sinY = Math.sin(yaw), cosY = Math.cos(yaw);
+    var mx = sinY * f - cosY * r;
+    var mz = cosY * f + sinY * r;
+    var mag = Math.hypot(mx, mz);
+    if (mag > 1) { mx /= mag; mz /= mag; }
 
     var speed = 4.2;
-    vel.x = lerp(vel.x, ix * speed, 0.22);
-    vel.z = lerp(vel.z, iz * speed, 0.22);
+    vel.x = lerp(vel.x, mx * speed, 0.22);
+    vel.z = lerp(vel.z, mz * speed, 0.22);
 
     var nx = hero.position.x + vel.x * dt;
     var nz = hero.position.z + vel.z * dt;
-    var r = resolve(nx, nz, 0.42);
-    hero.position.x = r[0]; hero.position.z = r[1];
+    var res = resolve(nx, nz, 0.42);
+    hero.position.x = res[0]; hero.position.z = res[1];
 
-    var moving = mag > 0.08 && (Math.abs(vel.x) + Math.abs(vel.z)) > 0.2;
-    if (moving) {
-      var want = Math.atan2(vel.x, vel.z);
-      facing = angLerp(facing, want, 0.25);
-    }
+    var sp = Math.abs(vel.x) + Math.abs(vel.z);
+    var moving = mag > 0.08 && sp > 0.2;
+    if (camMode === "first") { facing = yaw; }                 // thân quay theo hướng nhìn
+    else if (moving) { facing = angLerp(facing, Math.atan2(vel.x, vel.z), 0.25); }
     hero.rotation.y = facing;
-    animateHero(dt, moving ? Math.min(1, (Math.abs(vel.x) + Math.abs(vel.z)) / speed) : 0);
-
+    animateHero(dt, moving ? Math.min(1, sp / speed) : 0);
     updateNearest();
   }
 
@@ -782,13 +887,55 @@
   }
 
   function updateCamera(dt) {
-    var tx = hero.position.x, tz = hero.position.z;
-    var want = { x: tx * 0.6, y: 11, z: tz * 0.6 + 11 };
+    var hx = hero.position.x, hy = hero.position.y, hz = hero.position.z;
     var k = REDUCED ? 1 : 1 - Math.pow(0.0001, dt);
-    camera.position.x = lerp(camera.position.x, want.x, k);
-    camera.position.y = lerp(camera.position.y, want.y, k);
-    camera.position.z = lerp(camera.position.z, want.z, k);
-    camera.lookAt(tx, 1.1, tz - 0.3);
+    if (camMode === "first") {
+      var kf = REDUCED ? 1 : 1 - Math.pow(1e-7, dt); // bám mắt nhanh để không nhìn xuyên tường
+      var ey = 1.55;
+      camera.position.x = lerp(camera.position.x, hx, kf);
+      camera.position.y = lerp(camera.position.y, hy + ey, kf);
+      camera.position.z = lerp(camera.position.z, hz, kf);
+      var cp = Math.cos(pitch);
+      camera.lookAt(hx + Math.sin(yaw) * cp, hy + ey + Math.sin(pitch), hz + Math.cos(yaw) * cp);
+    } else {
+      var dist, height, lookY, ahead;
+      if (camMode === "iso") { dist = 8.5 * isoZoom; height = 11 * isoZoom; lookY = 0.9; ahead = 0; }
+      else { dist = thirdDist; height = 4.0; lookY = 1.4; ahead = 1.2; } // third
+      // camera phía sau hướng nhìn; giữ trong phòng + trên tường để không xuyên geometry
+      var wx = hx - Math.sin(yaw) * dist, wz = hz - Math.cos(yaw) * dist, wy = hy + height;
+      wx = clamp(wx, -7.6, 7.6); wz = clamp(wz, -7.6, 7.6); wy = Math.max(wy, 1.6);
+      camera.position.x = lerp(camera.position.x, wx, k);
+      camera.position.y = lerp(camera.position.y, wy, k);
+      camera.position.z = lerp(camera.position.z, wz, k);
+      camera.lookAt(hx + Math.sin(yaw) * ahead, lookY, hz + Math.cos(yaw) * ahead);
+    }
+    var wantHidden = (camMode === "first");
+    if (wantHidden !== heroHidden) { heroHidden = wantHidden; if (hero) hero.visible = !wantHidden; }
+  }
+
+  /* ---- chuyển/điều khiển camera ---- */
+  function setCamMode(m) {
+    if (m !== "first" && m !== "third" && m !== "iso") return;
+    camMode = m;
+    try { localStorage.setItem("a3dCam", m); } catch (e) {}
+    if (m !== "first" && pointerLocked) { try { document.exitPointerLock(); } catch (e) {} }
+    // Pointer Lock CHỈ kích hoạt khi người dùng bấm vào màn hình (camClick) — không tự khoá.
+    if (m === "first" && isDesktopPointer()) showToast("👁️ Bấm vào màn hình để nhìn quanh · Esc để thả chuột");
+    updateCamUI();
+  }
+  function isDesktopPointer() { try { return !!(window.matchMedia && window.matchMedia("(hover:hover) and (pointer:fine)").matches); } catch (e) { return false; } }
+  function updateCamUI() {
+    var btn = $("a3dCamBtn");
+    if (btn) btn.textContent = camMode === "first" ? "👁️" : camMode === "iso" ? "🗺️" : "🎬";
+    var menu = $("a3dCamMenu");
+    if (menu) menu.querySelectorAll("[data-cam]").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-cam") === camMode); });
+  }
+  function toggleCamMenu() { camMenuOpen = !camMenuOpen; var m = $("a3dCamMenu"); if (m) m.classList.toggle("hidden", !camMenuOpen); }
+  function closeCamMenu() { camMenuOpen = false; var m = $("a3dCamMenu"); if (m) m.classList.add("hidden"); }
+  function maybeLockPointer() {
+    if (camMode !== "first" || dialogOpen || overlayOpen) return;
+    if (!isDesktopPointer()) return; // chỉ desktop
+    try { if (renderer && renderer.domElement.requestPointerLock) { var p = renderer.domElement.requestPointerLock(); if (p && p.catch) p.catch(function () {}); } } catch (e) {}
   }
 
   /* ========================================================================
@@ -823,22 +970,26 @@
     if (!nearest || dialogOpen || overlayOpen) return;
     var id = nearest.data.id;
     if (id === "lan") {
-      if (state === "brief") { runBrief(0); return; }
-      say("👩‍🏫", "Cô Lan", hintLine(), null, close);
+      if (!Engine.done["brief"]) { runBrief(0); return; }
+      say(AC.brief.avatar, nearest.data.name, hintLine(), null, close);
       return;
     }
     if (id === "ai") {
-      if (seenCount() < 3) { say("🤖", "Máy AI", "Hãy xem đủ <b>3 manh mối</b> (🖥️ 📄 📊) trước khi quyết định nhé!", null, close); return; }
-      if (!allBoardDone()) { say("🤖", "Máy AI", "Em đã có đủ manh mối rồi! Hãy mở <b>📋 Bảng điều tra</b> để đối chiếu từng bằng chứng trước đã.", null, close); return; }
-      if (solved) { say("🤖", "Máy AI", "Vụ án đã khép lại — làm tốt lắm, Thám tử! 🎉", null, close); return; }
+      var dq = Engine.byId["decision"];
+      if (Engine.done["decision"]) { say(AC.avatarAI, AC.whoAI, "Vụ án đã khép lại — làm tốt lắm, Thám tử! 🎉", null, close); return; }
+      if (!dq || !Engine.reqMet(dq)) {                       // CHẶN kết luận khi chưa đủ điều kiện
+        if (Engine.invCount() < AC.need) say(AC.avatarAI, AC.whoAI, "Hãy xem đủ <b>" + AC.need + " manh mối</b> trước khi quyết định nhé!", null, close);
+        else say(AC.avatarAI, AC.whoAI, "Em đã có đủ manh mối rồi! Hãy mở <b>📋 Bảng điều tra</b> để đối chiếu từng bằng chứng trước đã.", null, close);
+        return;
+      }
       runDecision();
       return;
     }
-    // NPC manh mối
+    // NPC manh mối (collect)
     var cl = clueById(id);
     if (!cl) return;
     var first = !cluesGot[id];
-    if (first) { cluesGot[id] = true; sfxSafe("correct"); burstSafe(3); popClue(cl); }
+    if (first) { cluesGot[id] = true; Engine.collect(id); sfxSafe("correct"); burstSafe(3); popClue(cl); }
     hideMarker(id);
     var pre = first ? '<span class="a3dHl a3dHl-violet">Manh mối mới!</span> ' : "";
     say(cl.ic, nearest.data.name, pre + cl.info, null, function () {
@@ -852,23 +1003,29 @@
   function allBoardDone() { return Object.keys(boardDone).length >= 3; }
 
   function hintLine() {
-    if (seenCount() < 3) return "Em đã thu <b>" + seenCount() + "/3</b> manh mối. Hãy tìm các bạn có dấu <b>❗</b> để hỏi thêm nhé!";
-    if (!allBoardDone()) return "Đủ 3 manh mối rồi! Mở <b>📋 Bảng điều tra</b> để sắp xếp bằng chứng.";
-    return "Em đã sẵn sàng! Tới gặp <b>🤖 Máy AI</b> để đưa ra kết luận nhé.";
+    var q = Engine.active();
+    if (!q) return "Em đã hoàn thành vụ án rồi! 🎉";
+    if (q.type === "collect") return "Em đã thu <b>" + Engine.invCount() + "/" + AC.need + "</b> manh mối. Tìm các bạn có dấu <b>❗</b> để hỏi thêm nhé!";
+    if (q.type === "investigate") return "Đủ manh mối rồi! Mở <b>📋 Bảng điều tra</b> để sắp xếp bằng chứng.";
+    if (q.type === "decision") return "Em đã sẵn sàng! Tới gặp <b>🤖 Máy AI</b> để kết luận nhé.";
+    if (q.type === "quiz") return "Trả lời nhanh mấy câu để chốt bài học nhé!";
+    return "Tiếp tục nhiệm vụ nhé!";
   }
 
   function hideMarker(id) {
     for (var i = 0; i < npcs.length; i++) if (npcs[i].data.id === id && npcs[i].mk) npcs[i].mk.visible = false;
   }
 
+  // Hiện ❗/biểu tượng theo NHIỆM VỤ đang hoạt động (do engine quyết định)
   function updateMarkers() {
-    // hiện ❗ tùy trạng thái nhiệm vụ
+    var q = Engine.active();
     for (var i = 0; i < npcs.length; i++) {
       var n = npcs[i], id = n.data.id, show = false;
-      if (state === "brief") show = (id === "lan");
-      else if (seenCount() < 3) show = (id.charAt(0) === "c" && !cluesGot[id]);
-      else if (!allBoardDone()) show = false;
-      else show = (id === "ai" && !solved);
+      if (q) {
+        if (q.type === "talk" && q.npc === id) show = true;
+        else if (q.type === "collect" && clueById(id) && !cluesGot[id]) show = true;
+        else if (q.type === "decision" && q.npc === id) show = true;
+      }
       if (n.mk) n.mk.visible = show;
     }
   }
@@ -876,17 +1033,13 @@
   /* ========================================================================
      TRẠNG THÁI NHIỆM VỤ
      ======================================================================== */
-  function setState(s) {
-    state = s;
-    var obj = $("a3dObjective");
-    if (s === "brief") setObjective("🎧 Nghe cô Lan giao nhiệm vụ");
-    else if (s === "explore") setObjective("🔎 " + AC.objExplore);
-    else if (s === "board") setObjective("📋 " + AC.objBoard);
-    else if (s === "decide") setObjective("🤖 " + AC.objDecide);
-    else if (s === "done") setObjective("✅ Hoàn thành!");
+  // Đồng bộ HUD theo nhiệm vụ ĐANG hoạt động của engine (thay cho state-machine cứng)
+  function syncQuestUI() {
+    var q = Engine.active();
+    setObjective(q ? q.objective : "✅ Hoàn thành vụ án!");
+    var tot = $("a3dClueTot"); if (tot && AC) tot.textContent = AC.need;
+    var bb = $("a3dBoardBtn"); if (bb) bb.classList.toggle("hidden", !(q && q.type === "investigate"));
     updateMarkers();
-    var bb = $("a3dBoardBtn");
-    if (bb) bb.classList.toggle("hidden", !(s === "board"));
   }
 
   function setObjective(text, toast) {
@@ -899,24 +1052,25 @@
     var chip = $("a3dClueN"); if (chip) chip.textContent = n;
     var chipBox = $("a3dClueChip");
     if (chipBox && !REDUCED) { chipBox.classList.remove("pop"); void chipBox.offsetWidth; chipBox.classList.add("pop"); }
-    if (n >= 3 && state === "explore") { setState("board"); }
-    updateMarkers();
+    if (Engine.invCount() >= AC.need && !Engine.done["collect"]) Engine.complete("collect"); // đủ manh mối → xong quest thu thập
+    syncQuestUI();
   }
 
   function runBrief(i) {
     if (i >= AC.brief.lines.length) {
       close();
-      setState("explore");
+      Engine.complete("brief");
+      syncQuestUI();
       return;
     }
-    say("👩‍🏫", AC.brief.who, AC.brief.lines[i], null, function () { runBrief(i + 1); });
+    say(AC.brief.avatar, AC.brief.who, AC.brief.lines[i], null, function () { runBrief(i + 1); });
   }
 
   /* ========================================================================
      BẢNG ĐIỀU TRA (đối chiếu bằng chứng ↔ kết luận của AI)
      ======================================================================== */
   function openBoard() {
-    if (seenCount() < 3) return;
+    if (Engine.invCount() < AC.need) return;             // chặn mở bảng khi chưa đủ bằng chứng
     overlayOpen = true;
     var items = AC.clues.map(function (cl, i) {
       var done = !!boardDone[i];
@@ -936,7 +1090,7 @@
       '<div class="a3dPanel a3dBoardPanel">' +
         '<div class="a3dPanelHead"><span>📋 Bảng điều tra</span>' +
           '<button class="a3dRound" id="a3dBoardClose" aria-label="Đóng">✕</button></div>' +
-        '<p class="a3dBoardLead">Máy AI kết luận <b>“Minh gian lận”</b>. Với mỗi bằng chứng, hãy chọn: nó <b>ủng hộ</b> hay <b>phản bác</b> lời buộc tội đó?</p>' +
+        '<p class="a3dBoardLead">' + AC.boardLead + '</p>' +
         items +
         '<div class="a3dBoardFoot" id="a3dBoardFoot"></div>' +
       '</div>';
@@ -972,13 +1126,16 @@
 
   function renderBoardFoot() {
     var foot = $("a3dBoardFoot"); if (!foot) return;
-    var done = Object.keys(boardDone).length;
-    if (done < 3) {
-      foot.innerHTML = '<div class="a3dBoardCount">Đã đối chiếu <b>' + done + '/3</b> bằng chứng</div>';
+    var total = AC.clues.length, done = Object.keys(boardDone).length;
+    if (done < total) {
+      foot.innerHTML = '<div class="a3dBoardCount">Đã đối chiếu <b>' + done + '/' + total + '</b> bằng chứng</div>';
     } else {
-      foot.innerHTML = '<div class="a3dBoardCount ok">🎯 Đã rõ: 1 bằng chứng ủng hộ AI, 2 bằng chứng minh oan cho Minh!</div>' +
+      foot.innerHTML = '<div class="a3dBoardCount ok">' + AC.boardSummary + '</div>' +
         '<button class="a3dBtn a3dBtnBig" id="a3dBoardGo">Tới gặp Máy AI để kết luận ➜</button>';
-      on($("a3dBoardGo"), "click", function () { closeOverlay(); setState("decide"); say("🤖", "Máy AI", "Em đã nắm chắc các bằng chứng. Lại gần tôi (🤖) và nhấn <b>E</b> để đưa ra quyết định cuối cùng nhé!", null, close); });
+      on($("a3dBoardGo"), "click", function () {
+        closeOverlay(); Engine.complete("investigate"); syncQuestUI();
+        say(AC.avatarAI, AC.whoAI, "Em đã nắm chắc các bằng chứng. Lại gần tôi (🤖) và nhấn <b>E</b> để đưa ra quyết định cuối cùng nhé!", null, close);
+      });
     }
   }
 
@@ -991,9 +1148,9 @@
     var layer = $("a3dLayer");
     layer.innerHTML =
       '<div class="a3dDlg">' +
-        '<div class="a3dDlgAva">🤖</div>' +
+        '<div class="a3dDlgAva">' + AC.avatarAI + '</div>' +
         '<div class="a3dDlgBody">' +
-          '<div class="a3dDlgName">Máy AI</div>' +
+          '<div class="a3dDlgName">' + esc(AC.whoAI) + '</div>' +
           '<div class="a3dDlgText">' + esc(AC.q) + '</div>' +
           '<div class="a3dOpts" id="a3dOpts">' + opts + '</div>' +
           '<div class="a3dReply hidden" id="a3dReply"></div>' +
@@ -1016,11 +1173,55 @@
       burstSafe(6);
       box.innerHTML += '<div class="a3dCenter"><button class="a3dBtn a3dNext" id="a3dResNext">Xem kết quả ➜</button></div>';
       on($("a3dResNext"), "click", function () {
+        Engine.complete("decision"); syncQuestUI();
         say("🎉", "Kết quả", AC.result, null, function () {
-          say("🧠", "Vì sao AI sai?", AC.lesson, null, function () { close(); solved = true; endGame(); });
+          say("🧠", AC.explainTitle, AC.lesson, null, function () { close(); afterDecision(); });
         });
       });
     }
+  }
+
+  // Sau quyết định: nếu có nhiệm vụ quiz → chơi quiz (lấy câu từ ngân hàng); không thì kết thúc.
+  function afterDecision() {
+    var q = Engine.active();
+    if (q && q.type === "quiz") runQuiz(q);
+    else { solved = true; endGame(); }
+  }
+
+  /* ---- Quiz: lấy câu hỏi từ ngân hàng có sẵn (QuestionBank → window.BANK) ---- */
+  function runQuiz(quest) {
+    var qs = QBank.pick(quest.pool); QBank.save();
+    if (!qs.length) { Engine.complete("quiz"); solved = true; endGame(); return; }  // ngân hàng rỗng → bỏ qua, không kẹt
+    syncQuestUI();
+    var idx = 0;
+    function ask() {
+      if (idx >= qs.length) { Engine.complete("quiz"); solved = true; endGame(); return; }
+      dialogOpen = true;
+      var qq = qs[idx];
+      var opts = qq.opts.map(function (o, i) { return '<button class="a3dOpt" data-i="' + i + '">' + esc(o) + '</button>'; }).join("");
+      var layer = $("a3dLayer");
+      layer.innerHTML =
+        '<div class="a3dDlg"><div class="a3dDlgAva">🧠</div><div class="a3dDlgBody">' +
+          '<div class="a3dDlgName">Câu ' + (idx + 1) + '/' + qs.length + '</div>' +
+          '<div class="a3dDlgText">' + esc(qq.q) + '</div>' +
+          '<div class="a3dOpts" id="a3dQOpts">' + opts + '</div>' +
+          '<div class="a3dReply hidden" id="a3dQReply"></div>' +
+        '</div></div>';
+      layer.classList.remove("hidden");
+      var btns = layer.querySelectorAll("#a3dQOpts .a3dOpt");
+      for (var b = 0; b < btns.length; b++) on(btns[b], "click", pick);
+    }
+    function pick(e) {
+      var i = +e.currentTarget.getAttribute("data-i"), qq = qs[idx], ok = (i === qq.correct), box = $("a3dQReply");
+      if (ok) sfxSafe("correct"); else { sfxSafe("wrong"); wrong++; }
+      box.className = "a3dReply " + (ok ? "good" : "bad");
+      box.innerHTML = ok ? "👍 Chính xác!" : ("🤔 Đáp án đúng: <b>" + esc(qq.opts[qq.correct]) + "</b>");
+      box.classList.remove("hidden");
+      var bs = document.querySelectorAll("#a3dQOpts .a3dOpt"); for (var b = 0; b < bs.length; b++) bs[b].disabled = true;
+      box.innerHTML += '<div class="a3dCenter"><button class="a3dBtn a3dNext" id="a3dQNext">' + (idx + 1 < qs.length ? "Câu tiếp ➜" : "Xem kết quả ➜") + '</button></div>';
+      on($("a3dQNext"), "click", function () { idx++; ask(); });
+    }
+    say("🧠", "Kiểm tra nhanh", esc(quest.intro || "Trả lời nhanh nhé!"), null, function () { close(); ask(); });
   }
 
   function endGame() {
@@ -1038,8 +1239,8 @@
           '<div class="a3dEndIco">🎓</div>' +
           '<h2>' + esc(AC.endTitle) + '</h2>' +
           starRow +
-          '<div class="a3dEndTier">Bạn là một Thám tử AI tài ba!</div>' +
-          '<div class="a3dReward">+15 ⭐ · Mở khóa huy hiệu “Điều tra viên AI”</div>' +
+          '<div class="a3dEndTier">' + esc(AC.endTier || "") + '</div>' +
+          '<div class="a3dReward">+' + ((AC.reward && AC.reward.xp) || 15) + ' ⭐' + ((AC.reward && AC.reward.badge) ? ' · Mở khóa huy hiệu “' + esc(AC.reward.badge) + '”' : '') + '</div>' +
           '<div class="a3dEndCard"><div class="a3dEndHead">💡 Em vừa học</div><p>' + AC.lesson + '</p></div>' +
           '<div class="a3dCenter">' +
             '<button class="a3dBtn a3dBtnBig" id="a3dReplay">Chơi lại 🔄</button>' +
@@ -1053,9 +1254,10 @@
     burstSafe(22); sfxSafe("win");
     if (window.Cloud) {
       var pct = stars >= 3 ? 100 : stars >= 2 ? 75 : 50;
+      var rw = AC.reward || {};
       try {
         Cloud.saveQuizResult({ mode: "practice", score: stars, total: 3, percent: pct, stars: stars });
-        Cloud.aiRecord({ xp: 15, lesson: "ai:game:academy1", quiz: true, percent: pct, stars: stars });
+        Cloud.aiRecord({ xp: rw.xp || 15, lesson: rw.cloudLesson || "ai:game:academy1", quiz: true, percent: pct, stars: stars });
       } catch (e) {}
     }
   }
@@ -1185,7 +1387,11 @@
   if (A3D_QA) {
     window.__a3d = {
       get ready() { return !!renderer; },
-      get state() { return state; },
+      get state() { var q = Engine.active(); if (!q) return "done"; return ({ brief: "brief", collect: "explore", investigate: "board", decision: "decide", quiz: "quiz" })[q.id] || q.id; },
+      get quest() { var q = Engine.active(); return q ? q.id : null; },
+      get engine() { return { active: (Engine.active() || {}).id || null, done: Object.keys(Engine.done), inv: Engine.invCount(), quests: Engine.quests.map(function (x) { return x.id; }) }; },
+      validate: function (lvl) { return validateLevel(lvl || LEVEL); },
+      qbankPick: function (cfg) { return QBank.pick(cfg); },
       get clues() { return seenCount(); },
       get board() { return Object.keys(boardDone).length; },
       get wrong() { return wrong; },
@@ -1194,6 +1400,9 @@
       get overlayOpen() { return overlayOpen; },
       get nearest() { return nearest ? nearest.data.id : null; },
       get glbRobot() { return !!robotGLB; },
+      get cam() { return { mode: camMode, yaw: +yaw.toFixed(3), pitch: +pitch.toFixed(3), heroVisible: hero ? hero.visible : null, cx: camera ? +camera.position.x.toFixed(2) : null, cy: camera ? +camera.position.y.toFixed(2) : null, cz: camera ? +camera.position.z.toFixed(2) : null }; },
+      setCam: function (m) { setCamMode(m); },
+      setYaw: function (y) { yaw = y; },
       get aiInfo() {
         var rec = null; for (var i = 0; i < npcs.length; i++) if (npcs[i].data.id === "ai") rec = npcs[i];
         if (!rec || !rec.group || !THREE) return null;
