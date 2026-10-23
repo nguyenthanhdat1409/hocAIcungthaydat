@@ -412,9 +412,6 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .lessonImg{width:100%; max-height:220px; object-fit:contain; background:#fff; border:3px dashed #E2E8F0; border-radius:18px; padding:10px; margin:10px 0; box-shadow:0 4px 0 rgba(30,27,75,.08)}
 .lessonImgRow{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:12px 0}
 
-.uppercase-letter{font-family:var(--font-display)}
-.lowercase-letter{font-family:"Andika","Comic Sans MS",cursive;font-feature-settings:"ss01" 1}
-
 /* Color canvas - tô màu chữ */
 .canvasPickerWrap{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:14px 0; max-width:600px; width:100%; margin-left:auto; margin-right:auto}
 .canvasCard{background:#fff; border:3px solid #E2E8F0; border-radius:18px; padding:10px; text-align:center;
