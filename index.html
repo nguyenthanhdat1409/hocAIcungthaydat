@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://esm.sh">
-<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=91">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=92">
 </head>
 <body>
 
@@ -115,7 +115,7 @@
   <section id="dauvao" class="page hidden">
     <h2 class="srOnly">Kiểm tra đầu vào — làm các bài test ngắn để biết bé nên bắt đầu học từ đâu</h2>
     <div class="pageBanner">
-      <img src="images/bg-dauvao.webp?v=1" width="1200" height="515" loading="eager" fetchpriority="high" decoding="async"
+      <img src="images/bg-dauvao.webp?v=1" width="1200" height="515" loading="lazy" decoding="async"
            alt="Kiểm tra đầu vào: làm các bài test ngắn (tư duy logic, công nghệ & máy tính, AI cơ bản, kỹ năng sáng tạo) để biết bé nên bắt đầu học từ đâu.">
     </div>
     <div class="card dvAge">
@@ -160,7 +160,7 @@
   <section id="kiemtra" class="page hidden">
     <div class="quizIntroImg">
       <h1 class="srOnly">Thử tài hiểu biết về AI — trả lời đúng để chinh phục 3 sao</h1>
-      <img class="quizHeroImg" src="images/bg-kiemtra.webp?v=1" width="1200" height="514" decoding="async" fetchpriority="high"
+      <img class="quizHeroImg" src="images/bg-kiemtra.webp?v=1" width="1200" height="514" loading="lazy" decoding="async"
            alt="Thử tài hiểu biết về AI: trả lời đúng +1 sao, sai −1 sao, câu hỏi ngẫu nhiên mỗi lần; chủ đề AI là gì, AI học thế nào, AI quanh ta, ra lệnh cho AI, dùng AI an toàn.">
       <button class="btn pulseBtn" onclick="startQuiz()">Bắt đầu luôn! 🎮</button>
     </div>
@@ -213,7 +213,7 @@
 <button id="installBtn" class="installBtn hidden" onclick="pwaInstall()">📲 Cài ứng dụng</button>
 
 <script defer src="supabase-config.js?v=63"></script>
-<script defer src="cloud.js?v=67"></script>
-<script defer src="app.js?v=82"></script>
+<script defer src="cloud.js?v=68"></script>
+<script defer src="app.js?v=83"></script>
 </body>
 </html>

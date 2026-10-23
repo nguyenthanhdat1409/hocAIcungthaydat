@@ -1437,29 +1437,14 @@ function renderExHub(){
     });
     html += `</div></div>`;
   }
-  // Trò chơi AI (3D nhẹ) — Robot mê cung & Thật hay AI?
+  // Trò chơi AI — AI Academy (nhập vai) & Gỡ boom
   if(window.MINIGAMES){
-    html += `<div class="exLevel"><h3 class="exLevelH mgHead">🕹️ Trò chơi AI <span>tư duy thuật toán · nhận biết AI · 6–15 tuổi</span></h3><div class="exGrid">
+    html += `<div class="exLevel"><h3 class="exLevelH mgHead">🕹️ Trò chơi AI <span>điều tra &amp; suy luận · 6–15 tuổi</span></h3><div class="exGrid">
       <button class="exModCard mgCard mgAcademy hasThumb" onclick="startAcademy()">
         <span class="emThumb mgThumbImg"><img src="images/bg-academy.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>
         <span class="emCode">🕵️ NHẬP VAI</span>
         <span class="emName">🎓 AI Academy · Vụ án AI</span>
         <span class="emMeta">Điều tra sự cố AI, dùng kiến thức để phá án · story game 3D</span></button>
-      <button class="exModCard mgCard mgMaze hasThumb" onclick="startMaze()">
-        <span class="emThumb mgThumbImg"><img src="images/bg-robot.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>
-        <span class="emCode">🎮 TRÒ CHƠI</span>
-        <span class="emName">🤖 Robot mê cung</span>
-        <span class="emMeta">Xếp lệnh đưa robot tới đích · tư duy thuật toán</span></button>
-      <button class="exModCard mgCard mgReal hasThumb" onclick="startRealAI()">
-        <span class="emThumb mgThumbImg"><img src="images/bg-realai.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>
-        <span class="emCode">🎮 TRÒ CHƠI</span>
-        <span class="emName">🕵️ Thật hay AI?</span>
-        <span class="emMeta">Đoán nội dung do AI hay người tạo · tư duy phản biện</span></button>
-      <button class="exModCard mgCard mgPrompt hasThumb" onclick="startPrompt()">
-        <span class="emThumb mgThumbImg"><img src="images/bg-prompt.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>
-        <span class="emCode">🎮 TRÒ CHƠI</span>
-        <span class="emName">🎯 Prompt Master</span>
-        <span class="emMeta">Ghép mảnh prompt rõ ràng · cách ra lệnh cho AI</span></button>
       <button class="exModCard mgCard mgBoom hasThumb" onclick="startBoom()">
         <span class="emThumb mgThumbImg"><img src="images/bg-domin.webp" alt="" loading="lazy" decoding="async" onerror="this.closest('.emThumb').remove()"></span>
         <span class="emCode">🎮 TRÒ CHƠI</span>

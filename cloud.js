@@ -23,27 +23,48 @@
     return;
   }
 
-  Cloud.ready = (async function () {
-    try {
-      var mod = await import("https://esm.sh/@supabase/supabase-js@2");
-      Cloud.sb = mod.createClient(cfg.url, cfg.anonKey, {
-        auth: { persistSession: true, autoRefreshToken: true },
+  // Hoãn tải bộ Supabase (nặng, từ CDN) tới khi trình duyệt rảnh — ưu tiên
+  // hiển thị & tương tác trang trước, không chặn tải lần đầu. Việc đăng nhập
+  // là tùy chọn nên chậm vài trăm ms không ảnh hưởng trải nghiệm.
+  var _boot = function () {
+    return (async function () {
+      try {
+        var mod = await import("https://esm.sh/@supabase/supabase-js@2");
+        Cloud.sb = mod.createClient(cfg.url, cfg.anonKey, {
+          auth: { persistSession: true, autoRefreshToken: true },
+        });
+        Cloud.enabled = true;
+        var res = await Cloud.sb.auth.getUser();
+        Cloud.user = (res && res.data && res.data.user) || null;
+        Cloud.sb.auth.onAuthStateChange(function (_e, s) {
+          Cloud.user = (s && s.user) || null;
+          document.dispatchEvent(new CustomEvent("cloud-auth", { detail: Cloud.user }));
+        });
+        console.info("[Cloud] Supabase sẵn sàng. Đăng nhập:", !!Cloud.user);
+        return true;
+      } catch (e) {
+        console.warn("[Cloud] Không khởi tạo được Supabase:", e);
+        Cloud.enabled = false;
+        return false;
+      }
+    })();
+  };
+  Cloud.ready = new Promise(function (resolve) {
+    var started = false;
+    var start = function () {
+      if (started) return; started = true;
+      ["pointerdown", "keydown", "touchstart"].forEach(function (ev) {
+        window.removeEventListener(ev, start);
       });
-      Cloud.enabled = true;
-      var res = await Cloud.sb.auth.getUser();
-      Cloud.user = (res && res.data && res.data.user) || null;
-      Cloud.sb.auth.onAuthStateChange(function (_e, s) {
-        Cloud.user = (s && s.user) || null;
-        document.dispatchEvent(new CustomEvent("cloud-auth", { detail: Cloud.user }));
-      });
-      console.info("[Cloud] Supabase sẵn sàng. Đăng nhập:", !!Cloud.user);
-      return true;
-    } catch (e) {
-      console.warn("[Cloud] Không khởi tạo được Supabase:", e);
-      Cloud.enabled = false;
-      return false;
-    }
-  })();
+      resolve(_boot());
+    };
+    // Khởi động khi rảnh HOẶC ngay khi người dùng tương tác (để đăng nhập không trễ).
+    ["pointerdown", "keydown", "touchstart"].forEach(function (ev) {
+      window.addEventListener(ev, start, { once: true, passive: true });
+    });
+    if ("requestIdleCallback" in window) requestIdleCallback(start, { timeout: 3000 });
+    else setTimeout(start, 1200);
+  });
 
   /* ----- ĐĂNG NHẬP (chỉ login, không đăng ký) ----- */
   Cloud.signInStudent = async function (username, pin) {
