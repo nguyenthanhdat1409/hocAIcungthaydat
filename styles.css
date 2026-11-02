@@ -53,22 +53,22 @@ h1,h2,h3{font-family:var(--font-display); margin:0; line-height:1.15}
 .hidden{display:none !important}
 .center{text-align:center}
 
-/* ===================== NAV (floating trắng) ===================== */
+/* ===================== NAV (gradient hồng) ===================== */
 #nav{position:sticky; top:0; z-index:50; padding:10px 20px;
-  background:rgba(255,255,255,.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  box-shadow:0 4px 24px rgba(79,37,206,.06);
+  background:linear-gradient(115deg,#EC4899 0%,#F43F5E 48%,#FB923C 100%);
+  border-bottom:1px solid rgba(255,255,255,.18);
+  box-shadow:0 6px 22px rgba(236,72,153,.28);
 }
 .navInner{max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:14px}
-.brand{display:flex; align-items:center; gap:11px; text-decoration:none; color:var(--heading); margin-right:auto}
-.brandFace{width:40px; height:40px; border-radius:12px; display:block; box-shadow:0 4px 12px rgba(109,60,246,.28)}
-.brandText{font-family:var(--font-display); font-weight:800; font-size:19px; line-height:1; display:flex; flex-direction:column; gap:2px; color:var(--heading)}
-.brandText small{font-family:var(--font-body); font-weight:500; font-size:11px; color:var(--bodytext)}
+.brand{display:flex; align-items:center; gap:11px; text-decoration:none; color:#fff; margin-right:auto}
+.brandFace{width:40px; height:40px; border-radius:12px; display:block; box-shadow:0 4px 12px rgba(0,0,0,.22)}
+.brandText{font-family:var(--font-display); font-weight:800; font-size:19px; line-height:1; display:flex; flex-direction:column; gap:2px; color:#fff}
+.brandText small{font-family:var(--font-body); font-weight:500; font-size:11px; color:rgba(255,255,255,.85)}
 .navLinks{display:flex; gap:4px; flex-wrap:wrap}
-.navLinks a{text-decoration:none; color:#4A4668; font-weight:600; font-size:14.5px; padding:9px 15px; border-radius:999px; transition:background .15s, color .15s; white-space:nowrap}
-.navLinks a:hover{background:var(--lp); color:var(--brand)}
-.navLinks a.active{background:var(--lp); color:var(--brand); box-shadow:none}
-.burger{display:none; margin-left:auto; background:var(--lp); border:1px solid var(--border); color:var(--brand); font-size:22px;
+.navLinks a{text-decoration:none; color:rgba(255,255,255,.92); font-weight:600; font-size:14.5px; padding:9px 15px; border-radius:999px; transition:background .15s, color .15s; white-space:nowrap}
+.navLinks a:hover{background:rgba(255,255,255,.22); color:#fff}
+.navLinks a.active{background:#fff; color:#E5308A; box-shadow:none}
+.burger{display:none; margin-left:auto; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.4); color:#fff; font-size:22px;
   width:44px; height:44px; border-radius:14px; cursor:pointer}
 
 /* ===================== TRANG ===================== */
@@ -2032,13 +2032,13 @@ html,body{ overflow-x:hidden }
    TÀI KHOẢN + MODAL ĐĂNG NHẬP / ĐĂNG KÝ
    ========================================================= */
 .acctBtn{ margin-left:4px; border:0; cursor:pointer; white-space:nowrap;
-  font-family:var(--font-display,sans-serif); font-weight:800; font-size:14px; color:#fff;
-  background:linear-gradient(135deg,var(--brand),var(--brand-dark)); padding:10px 20px; border-radius:999px;
-  box-shadow:0 6px 16px rgba(109,60,246,.30);
+  font-family:var(--font-display,sans-serif); font-weight:800; font-size:14px; color:#E5308A;
+  background:#fff; padding:10px 20px; border-radius:999px;
+  box-shadow:0 6px 16px rgba(0,0,0,.16);
   transition:transform .12s ease, box-shadow .12s ease, filter .12s; max-width:200px; overflow:hidden; text-overflow:ellipsis }
-.acctBtn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(109,60,246,.38) }
-.acctBtn:active{ transform:translateY(0); box-shadow:0 4px 12px rgba(109,60,246,.30) }
-.acctBtn.on{ background:linear-gradient(135deg,#8257ff,var(--brand)) }
+.acctBtn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(0,0,0,.22) }
+.acctBtn:active{ transform:translateY(0); box-shadow:0 4px 12px rgba(0,0,0,.18) }
+.acctBtn.on{ background:#fff; color:#D22B82 }
 @media(max-width:820px){ .acctBtn{ font-size:13px; padding:7px 12px } }
 
 .authBox{ max-width:420px; padding:26px 24px 24px }
@@ -2636,12 +2636,13 @@ html,body{ overflow-x:hidden }
   .a3dBtn, .a3dRound, .a3dOpt{ transition:none }
 }
 
-/* Tablet/Mobile: menu thả xuống nền trắng (đồng bộ nav mới) */
+/* Tablet/Mobile: menu thả xuống nền trắng (đồng bộ nav hồng) */
 @media (max-width:860px){
   #nav{ padding:10px 14px }
-  .navLinks{ background:#fff; border:1px solid var(--border); box-shadow:0 18px 44px rgba(79,37,206,.16) }
+  .navLinks{ background:#fff; border:1px solid var(--border); box-shadow:0 18px 44px rgba(236,72,153,.18) }
   .navLinks a{ color:var(--heading) }
-  .navLinks a.active{ background:var(--lp); color:var(--brand) }
+  .navLinks a:hover{ background:#FCE7F3; color:#E5308A }
+  .navLinks a.active{ background:#FCE7F3; color:#E5308A }
   .acctBtn{ padding:9px 15px; font-size:13.5px }
 }
 @media (max-width:400px){
