@@ -9,3 +9,6 @@ claude.exe
 # Cấu hình cá nhân / không di động (máy này) — không commit
 .claude/settings.local.json
 .claude/skills/
+
+# Ảnh chụp QA tạm của Playwright MCP — không commit
+.playwright-mcp/

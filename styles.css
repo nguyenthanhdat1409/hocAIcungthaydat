@@ -1435,8 +1435,6 @@ h1,h2,h3{letter-spacing:.2px}
 .lessonHero{position:relative;height:184px;overflow:hidden}
 .lessonArt{position:absolute;inset:0;z-index:1}
 .lessonArt .artSvg{width:100%;height:100%;display:block}
-.lessonPhoto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;
-  animation:fadeUp .4s ease}
 .heroShade{position:absolute;inset:0;z-index:3;pointer-events:none;
   background:linear-gradient(to top,rgba(30,27,75,.72) 0%,rgba(30,27,75,.12) 52%,rgba(30,27,75,.05) 100%)}
 .heroCap{position:absolute;left:22px;right:66px;bottom:16px;z-index:4}
@@ -1494,8 +1492,6 @@ h1,h2,h3{letter-spacing:.2px}
 .lessonHero{position:relative;height:auto;aspect-ratio:16/9;overflow:hidden;border-radius:28px 28px 0 0;background:#0b1020}
 .lessonArt{position:absolute;inset:0;z-index:1}
 .lessonArt .artSvg{width:100%;height:100%;display:block}
-/* Hiện TRỌN ảnh, không cắt; phần trống lấp bằng tranh nền */
-.lessonPhoto{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:2;animation:fadeUp .35s ease}
 
 /* Thanh tiêu đề nằm DƯỚI ảnh, không đè lên ảnh */
 .lessonBar{position:relative;display:flex;align-items:center;gap:12px;padding:14px 18px;color:#fff}
@@ -1554,9 +1550,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
 
 /* Chỉ báo trình duyệt tối ưu biến đổi của các phần tử hay hover/animate */
 .lsRow,.modCard,.beatBlock,.featCard,.skillCard,.learnItem,.lqOpt{will-change:auto}
-
-/* Ảnh banner: nền chờ nhẹ trong lúc tải */
-.lessonPhoto{background:rgba(255,255,255,.06)}
 
 /* Trạng thái đang tải bài học (lazy-load) */
 .curLoading{max-width:1080px;margin:60px auto;text-align:center;color:#fff;
