@@ -733,9 +733,8 @@ function openPlan(li, mi, lsi){
   const c = LEVEL_COLORS[li];
   if(window.Cloud){ Cloud.logEvent("lesson_open", "lesson:" + ls.code); Cloud.aiRecord({ lesson: "ai:" + ls.code, lessonXp: 10 }); }
 
-  /* Minh hoạ: tranh SVG theo chủ đề (mặc định) + ảnh trong images/<mã>.<ext> nếu có */
+  /* Minh hoạ: tranh SVG theo chủ đề (dùng chung mọi bài, không nạp ảnh riêng từng bài) */
   const art = window.LessonArt ? window.LessonArt.svg(ls, c) : "";
-  const photo = `<img class="lessonPhoto" alt="" loading="lazy" decoding="async" src="images/${encodeURIComponent(ls.code)}.webp" data-code="${esc(ls.code)}" data-try="0" onerror="photoFallback(this)">`;
 
   /* Panel cho giáo viên (ẩn, mở bằng nút ?) */
   let steps = "";
@@ -760,7 +759,6 @@ function openPlan(li, mi, lsi){
   document.getElementById("lessonBody").innerHTML =
     `<div class="lessonHero" style="--lc:${c}">
        <div class="lessonArt">${art}</div>
-       ${photo}
      </div>
      <div class="lessonBar" style="background:linear-gradient(135deg,${c},${c}cc)">
        <div class="lessonBarText"><span class="lhCode">Bài ${esc(ls.code)}</span><h2>${esc(ls.name)}</h2></div>
@@ -793,14 +791,6 @@ function toggleCoachPanel(btn){
     (window.requestAnimationFrame || setTimeout)(doScroll);
   }
 }
-/* Ảnh trong images/<mã bài>.<ext>: thử webp→jpg→png→jpeg; không có thì bỏ để lộ tranh SVG */
-function photoFallback(img){
-  const exts = ["webp","jpg","png","jpeg"];
-  let t = (parseInt(img.dataset.try, 10) || 0) + 1;
-  if(t < exts.length){ img.dataset.try = t; img.src = "images/" + encodeURIComponent(img.dataset.code) + "." + exts[t]; }
-  else { img.remove(); }
-}
-
 /* --- Tìm kiếm realtime --- */
 let _searchTimer = null;
 function onCurSearch(v){
