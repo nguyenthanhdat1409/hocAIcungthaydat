@@ -179,7 +179,7 @@ function go(id){
 }
 
 /* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
-const ASSET_VER = "33";
+const ASSET_VER = "34";
 let _curDataPromise = null;
 function loadScript(src){
   return new Promise((resolve, reject) => {
@@ -218,14 +218,9 @@ function toggleMenu(){
 /* ---------- Trang chủ ---------- */
 function renderHome(){
   document.getElementById("featGrid").innerHTML = FEATURES.map(f =>
-    `<div class="featCard"><div class="featCard__ic">${f.i}</div><h4>${f.h}</h4><p>${f.p}</p></div>`).join("");
-  const ARROW = `<svg class="skillCard__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    `<div class="featCard"><div class="fi">${f.i}</div><h4>${f.h}</h4><p>${f.p}</p></div>`).join("");
   document.getElementById("skillGrid").innerHTML = Object.values(TOPICS).map(t =>
-    `<button class="skillCard" style="--tc:${t.color}" onclick="go('baihoc')">
-       <span class="skillCard__ic">${t.emoji}</span>
-       <span class="skillCard__name">${t.name}</span>
-       <span class="skillCard__go">Khám phá ${ARROW}</span>
-     </button>`).join("");
+    `<div class="skillCard" style="background:${t.color}"><span class="se">${t.emoji}</span><span class="sn">${t.name}</span></div>`).join("");
   // Thống kê tự động
   const totalQ = [1,2,3].reduce((s,lv)=>s+BANK[lv].length,0);
   const cst = curriculumStats();
