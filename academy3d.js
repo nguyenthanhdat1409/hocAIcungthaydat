@@ -125,6 +125,7 @@
   var renderer, scene, camera, clock, hero, raf = 0, lastT = 0;
   var npcs = [], colliders = [], interactables = [], markers = [];
   var robotGLB = null, aiMixer = null, aiActions = null, aiCurrent = null; // Máy AI dạng GLB (CC0 RobotExpressive)
+  var charTpl = {};   // template model nhân vật (detective/teacher/student) — nạp 1 lần/phiên, clone cho mỗi thực thể
   var keys = {}, joy = { x: 0, z: 0, active: false }, nearest = null;
   var currentZoneId = null, bounds = 7.2, camBound = 7.6;         // KHU hiện tại + giới hạn di chuyển/camera
   var progress = { xp: 0, coins: 0, zonesDone: {} };               // tiến độ tự lưu (local)
@@ -272,8 +273,9 @@
     aiMixer = null; aiActions = null; aiCurrent = null; robotGLB = null;
     npcs = []; colliders = []; interactables = []; markers = []; nearest = null;
     var needRobot = (zone.npcs || []).some(function (n) { return n.kind === "robot"; });
-    if (needRobot) loadRobotGLB().then(function () { buildZone(zone); });
-    else buildZone(zone);
+    var tasks = [loadChars()];
+    if (needRobot) tasks.push(loadRobotGLB());
+    Promise.all(tasks).then(function () { buildZone(zone); });
   }
 
   function buildZone(zone) {
@@ -729,6 +731,113 @@
     return g;
   }
 
+  /* ======= Nhân vật bằng model GLB (detective / teacher / student) — chibi rig + Idle/Walk ======= */
+  function loadChars() {
+    var types = ["detective", "teacher", "student"];
+    var need = types.filter(function (t) { return !charTpl[t]; });
+    if (!need.length) return Promise.resolve();
+    return import("./GLTFLoader.module.js").then(function (m) {
+      var loader = new m.GLTFLoader();
+      return Promise.all(need.map(function (t) {
+        return new Promise(function (res) {
+          try {
+            loader.load("./models/" + t + ".glb",
+              function (g) { charTpl[t] = g; res(); }, undefined, function () { res(); });
+          } catch (e) { res(); }
+        });
+      }));
+    }).catch(function () { /* thiếu loader → fallback makePerson() dựng-bằng-code */ });
+  }
+
+  // Clone nhân vật có xương (SkeletonUtils thu gọn) + clone geometry/material/texture để dispose an toàn giữa các khu.
+  function cloneSkinned(source) {
+    var srcLookup = new Map(), cloneLookup = new Map();
+    var clone = source.clone();
+    (function par(a, b) {
+      srcLookup.set(b, a); cloneLookup.set(a, b);
+      for (var i = 0; i < a.children.length; i++) par(a.children[i], b.children[i]);
+    })(source, clone);
+    clone.traverse(function (node) {
+      if (!node.isSkinnedMesh) return;
+      var src = srcLookup.get(node);
+      node.skeleton = src.skeleton.clone();
+      node.bindMatrix.copy(src.bindMatrix);
+      node.skeleton.bones = src.skeleton.bones.map(function (b) { return cloneLookup.get(b); });
+      node.bind(node.skeleton, node.bindMatrix);
+    });
+    return clone;
+  }
+
+  function clipAct(mixer, clips, name) {
+    var c = THREE.AnimationClip.findByName(clips, name);
+    return c ? mixer.clipAction(c) : null;
+  }
+
+  function setupCharGLB(type, opts) {
+    opts = opts || {};
+    var tpl = charTpl[type];
+    var root = cloneSkinned(tpl.scene);
+    root.traverse(function (o) {
+      if (o.isMesh || o.isSkinnedMesh) {
+        o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false;
+        o.geometry = o.geometry.clone();
+        o.material = o.material.clone();
+        if (o.material.map) { o.material.map = o.material.map.clone(); o.material.map.needsUpdate = true; }
+      }
+    });
+    if (opts.tint) applyTint(root, (tpl.scene.userData && tpl.scene.userData.tintCells), opts.tint);
+    root.updateMatrixWorld(true);
+    var box = new THREE.Box3().setFromObject(root);
+    var h = (box.max.y - box.min.y) || 1.8;
+    root.position.y = -box.min.y;                 // chân về 0 trong hệ gốc (trước scale)
+    var g = new THREE.Group(); g.add(root);
+    g.scale.setScalar(1.8 / h);                   // chuẩn hoá cao 1.8 bằng wrapper (giữ skeleton bind gốc)
+    var mixer = new THREE.AnimationMixer(root);
+    var idle = clipAct(mixer, tpl.animations, "Idle");
+    var walk = clipAct(mixer, tpl.animations, "Walk");
+    if (idle) idle.play();
+    g.userData.rig = { glbChar: true, mixer: mixer, idle: idle, walk: walk, cur: idle };
+    return g;
+  }
+
+  // Đổi màu NPC học sinh: vẽ lại các ô màu phẳng trên texture (toạ độ ô ở userData.tintCells).
+  function applyTint(root, cells, colors) {
+    if (!cells) return;
+    root.traverse(function (o) {
+      if (!(o.isMesh || o.isSkinnedMesh)) return;
+      var map = o.material && o.material.map, img = map && map.image;
+      if (!img) return;
+      var w = img.width || 256, hh = img.height || 256;
+      var cv = document.createElement("canvas"); cv.width = w; cv.height = hh;
+      var ctx = cv.getContext("2d"); ctx.drawImage(img, 0, 0);
+      for (var k in colors) { var r = cells[k]; if (r) { ctx.fillStyle = colors[k]; ctx.fillRect(r[0], r[1], r[2], r[3]); } }
+      var tex = new THREE.CanvasTexture(cv); tex.flipY = false; tex.colorSpace = THREE.SRGBColorSpace;
+      if (o.material.map) o.material.map.dispose();
+      o.material.map = tex;
+    });
+  }
+
+  var NPC_PALETTES = [
+    { shirt: "#FF6FA8", shorts: "#4B6BFF", shoe: "#FFD447", pack: "#7ED957" },
+    { shirt: "#FFD447", shorts: "#36C2B4", shoe: "#FF5A5F", pack: "#8E5BD6" },
+    { shirt: "#9B7BFF", shorts: "#FF9F43", shoe: "#5EC8FF", hair: "#2E2230" },
+    { shirt: "#7ED957", shorts: "#5A4BD6", shoe: "#FF8FAB", hair: "#C2703D" },
+    { shirt: "#5EC8FF", shorts: "#FF6FA8", shoe: "#FFD447", pack: "#FF9F43" }
+  ];
+  function npcTint(e) {
+    var s = String(e.id || e.name || ""), hsum = 0;
+    for (var i = 0; i < s.length; i++) hsum = (hsum + s.charCodeAt(i)) | 0;
+    return NPC_PALETTES[Math.abs(hsum) % NPC_PALETTES.length];
+  }
+
+  // Chuyển mượt giữa Idle/Walk cho nhân vật GLB
+  function playClip(rig, action) {
+    if (!rig || !rig.glbChar || !action || rig.cur === action) return;
+    action.reset().fadeIn(0.25).play();
+    if (rig.cur) rig.cur.fadeOut(0.25);
+    rig.cur = action;
+  }
+
   function playAI(name) {
     if (!aiMixer || !aiActions || !aiActions[name] || aiCurrent === aiActions[name]) return;
     var next = aiActions[name];
@@ -741,7 +850,10 @@
     npcs = [];
     ENT.forEach(function (e) {
       if (e.kind === "door") { buildDoorEntity(e); return; }
-      var g = e.kind === "robot" ? (robotGLB ? setupRobotGLB() : makeRobot(e.color)) : makePerson(e.color, e.look);
+      var g;
+      if (e.kind === "robot") g = robotGLB ? setupRobotGLB() : makeRobot(e.color);
+      else if (e.kind === "teacher") g = charTpl.teacher ? setupCharGLB("teacher") : makePerson(e.color, e.look);
+      else g = charTpl.student ? setupCharGLB("student", { tint: npcTint(e) }) : makePerson(e.color, e.look);
       g.position.set(e.x, 0, e.z);
       g.rotation.y = Math.atan2(-e.x, -e.z);               // quay mặt về giữa khu
       scene.add(g);
@@ -797,12 +909,16 @@
   }
 
   function buildHero() {
-    hero = makePerson(0x6366f1, { hair: 0x2a1c12, skin: 0xffe0bd, style: "short", pants: 0x4338ca });
-    // mũ thám tử nhỏ cho khác NPC
-    var cap = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.12, 16), matSmooth(0x4338ca, 0.7));
-    cap.position.y = 1.86; hero.add(cap);
-    var brim = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.05, 16), matSmooth(0x4338ca, 0.7));
-    brim.position.set(0, 1.8, 0.1); hero.add(brim);
+    if (charTpl.detective) {
+      hero = setupCharGLB("detective");
+    } else {
+      hero = makePerson(0x6366f1, { hair: 0x2a1c12, skin: 0xffe0bd, style: "short", pants: 0x4338ca });
+      // mũ thám tử nhỏ cho khác NPC (chỉ ở bản fallback khối)
+      var cap = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.12, 16), matSmooth(0x4338ca, 0.7));
+      cap.position.y = 1.86; hero.add(cap);
+      var brim = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.05, 16), matSmooth(0x4338ca, 0.7));
+      brim.position.set(0, 1.8, 0.1); hero.add(brim);
+    }
     var sp = (LEVEL && LEVEL.spawn) ? LEVEL.spawn : { x: 0, z: 3.4, yaw: Math.PI };
     hero.position.set(sp.x || 0, 0, sp.z || 3.4);
     facing = (sp.yaw != null ? sp.yaw : Math.PI);
@@ -996,6 +1112,12 @@
 
   function animateHero(dt, speed) {
     var rig = hero.userData.rig; if (!rig) return;
+    if (rig.glbChar) {
+      if (rig.mixer) rig.mixer.update(dt);
+      playClip(rig, speed > 0.06 ? rig.walk : rig.idle);
+      hero.position.y = 0;                         // Walk/Idle đã tự nhún trong animation (không root motion)
+      return;
+    }
     if (REDUCED) { if (rig.arms) rig.arms.forEach(function (a) { a.rotation.x = 0; }); if (rig.legs) rig.legs.forEach(function (l) { l.rotation.x = 0; }); hero.position.y = 0; return; }
     if (speed > 0.05) {
       walkPhase += dt * 10 * (0.5 + speed);
@@ -1034,8 +1156,12 @@
           n.ring.position.x = n.group.position.x; n.ring.position.z = n.group.position.z;
         }
       }
+      if (rig && rig.glbChar) {                    // nhân vật GLB: chạy Idle/Walk (kể cả khi REDUCED → giữ Idle)
+        if (rig.mixer) rig.mixer.update(dt);
+        playClip(rig, moving ? rig.walk : rig.idle);
+      }
       if (REDUCED) continue;
-      if (rig && rig.head && !moving) rig.head.position.y = 1.62 + Math.sin(idleT * 1.5 + i) * 0.015;
+      if (rig && rig.person && rig.head && !moving) rig.head.position.y = 1.62 + Math.sin(idleT * 1.5 + i) * 0.015;
       if (n.data.kind === "robot" && rig && rig.ant) rig.ant.position.y = 2.02 + Math.sin(idleT * 3) * 0.03;
       if (n.ring && nearest === n) n.ring.material.opacity = 0.45 + Math.sin(idleT * 3.2) * 0.22;
       if (rig && rig.person && rig.legs && moving) {
