@@ -133,7 +133,7 @@
   var state = "", cluesGot = {}, boardDone = {}, wrong = 0, solved = false;
   var dialogOpen = false, overlayOpen = false;
   var listeners = [], visHandler = null, ro = null;
-  var vel = { x: 0, z: 0 }, walkPhase = 0, idleT = 0, facing = 0, camPos = null, heroJump = 0;
+  var vel = { x: 0, z: 0 }, walkPhase = 0, idleT = 0, facing = 0, camPos = null, heroJump = 0, heroSit = null;
   // ---- Camera System V2 ----
   var camMode = "third", yaw = Math.PI, pitch = 0.0, thirdDist = 7.2, isoZoom = 1, heroHidden = false;
   var dragging = false, dragPId = null, dragLX = 0, dragLY = 0, pointerLocked = false, camMenuOpen = false;
@@ -150,7 +150,7 @@
     npcs = []; colliders = []; interactables = []; markers = [];
     keys = {}; joy = { x: 0, z: 0, active: false }; nearest = null;
     cluesGot = {}; boardDone = {}; wrong = 0; solved = false;
-    dialogOpen = false; overlayOpen = false; vel = { x: 0, z: 0 }; walkPhase = 0; idleT = 0; facing = 0; heroJump = 0;
+    dialogOpen = false; overlayOpen = false; vel = { x: 0, z: 0 }; walkPhase = 0; idleT = 0; facing = 0; heroJump = 0; heroSit = null;
     robotGLB = null; aiMixer = null; aiActions = null; aiCurrent = null;
     yaw = Math.PI; pitch = 0; thirdDist = 7.2; isoZoom = 1; heroHidden = false;
     dragging = false; dragPId = null; pointerLocked = false; camMenuOpen = false;
@@ -283,6 +283,7 @@
     currentZoneId = zone.id;
     cluesGot = {}; boardDone = {}; wrong = 0; solved = false;
     dialogOpen = false; overlayOpen = false; vel = { x: 0, z: 0 };
+    heroSit = null; heroJump = 0;
     LEVEL = zone; AC = buildAC(zone); ENT = zone.npcs || []; Engine.load(zone);
     var outdoor = (zone.env === "campus");
     bounds = outdoor ? 14 : 7.2; camBound = outdoor ? 18 : 7.6;
@@ -411,7 +412,11 @@
     var seat = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.14, 0.5), matSmooth(0xb9834e, 0.8)); seat.position.set(x, 0.5, z); seat.rotation.y = rot; seat.castShadow = true; scene.add(seat);
     var back = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 0.12), matSmooth(0xa8733f, 0.8)); back.position.set(x - Math.sin(rot) * 0.2, 0.8, z - Math.cos(rot) * 0.2); back.rotation.y = rot; scene.add(back);
     colliders.push({ x: x, z: z, r: 0.7 });
+    // ghế ngồi được: nhấn E để ngồi (hướng ra ngoài ghế = rot)
+    var rec = { data: { id: "bench_" + benchN++, name: "Ghế đá", x: x, z: z }, group: null, bench: { x: x, z: z, yaw: rot, y: 0.42 } };
+    interactables.push(rec);
   }
+  var benchN = 0;
   function flower(x, z, i) {
     var col = [0xff6b9d, 0xffd166, 0xf472b6, 0xa78bfa, 0xff8fab][i % 5];
     var stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.4, 6), matSmooth(0x3f8f3f, 1)); stem.position.set(x, 0.2, z); scene.add(stem);
@@ -1074,8 +1079,8 @@
     else if (k === "arrowdown" || k === "s") { keys.D = 1; e.preventDefault(); }
     else if (k === "arrowleft" || k === "a") { keys.L = 1; e.preventDefault(); }
     else if (k === "arrowright" || k === "d") { keys.R = 1; e.preventDefault(); }
-    else if (k === " ") { e.preventDefault(); if (heroJump <= 0) heroJump = 0.0001; }   // Space = nhảy
-    else if (k === "e" || k === "enter") { if (nearest) { e.preventDefault(); doInteract(); } }
+    else if (k === " ") { e.preventDefault(); if (heroSit) standUp(); else if (heroJump <= 0) heroJump = 0.0001; }   // Space = nhảy (hoặc đứng dậy khi đang ngồi)
+    else if (k === "e" || k === "enter") { if (heroSit || nearest) { e.preventDefault(); doInteract(); } }
     else if (k === "v") { setCamMode(camMode === "first" ? "third" : "first"); }
     else if (k === "escape") { if (camMenuOpen) closeCamMenu(); }
   }
@@ -1143,6 +1148,11 @@
   }
 
   function updateMove(dt) {
+    if (heroSit) {   // đang ngồi: giữ yên; có input đi lại thì đứng dậy rồi di chuyển bình thường
+      var anyKey = keys.U || keys.D || keys.L || keys.R || (joy.active && Math.hypot(joy.x, joy.z) > 0.2);
+      if (!anyKey) { animateHero(dt, 0); return; }
+      standUp();
+    }
     // input: f = tiến/lùi, r = phải/trái
     var f = (keys.U ? 1 : 0) - (keys.D ? 1 : 0);
     var r = (keys.R ? 1 : 0) - (keys.L ? 1 : 0);
@@ -1200,6 +1210,11 @@
 
   function animateHero(dt, speed) {
     var rig = hero.userData.rig; if (!rig) return;
+    if (heroSit) {                                   // ngồi trên ghế: giữ Idle, đặt ở mặt ghế
+      if (rig.glbChar) { if (rig.mixer) rig.mixer.update(dt); playClip(rig, rig.idle); }
+      hero.position.y = heroSit.y;
+      return;
+    }
     var jy = updateHeroJump(dt);
     if (rig.glbChar) {
       if (rig.mixer) rig.mixer.update(dt);
@@ -1338,7 +1353,7 @@
       var prompt = $("a3dPrompt"), action = $("a3dAction");
       for (var j = 0; j < npcs.length; j++) if (npcs[j].ring && !npcs[j].isDoor) npcs[j].ring.material.opacity = 0;
       if (found) {
-        var verb = found.isDoor ? "Vào" : "Nói chuyện với";
+        var verb = found.isDoor ? "Vào" : found.bench ? "Ngồi ·" : "Nói chuyện với";
         prompt.innerHTML = '<span class="a3dPKey">E</span> ' + verb + ' <b>' + esc(found.data.name) + '</b>';
         prompt.classList.remove("hidden"); action.classList.remove("hidden");
         if (found.ring && !found.isDoor) found.ring.material.opacity = 0.6;
@@ -1346,9 +1361,19 @@
     }
   }
 
+  function sitOnBench(b) {
+    heroSit = b; heroJump = 0; vel.x = 0; vel.z = 0;
+    hero.position.set(b.x, b.y, b.z);
+    facing = b.yaw; hero.rotation.y = facing;
+    showToast("🪑 Đang ngồi — bấm phím đi hoặc E để đứng dậy");
+  }
+  function standUp() { heroSit = null; if (hero) hero.position.y = 0; }
+
   function doInteract() {
+    if (heroSit) { standUp(); return; }                 // đang ngồi → đứng dậy
     if (!nearest || dialogOpen || overlayOpen) return;
     var d = nearest.data;
+    if (nearest.bench) { sitOnBench(nearest.bench); return; }
     if (nearest.isDoor) { useDoor(d); return; }
     // nhiệm vụ talk gắn với NPC này
     var tq = findQuest("talk", d.id);
