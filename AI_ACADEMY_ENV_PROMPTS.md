@@ -292,3 +292,150 @@ to mount flat on a wall. [+ STYLE]
 `desk_teacher.glb`, `desk_student.glb`, `chair.glb`, `bookshelf.glb`, `blackboard.glb`, `plant_indoor.glb`, `rug.glb`.
 
 → Thả vào `models/env/` là tôi thay nội thất phòng điều tra (bàn/kệ/bảng/chậu/thảm), đặt ghế quanh bàn (ngồi được), và xử lý cache/scale như khuôn viên.
+
+---
+
+## 6. ZONE MỚI — MỞ RỘNG THẾ GIỚI (thư viện · công viên · lab)
+
+> Cùng SPEC + đoạn STYLE mục 0. Vẫn `models/env/`, gốc đáy-giữa, mặt chính +Z, tĩnh.
+> Nhiều vật **tái dùng** asset đã có → chỉ gen phần MỚI của mỗi zone.
+
+### 📚 ZONE THƯ VIỆN (interior) — cửa vào đã có sẵn ở khuôn viên
+**Tái dùng:** `bookshelf`, `chair`, `rug`, `plant_indoor`, `wallclock`, `window_interior`, `poster_*`.
+**Cần gen MỚI:**
+
+**`models/env/library_table.glb`** — Bàn đọc dài ⭐⭐⭐ · cao ~0.78, dài ~2.6
+```
+A cozy stylized low-poly long library reading table, warm honey-wood top with soft rounded edges,
+sturdy rounded legs with a lower stretcher bar, a couple of open books and a small green reading
+lamp resting on top. Inviting study table. [+ STYLE]
+```
+
+**`models/env/armchair.glb`** — Ghế bành đọc sách ⭐⭐⭐ · ~1.0 (mặt ngồi ~0.45, +Z)
+```
+A cozy stylized low-poly reading armchair, plump rounded cushions in soft blush or teal fabric,
+chunky padded armrests, short wooden legs, a tiny folded blanket on the arm. Super comfy storybook
+armchair, seat facing +Z. [+ STYLE]
+```
+> extras: seatHeight ~0.45, seatFacing +Z (để ngồi được).
+
+**`models/env/globe.glb`** — Quả địa cầu ⭐⭐ · ~1.3
+```
+A cozy stylized low-poly world globe on a warm-wood stand, a soft pastel-blue sphere with gentle
+rounded green landmass shapes (no text), a curved brass-cream meridian ring, a small round base.
+Charming study globe. [+ STYLE]
+```
+
+**`models/env/book_cart.glb`** — Xe đẩy sách ⭐ · ~1.0
+```
+A cozy stylized low-poly rolling book cart, a warm-wood two-shelf trolley with four little rounded
+wheels, neat stacks of chunky pastel books (no text), rounded push handle. Cute library cart. [+ STYLE]
+```
+
+**`models/env/card_catalog.glb`** — Tủ phiếu mục lục ⭐ · ~1.3
+```
+A cozy stylized low-poly library card-catalog cabinet, a warm-wood chest with a grid of small
+rounded drawers each with a tiny knob, a soft rounded top with a little potted plant. Classic cozy
+library cabinet. [+ STYLE]
+```
+
+**`models/env/ladder.glb`** — Thang trượt thư viện ⭐ · ~2.6
+```
+A cozy stylized low-poly rolling library ladder, a warm-wood slanted ladder with rounded rungs and
+side rails, little wheels at the bottom, a small brass-cream top hook. Charming tall-shelf ladder. [+ STYLE]
+```
+
+**`models/env/floor_lamp.glb`** — Đèn cây đọc sách ⭐ · ~1.7
+```
+A cozy stylized low-poly standing floor reading lamp, a slim warm-wood pole on a round base, a soft
+rounded cream lampshade with a gentle honey-yellow glow. Warm reading-nook lamp. [+ STYLE]
+```
+
+### 🌳 ZONE CÔNG VIÊN (outdoor) — mở rộng công viên + hồ
+**Tái dùng:** `tree`, `tree_blossom`, `bench`, `bush`, `lamp`, `fountain`, `flowerbed`, `rock`, `lilypad`.
+**Cần gen MỚI:**
+
+**`models/env/gazebo.glb`** — Chòi nghỉ (landmark, đứng dưới được) ⭐⭐⭐ · ~3.2, rộng ~3.4
+```
+A cozy stylized low-poly garden gazebo pavilion, a hexagonal open structure with slim cream pillars,
+a gentle pointed pastel roof with a little finial, a low rounded railing, a small bench ring inside,
+soft climbing roses on one pillar. Charming park landmark. [+ STYLE]
+```
+
+**`models/env/bridge.glb`** — Cầu vòm qua hồ ⭐⭐ · dài ~3.5
+```
+A cozy stylized low-poly small arched wooden footbridge, warm-wood planks gently curving up and over,
+rounded side railings with little posts, soft worn edges. Cute pond bridge, spanning along +Z. [+ STYLE]
+```
+
+**`models/env/picnic_table.glb`** — Bàn dã ngoại (ngồi được) ⭐⭐ · ~0.9, dài ~1.8
+```
+A cozy stylized low-poly picnic table with attached bench seats on both sides, warm-wood planks with
+soft rounded edges, a tiny checkered cloth and a basket on top. Friendly park picnic set. [+ STYLE]
+```
+> extras: seatHeight ~0.45, seatFacing +Z.
+
+**`models/env/statue.glb`** — Tượng landmark ⭐ · ~2.6
+```
+A cozy stylized low-poly cute statue on a rounded stone pedestal, a friendly chibi robot or an open
+book sculpture in soft cream stone, gentle rounded forms, a little plaque shape (no text), moss at
+the base. Charming plaza landmark. [+ STYLE]
+```
+
+**`models/env/icecream_cart.glb`** — Xe kem ⭐ · ~1.8
+```
+A cozy stylized low-poly ice-cream vendor cart, a rounded pastel wooden cart with a striped candy
+awning, two big rounded wheels, a little menu board shape (no text), a cute ice-cream cone topper.
+Cheerful park food cart. [+ STYLE]
+```
+
+**`models/env/flower_arch.glb`** — Cổng hoa ⭐ · ~2.8
+```
+A cozy stylized low-poly rose flower arch, two slim trellis posts joined by a gentle curved top,
+covered in soft pastel-pink and white rounded blossoms and green leaves. Romantic garden archway. [+ STYLE]
+```
+
+### 🔬 ZONE LAB (interior) — dùng `lab.glb` làm vỏ ngoài
+**Tái dùng:** `chair`, `screen`, `wallclock`, `plant_indoor`, `rug`.
+**Cần gen MỚI:**
+
+**`models/env/lab_bench.glb`** — Bàn thí nghiệm ⭐⭐⭐ · ~0.95, dài ~2.2
+```
+A cozy stylized low-poly science workbench, a clean cream-and-wood counter with soft rounded edges,
+a little rack of rounded pastel beakers and flasks with colored liquid, a small funnel and a cute
+petri dish, under-shelf storage. Friendly non-scary lab bench. [+ STYLE]
+```
+
+**`models/env/hologram_table.glb`** — Bàn chiếu ba chiều (landmark) ⭐⭐⭐ · ~1.4
+```
+A cozy stylized low-poly holographic display table, a rounded cream pedestal with a soft glowing
+pastel-blue projected shape floating above (a gentle globe or a simple brain hologram), tiny light
+dots rising. Wonder-inducing AI display, subtle soft glow. [+ STYLE]
+```
+
+**`models/env/robot_arm.glb`** — Cánh tay robot thân thiện ⭐⭐ · ~1.6
+```
+A cozy stylized low-poly friendly robotic arm on a rounded base, chunky pastel-cream segments with
+soft rounded joints, a cute two-finger gripper holding a little block, a tiny glowing indicator dot.
+Playful helper robot arm. [+ STYLE]
+```
+
+**`models/env/server_tower.glb`** — Máy chủ AI dễ thương ⭐⭐ · ~1.8
+```
+A cozy stylized low-poly AI server tower, a rounded cream cabinet with soft glowing pastel indicator
+dots in a row, a gentle vent pattern, a little antenna ball on top, rounded feet. Cute friendly
+computer, no scary cables. [+ STYLE]
+```
+
+**`models/env/microscope.glb`** — Kính hiển vi ⭐ · ~0.6 (đặt trên bàn)
+```
+A cozy stylized low-poly toy microscope, a rounded pastel body with a soft eyepiece, a little stage
+and a cute adjustment knob, cream-and-teal colors. Friendly science prop. [+ STYLE]
+```
+
+### Gợi ý thứ tự gen
+1. **Thư viện** (mở khu đầu tiên liền mạch với cửa sẵn có): `library_table, armchair, globe` (+ tái dùng bookshelf/chair/rug/plant).
+2. **Công viên**: `gazebo, bridge, picnic_table` (+ tái dùng tree/bench/bush/lamp).
+3. **Lab**: `lab_bench, hologram_table, robot_arm, server_tower`.
+
+→ Gen nhóm nào xong tôi sẽ **dựng zone đó** (layout + NPC + nhiệm vụ học AI) và nối cổng cho đi lại liền mạch.
