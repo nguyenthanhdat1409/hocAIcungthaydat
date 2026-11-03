@@ -126,6 +126,7 @@
   var npcs = [], colliders = [], interactables = [], markers = [];
   var robotGLB = null, aiMixer = null, aiActions = null, aiCurrent = null; // Máy AI dạng GLB (CC0 RobotExpressive)
   var charTpl = {};   // template model nhân vật (detective/teacher/student) — nạp 1 lần/phiên, clone cho mỗi thực thể
+  var envTpl = {};    // template model bối cảnh (academy/library/fountain/tree/bench/lamp/bush) — tĩnh, clone khi đặt
   var _AX_Z = null;   // trục Z để tính quaternion vẫy tay (khởi tạo khi THREE sẵn sàng)
   var keys = {}, joy = { x: 0, z: 0, active: false }, nearest = null;
   var currentZoneId = null, bounds = 7.2, camBound = 7.6;         // KHU hiện tại + giới hạn di chuyển/camera
@@ -276,6 +277,7 @@
     var needRobot = (zone.npcs || []).some(function (n) { return n.kind === "robot"; });
     var tasks = [loadChars()];
     if (needRobot) tasks.push(loadRobotGLB());
+    if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "fountain", "tree", "bench", "lamp", "bush"]));
     Promise.all(tasks).then(function () { buildZone(zone); });
   }
 
@@ -342,19 +344,14 @@
       path.rotation.x = -Math.PI / 2; path.position.set(p[0], 0.015, p[1]); path.receiveShadow = true; scene.add(path);
     });
 
-    // vòi phun nước ở giữa quảng trường (landmark)
-    var fBase = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 0.4, 24), matSmooth(0xd9d2c0, 0.9));
-    fBase.position.y = 0.2; fBase.receiveShadow = true; fBase.castShadow = true; scene.add(fBase);
-    var fWater = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.12, 24), new THREE.MeshStandardMaterial({ color: 0x8fd3f4, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.85 }));
-    fWater.position.y = 0.42; scene.add(fWater);
-    var fStem = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.9, 12), matSmooth(0xcfc7b4, 0.9)); fStem.position.y = 0.85; fStem.castShadow = true; scene.add(fStem);
-    var fTop = new THREE.Mesh(new THREE.SphereGeometry(0.28, 14, 12), new THREE.MeshStandardMaterial({ color: 0x8fd3f4, roughness: 0.2, transparent: true, opacity: 0.85 })); fTop.position.y = 1.4; scene.add(fTop);
+    // vòi phun nước ở giữa quảng trường (landmark) — model GLB, fallback primitive
+    if (!placeEnv("fountain", 0, 0, 0)) campusFountain();
     colliders.push({ x: 0, z: 0, r: 1.7 });
 
-    // hai công trình (Học viện trái, Thư viện phải)
-    campusBuilding(-4.2, -11.4, 0x6366f1, 0xef9ea0, "🏫", "HỌC VIỆN AI");
-    campusBuilding(4.2, -11.4, 0x0ea5a5, 0xf4c06a, "📚", "THƯ VIỆN");
-    colliders.push({ x: -4.2, z: -11.4, r: 2.7 }, { x: 4.2, z: -11.4, r: 2.7 });
+    // hai công trình (Học viện trái, Thư viện phải) — model GLB, fallback primitive
+    if (!placeEnv("academy", -4.2, -11.4, 0)) campusBuilding(-4.2, -11.4, 0x6366f1, 0xef9ea0, "🏫", "HỌC VIỆN AI");
+    if (!placeEnv("library", 4.2, -11.4, 0)) campusBuilding(4.2, -11.4, 0x0ea5a5, 0xf4c06a, "📚", "THƯ VIỆN");
+    colliders.push({ x: -4.2, z: -11.4, r: 2.9 }, { x: 4.2, z: -11.4, r: 2.9 });
 
     // cổng chào trên lối vào
     arch(-4.2, -9.6); arch(4.2, -9.6);
@@ -365,8 +362,17 @@
     var lakeRim = new THREE.Mesh(new THREE.RingGeometry(3, 3.5, 36), matSmooth(0xd8cba6, 1)); lakeRim.rotation.x = -Math.PI / 2; lakeRim.position.set(7.5, 0.02, 9); scene.add(lakeRim);
     colliders.push({ x: 7.5, z: 9, r: 3.3 });
 
-    [[-8, 9], [-9.5, 4], [9.5, 2], [-6, 11], [5, 12], [10.5, 8], [-11, -2], [11, -5]].forEach(function (t) { campusTree(t[0], t[1]); });
+    // cây — model GLB (xoay mỗi cây một hướng cho tự nhiên), fallback primitive
+    [[-8, 9], [-9.5, 4], [9.5, 2], [-6, 11], [5, 12], [10.5, 8], [-11, -2], [11, -5]].forEach(function (t, i) {
+      if (placeEnv("tree", t[0], t[1], i * 1.3)) colliders.push({ x: t[0], z: t[1], r: 0.6 });
+      else campusTree(t[0], t[1]);
+    });
+    // ghế đá (ngồi được) — model GLB, fallback primitive
     [[2.5, 9, 0], [-3, 10, 0.6], [6, -3, -0.4]].forEach(function (b) { campusBench(b[0], b[1], b[2]); });
+    // bụi cây trang trí trong công viên — model GLB
+    [[-7, 7, 0.5], [8.8, 11, 1.2], [-4.5, 12, 2], [9, -3.4, 0.8]].forEach(function (b) {
+      if (placeEnv("bush", b[0], b[1], b[2])) colliders.push({ x: b[0], z: b[1], r: 0.5 });
+    });
     // luống hoa quanh quảng trường
     for (var a = 0; a < 10; a++) { var ang = a / 10 * 6.283, r = 6.2; flower(Math.cos(ang) * r, Math.sin(ang) * r, a); }
 
@@ -374,8 +380,11 @@
     [-13.5, 13.5].forEach(function (ex) { for (var z = -13; z <= 13; z += 2) hedge(ex, z); });
     [-13.5, 13.5].forEach(function (ez) { for (var x = -13; x <= 13; x += 2) hedge(x, ez); });
 
-    // đèn đường
-    [[-2.3, -4], [2.3, -4], [-2.3, 5], [2.3, 5]].forEach(function (p) { campusLamp(p[0], p[1]); });
+    // đèn đường — model GLB, fallback primitive
+    [[-2.3, -4], [2.3, -4], [-2.3, 5], [2.3, 5]].forEach(function (p) {
+      if (placeEnv("lamp", p[0], p[1], 0)) colliders.push({ x: p[0], z: p[1], r: 0.25 });
+      else campusLamp(p[0], p[1]);
+    });
     // vài đám mây
     [[-9, 12, -14], [8, 13, -10], [0, 15, -16]].forEach(function (c) {
       var cloud = new THREE.Mesh(new THREE.SphereGeometry(c[1] ? 1.6 : 1.6, 10, 8), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, emissive: 0xeef4ff, emissiveIntensity: 0.2 }));
@@ -398,6 +407,14 @@
     var sign = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.7, 0.14), matSmooth(0xffffff, 0.6)); sign.position.set(x, 4.1, z + 2.05); scene.add(sign);
     var sp = makeEmoji(emo, 110); sp.position.set(x, 4.1, z + 2.2); sp.scale.set(0.9, 0.9, 1); scene.add(sp);
   }
+  function campusFountain() {   // vòi phun primitive (fallback khi thiếu model fountain.glb)
+    var fBase = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 0.4, 24), matSmooth(0xd9d2c0, 0.9));
+    fBase.position.y = 0.2; fBase.receiveShadow = true; fBase.castShadow = true; scene.add(fBase);
+    var fWater = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.12, 24), new THREE.MeshStandardMaterial({ color: 0x8fd3f4, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.85 }));
+    fWater.position.y = 0.42; scene.add(fWater);
+    var fStem = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.9, 12), matSmooth(0xcfc7b4, 0.9)); fStem.position.y = 0.85; fStem.castShadow = true; scene.add(fStem);
+    var fTop = new THREE.Mesh(new THREE.SphereGeometry(0.28, 14, 12), new THREE.MeshStandardMaterial({ color: 0x8fd3f4, roughness: 0.2, transparent: true, opacity: 0.85 })); fTop.position.y = 1.4; scene.add(fTop);
+  }
   function arch(x, z) {
     [[-1.3], [1.3]].forEach(function (p) { var post = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 2.6, 10), matSmooth(0xead9b0, 0.8)); post.position.set(x + p[0], 1.3, z); post.castShadow = true; scene.add(post); });
     var top = new THREE.Mesh(new THREE.BoxGeometry(3, 0.4, 0.4), matSmooth(0xead9b0, 0.8)); top.position.set(x, 2.6, z); scene.add(top);
@@ -409,11 +426,16 @@
     colliders.push({ x: x, z: z, r: 0.6 });
   }
   function campusBench(x, z, rot) {
-    var seat = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.14, 0.5), matSmooth(0xb9834e, 0.8)); seat.position.set(x, 0.5, z); seat.rotation.y = rot; seat.castShadow = true; scene.add(seat);
-    var back = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 0.12), matSmooth(0xa8733f, 0.8)); back.position.set(x - Math.sin(rot) * 0.2, 0.8, z - Math.cos(rot) * 0.2); back.rotation.y = rot; scene.add(back);
+    var seatY = 0.42;                       // mặc định cho bản fallback
+    var placed = placeEnv("bench", x, z, rot);    // model GLB (mặt ngồi quay +Z)
+    if (placed) { if (placed.seatY) seatY = placed.seatY; }
+    else {
+      var seat = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.14, 0.5), matSmooth(0xb9834e, 0.8)); seat.position.set(x, 0.5, z); seat.rotation.y = rot; seat.castShadow = true; scene.add(seat);
+      var back = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 0.12), matSmooth(0xa8733f, 0.8)); back.position.set(x - Math.sin(rot) * 0.2, 0.8, z - Math.cos(rot) * 0.2); back.rotation.y = rot; scene.add(back);
+    }
     colliders.push({ x: x, z: z, r: 0.7 });
     // ghế ngồi được: nhấn E để ngồi (hướng ra ngoài ghế = rot)
-    var rec = { data: { id: "bench_" + benchN++, name: "Ghế đá", x: x, z: z }, group: null, bench: { x: x, z: z, yaw: rot, y: 0.42 } };
+    var rec = { data: { id: "bench_" + benchN++, name: "Ghế đá", x: x, z: z }, group: null, bench: { x: x, z: z, yaw: rot, y: seatY } };
     interactables.push(rec);
   }
   var benchN = 0;
@@ -794,6 +816,45 @@
         });
       }));
     }).catch(function () { /* thiếu loader → fallback makePerson() dựng-bằng-code */ });
+  }
+
+  /* ======= Model bối cảnh tĩnh (nhà/cây/ghế/đèn/vòi phun/bụi) ======= */
+  function loadEnv(types) {
+    var need = types.filter(function (t) { return !envTpl[t]; });
+    if (!need.length) return Promise.resolve();
+    return import("./GLTFLoader.module.js").then(function (m) {
+      var loader = new m.GLTFLoader();
+      return Promise.all(need.map(function (t) {
+        return new Promise(function (res) {
+          try {
+            loader.load("./models/env/" + t + ".glb",
+              function (g) { envTpl[t] = g; res(); }, undefined, function () { res(); });
+          } catch (e) { res(); }
+        });
+      }));
+    }).catch(function () { /* thiếu loader → fallback primitive dựng-bằng-code */ });
+  }
+
+  // Đặt 1 model bối cảnh tại (x,z), xoay rotY; tự scale về targetHeight (gốc model ở đáy-giữa).
+  // Trả về { root, scale, seatY } hoặc null nếu chưa nạp được model (để caller fallback primitive).
+  function placeEnv(type, x, z, rotY) {
+    var tpl = envTpl[type]; if (!tpl) return null;
+    var root = tpl.scene.clone(true);
+    root.traverse(function (o) {
+      if (o.isMesh) {
+        o.castShadow = true; o.receiveShadow = true;
+        o.geometry = o.geometry.clone();              // độc lập để dispose an toàn giữa các khu
+        o.material = o.material.clone();
+        if (o.material.map) { o.material.map = o.material.map.clone(); o.material.map.needsUpdate = true; }
+      }
+    });
+    var ex = tpl.scene.userData || {};
+    var s = (ex.targetHeight && ex.size && ex.size[1]) ? ex.targetHeight / ex.size[1] : 1;
+    root.scale.setScalar(s);
+    root.position.set(x, 0, z);
+    if (rotY) root.rotation.y = rotY;
+    scene.add(root);
+    return { root: root, scale: s, seatY: (ex.seatHeight ? ex.seatHeight * s : null) };
   }
 
   // Clone nhân vật có xương (SkeletonUtils thu gọn) + clone geometry/material/texture để dispose an toàn giữa các khu.
