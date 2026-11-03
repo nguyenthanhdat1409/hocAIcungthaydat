@@ -126,13 +126,14 @@
   var npcs = [], colliders = [], interactables = [], markers = [];
   var robotGLB = null, aiMixer = null, aiActions = null, aiCurrent = null; // Máy AI dạng GLB (CC0 RobotExpressive)
   var charTpl = {};   // template model nhân vật (detective/teacher/student) — nạp 1 lần/phiên, clone cho mỗi thực thể
+  var _AX_Z = null;   // trục Z để tính quaternion vẫy tay (khởi tạo khi THREE sẵn sàng)
   var keys = {}, joy = { x: 0, z: 0, active: false }, nearest = null;
   var currentZoneId = null, bounds = 7.2, camBound = 7.6;         // KHU hiện tại + giới hạn di chuyển/camera
   var progress = { xp: 0, coins: 0, zonesDone: {} };               // tiến độ tự lưu (local)
   var state = "", cluesGot = {}, boardDone = {}, wrong = 0, solved = false;
   var dialogOpen = false, overlayOpen = false;
   var listeners = [], visHandler = null, ro = null;
-  var vel = { x: 0, z: 0 }, walkPhase = 0, idleT = 0, facing = 0, camPos = null;
+  var vel = { x: 0, z: 0 }, walkPhase = 0, idleT = 0, facing = 0, camPos = null, heroJump = 0;
   // ---- Camera System V2 ----
   var camMode = "third", yaw = Math.PI, pitch = 0.0, thirdDist = 7.2, isoZoom = 1, heroHidden = false;
   var dragging = false, dragPId = null, dragLX = 0, dragLY = 0, pointerLocked = false, camMenuOpen = false;
@@ -149,7 +150,7 @@
     npcs = []; colliders = []; interactables = []; markers = [];
     keys = {}; joy = { x: 0, z: 0, active: false }; nearest = null;
     cluesGot = {}; boardDone = {}; wrong = 0; solved = false;
-    dialogOpen = false; overlayOpen = false; vel = { x: 0, z: 0 }; walkPhase = 0; idleT = 0; facing = 0;
+    dialogOpen = false; overlayOpen = false; vel = { x: 0, z: 0 }; walkPhase = 0; idleT = 0; facing = 0; heroJump = 0;
     robotGLB = null; aiMixer = null; aiActions = null; aiCurrent = null;
     yaw = Math.PI; pitch = 0; thirdDist = 7.2; isoZoom = 1; heroHidden = false;
     dragging = false; dragPId = null; pointerLocked = false; camMenuOpen = false;
@@ -834,8 +835,13 @@
     var mixer = new THREE.AnimationMixer(root);
     var idle = clipAct(mixer, tpl.animations, "Idle");
     var walk = clipAct(mixer, tpl.animations, "Walk");
-    if (idle) idle.play();
-    g.userData.rig = { glbChar: true, mixer: mixer, idle: idle, walk: walk, cur: idle };
+    if (idle) { idle.play(); try { idle.time = Math.random() * (idle.getClip().duration || 2.4); } catch (e) {} }  // lệch pha → không đồng loạt
+    var bArmR = root.getObjectByName("RightUpperArm");    // xương để vẫy tay (offset từ tư thế bind)
+    g.userData.rig = {
+      glbChar: true, mixer: mixer, idle: idle, walk: walk, cur: idle,
+      bArmR: bArmR, armRest: bArmR ? bArmR.quaternion.clone() : null,
+      gphase: Math.random() * 6.283, wave: 0, hop: 0, hopT: 3 + Math.random() * 7
+    };
     return g;
   }
 
@@ -875,6 +881,40 @@
     action.reset().fadeIn(0.25).play();
     if (rig.cur) rig.cur.fadeOut(0.25);
     rig.cur = action;
+  }
+
+  // Làm NPC "sống": quay nhìn người chơi khi gần, vẫy tay khi là NPC gần nhất, nhảy nhẹ khi đi tuần.
+  function npcLife(n, rig, dt, moving) {
+    if (REDUCED) return;
+    if (!_AX_Z) _AX_Z = new THREE.Vector3(0, 0, 1);
+    var near = (nearest === n) && !dialogOpen && !overlayOpen;
+    // quay mặt nhìn người chơi khi đứng yên & ở gần
+    if (!moving) {
+      var ddx = hero.position.x - n.group.position.x, ddz = hero.position.z - n.group.position.z;
+      if (Math.hypot(ddx, ddz) < 4.2) n.group.rotation.y = angLerp(n.group.rotation.y, Math.atan2(ddx, ddz), near ? 0.12 : 0.05);
+    }
+    // vẫy tay phải khi là NPC gần nhất (offset xoay từ tư thế bind → không phá Idle/Walk)
+    if (rig.bArmR && rig.armRest) {
+      rig.wave = lerp(rig.wave, near ? 1 : 0, 0.12);
+      if (rig.wave > 0.02) {
+        var amt = rig.wave * (1.05 + Math.sin(idleT * 9 + rig.gphase) * 0.4);
+        rig.bArmR.quaternion.copy(rig.armRest).multiply(new THREE.Quaternion().setFromAxisAngle(_AX_Z, amt));
+      }
+    }
+    // nhảy tung tăng khi đang đi tuần; bước thường thì nhún nhẹ
+    if (moving) {
+      if (rig.hop > 0) {
+        rig.hop += dt;
+        if (rig.hop >= 0.44) { rig.hop = 0; n.group.position.y = 0; }
+        else n.group.position.y = Math.sin(rig.hop / 0.44 * Math.PI) * 0.32;
+      } else {
+        rig.hopT -= dt;
+        if (rig.hopT <= 0) { rig.hop = 0.0001; rig.hopT = 5 + Math.random() * 8; }
+        n.group.position.y = Math.abs(Math.sin(idleT * 8)) * 0.04;
+      }
+    } else if (n.group.position.y > 0.002) {
+      n.group.position.y = lerp(n.group.position.y, 0, 0.2);
+    }
   }
 
   function playAI(name) {
@@ -1032,7 +1072,8 @@
     else if (k === "arrowdown" || k === "s") { keys.D = 1; e.preventDefault(); }
     else if (k === "arrowleft" || k === "a") { keys.L = 1; e.preventDefault(); }
     else if (k === "arrowright" || k === "d") { keys.R = 1; e.preventDefault(); }
-    else if (k === "e" || k === "enter" || k === " ") { if (nearest) { e.preventDefault(); doInteract(); } }
+    else if (k === " ") { e.preventDefault(); if (heroJump <= 0) heroJump = 0.0001; }   // Space = nhảy
+    else if (k === "e" || k === "enter") { if (nearest) { e.preventDefault(); doInteract(); } }
     else if (k === "v") { setCamMode(camMode === "first" ? "third" : "first"); }
     else if (k === "escape") { if (camMenuOpen) closeCamMenu(); }
   }
@@ -1147,12 +1188,21 @@
     return [clamp(px, -bounds, bounds), clamp(pz, -bounds, bounds)];
   }
 
+  // Nhảy của người chơi: cung sin, cao ~0.7, kéo dài ~0.52s (không cần clip jump).
+  function updateHeroJump(dt) {
+    if (heroJump <= 0) return 0;
+    heroJump += dt;
+    if (heroJump >= 0.52) { heroJump = 0; return 0; }
+    return Math.sin(heroJump / 0.52 * Math.PI) * 0.7;
+  }
+
   function animateHero(dt, speed) {
     var rig = hero.userData.rig; if (!rig) return;
+    var jy = updateHeroJump(dt);
     if (rig.glbChar) {
       if (rig.mixer) rig.mixer.update(dt);
       playClip(rig, speed > 0.06 ? rig.walk : rig.idle);
-      hero.position.y = 0;                         // Walk/Idle đã tự nhún trong animation (không root motion)
+      hero.position.y = jy;                         // Walk/Idle tự nhún; cộng cung nhảy khi bấm Space
       return;
     }
     if (REDUCED) { if (rig.arms) rig.arms.forEach(function (a) { a.rotation.x = 0; }); if (rig.legs) rig.legs.forEach(function (l) { l.rotation.x = 0; }); hero.position.y = 0; return; }
@@ -1182,8 +1232,8 @@
       if (n.isDoor) { if (n.ring) n.ring.material.opacity = 0.4 + (REDUCED ? 0.15 : Math.sin(idleT * 3) * 0.2); continue; }
       if (!n.group) continue;
       var rig = n.group.userData.rig, moving = false;
-      // NPC đi tuần giữa các waypoint (lịch trình đơn giản)
-      if (n.wander && !REDUCED) {
+      // NPC đi tuần giữa các waypoint (lịch trình đơn giản) — dừng khi đang hội thoại
+      if (n.wander && !REDUCED && !dialogOpen && !overlayOpen) {
         var wp = n.wander.path[n.wander.i];
         var dx = wp[0] - n.group.position.x, dz = wp[1] - n.group.position.z, d = Math.hypot(dx, dz);
         if (d < 0.25) n.wander.i = (n.wander.i + 1) % n.wander.path.length;
@@ -1199,6 +1249,7 @@
       if (rig && rig.glbChar) {                    // nhân vật GLB: chạy Idle/Walk (kể cả khi REDUCED → giữ Idle)
         if (rig.mixer) rig.mixer.update(dt);
         playClip(rig, moving ? rig.walk : rig.idle);
+        npcLife(n, rig, dt, moving);               // nhìn người chơi, vẫy tay, nhảy tung tăng
       }
       if (REDUCED) continue;
       if (rig && rig.person && rig.head && !moving) rig.head.position.y = 1.62 + Math.sin(idleT * 1.5 + i) * 0.015;

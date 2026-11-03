@@ -17,7 +17,7 @@
     questTitle: "🏙️ Khuôn viên Học viện AI",
     spawn: { x: 0, z: 7, yaw: PI },
     npcs: [
-      { id: "guide", kind: "person", name: "Bạn Na (hướng dẫn)", emo: "🧭", x: -1.6, z: 3.2, color: 0x7dd3fc, look: { hair: 0x3a2a1a, skin: 0xffe0bd, style: "long", pants: 0x2563eb } },
+      { id: "guide", kind: "person", name: "Bạn Na (hướng dẫn)", emo: "🧭", x: -1.6, z: 3.2, color: 0x7dd3fc, look: { hair: 0x3a2a1a, skin: 0xffe0bd, style: "long", pants: 0x2563eb }, wander: [[-1.6, 3.2], [2.2, 3.4], [2.6, 5], [-1, 5.2]] },
       { id: "amb1", kind: "person", name: "Bạn dạo công viên", emo: "🙂", x: 5.5, z: -1.5, color: 0xfca5a5, look: { hair: 0x4a2f1a, skin: 0xf1c79b, style: "short", pants: 0xb45309 }, wander: [[5.5, -1.5], [7.5, -4.5], [4, -4], [6, -1]] },
       { id: "amb2", kind: "person", name: "Học sinh", emo: "🎒", x: -6.5, z: -2.5, color: 0xa7f3d0, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0f766e }, wander: [[-6.5, -2.5], [-6.5, 2.5], [-3.5, 1], [-5, -1]] },
       { id: "door_academy", kind: "door", name: "Học viện AI 🏫", emo: "🏫", to: "academy1", x: -4.2, z: -8.6 },
