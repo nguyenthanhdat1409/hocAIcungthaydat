@@ -607,7 +607,9 @@
     var ctx = cv.getContext("2d"); ctx.font = px + "px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText(emoji, 64, 72);
     var t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 2;
-    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false }));
+    // depthTest:false → sprite trang trí (gắn trên tường/bảng) không bị tường che mất nửa khi billboard xoay theo camera
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, depthTest: false }));
+    sp.renderOrder = 6;
     sp.scale.set(1.3, 1.3, 1); return sp;
   }
 
