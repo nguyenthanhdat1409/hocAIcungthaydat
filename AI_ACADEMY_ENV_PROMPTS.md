@@ -204,3 +204,91 @@ Gói **"Khởi động đẹp ngay"** (đủ lột xác khuôn viên hiện tạ
 - Nếu tool cho chọn polycount/texture: chọn **low / 1024px** để file nhẹ (mobile + đã tối ưu tốc độ).
 - Cây/bụi/đèn/ghế: gen **1 bản, tôi nhân bản + xoay + đổi màu nhẹ** cho khỏi trùng.
 - Giữ **gốc ở đáy, mặt chính +Z** để tôi khỏi phải xoay/juggle khi ghép.
+
+---
+
+## 5. BỘ NỘI THẤT — LỚP HỌC / THƯ VIỆN / LAB (interior)
+
+> Thay bàn/ghế/kệ/bảng primitive trong phòng điều tra (academy1) và dùng lại cho interior các zone sau.
+> Vẫn **lưu `models/env/`**, cùng SPEC + đoạn STYLE ở mục 0 (gốc đáy-giữa, mặt chính +Z, tĩnh).
+> Cao mục tiêu tính theo nhân vật Chibi cao 1.8, mặt bàn ~0.75, ghế ngồi ~0.45.
+
+**`models/env/desk_teacher.glb`** — Bàn giáo viên ⭐⭐⭐ · cao ~0.78, rộng ~1.7
+```
+A cozy stylized low-poly teacher's desk, a warm honey-wood rectangular desktop with soft rounded
+edges and a front modesty panel, four chunky rounded legs, a small drawer on one side, a tiny
+rounded pen cup and a closed book resting on top. Friendly cartoon classroom furniture. [+ STYLE]
+```
+
+**`models/env/desk_student.glb`** — Bàn học sinh ⭐⭐⭐ · ~0.7, rộng ~1.1
+```
+A cozy stylized low-poly small student desk, a light cream-wood sloped top with rounded edges, a
+little tray lip at the front, four slim rounded legs, a small round stool-less open front. Simple
+cute school desk. [+ STYLE]
+```
+
+**`models/env/chair.glb`** — Ghế ngồi ⭐⭐⭐ · ~0.9 (mặt ngồi ~0.45, quay +Z)
+```
+A cozy stylized low-poly wooden chair, warm wood with soft rounded back slats and a gently scooped
+seat, four chunky rounded legs. Comfy friendly classroom chair, seat facing +Z. [+ STYLE]
+```
+> seatHeight ~0.45, seatFacing +Z (ghi vào extras như bench để tôi dùng cho "ngồi").
+
+**`models/env/bookshelf.glb`** — Kệ sách ⭐⭐⭐ · ~2.4, rộng ~1.6
+```
+A cozy stylized low-poly tall bookshelf, warm wood frame with three or four shelves neatly filled
+with chunky rounded books in pastel colors (red, blue, yellow, green, lilac — no text), a small
+potted succulent and a round clock shape on the top shelf. Snug library bookcase. [+ STYLE]
+```
+
+**`models/env/blackboard.glb`** — Bảng xanh có chân ⭐⭐⭐ · ~2.0, rộng ~2.6
+```
+A cozy stylized low-poly freestanding green chalkboard on a warm-wood A-frame easel stand, soft
+rounded wooden frame, a little tray at the bottom with a chunky chalk piece and an eraser, a faint
+hand-drawn lightbulb doodle on the board (simple shape, no text). Friendly classroom board. [+ STYLE]
+```
+
+**`models/env/rug.glb`** — Thảm tròn ⭐⭐ · rất thấp ~0.04, rộng ~3
+```
+A cozy stylized low-poly round area rug, soft lilac and cream concentric rings with a gentle scalloped
+edge, flat and thin, lying on the floor. Warm classroom rug. [+ STYLE]
+```
+
+**`models/env/plant_indoor.glb`** — Chậu cây trong nhà ⭐⭐ · ~1.2
+```
+A cozy stylized low-poly indoor potted plant, a rounded terracotta-cream pot with soft soil, a plump
+leafy green bush of chunky rounded leaves, one or two tiny pastel blossoms. Cute corner greenery. [+ STYLE]
+```
+
+**`models/env/screen.glb`** — Màn hình/máy tính để bàn ⭐⭐ · ~0.55 (đặt trên bàn)
+```
+A cozy stylized low-poly cute desktop computer, a rounded monitor with a soft glowing pastel-blue
+screen (no text), a chunky rounded keyboard and a little mouse, warm cream casing. Friendly retro
+classroom computer. [+ STYLE]
+```
+
+**`models/env/poster.glb`** — Poster treo tường ⭐ · phẳng, ~1.6 cao
+```
+A cozy stylized low-poly flat wall poster panel, a rounded pastel frame holding a simple friendly
+icon shape (a brain, a lightbulb, or a gear — pick one, no text), slight thickness so it hangs flat
+on a wall, facing +Z. Cheerful classroom poster. [+ STYLE]
+```
+> Gen 2–3 biến thể icon (brain / lightbulb / gear) để treo quanh phòng.
+
+**`models/env/wallclock.glb`** — Đồng hồ treo tường ⭐ · phẳng tròn ~0.5
+```
+A cozy stylized low-poly round wall clock, a soft cream rounded rim, a pale face with simple chunky
+hands and dot markers (no numbers), a tiny top knob, facing +Z to mount flat on a wall. [+ STYLE]
+```
+
+**`models/env/window_interior.glb`** — Cửa sổ trong nhà ⭐ · ~1.3 cao, rộng ~1.6
+```
+A cozy stylized low-poly interior window, a soft cream rounded frame with a cross mullion, a pale
+sky-blue glass pane with a couple of soft cloud shapes, a little flower box on the sill, facing +Z
+to mount flat on a wall. [+ STYLE]
+```
+
+### Gói "Lớp học đẹp ngay" (gen trước):
+`desk_teacher.glb`, `desk_student.glb`, `chair.glb`, `bookshelf.glb`, `blackboard.glb`, `plant_indoor.glb`, `rug.glb`.
+
+→ Thả vào `models/env/` là tôi thay nội thất phòng điều tra (bàn/kệ/bảng/chậu/thảm), đặt ghế quanh bàn (ngồi được), và xử lý cache/scale như khuôn viên.
