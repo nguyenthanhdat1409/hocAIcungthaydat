@@ -610,6 +610,45 @@
     sp.scale.set(1.3, 1.3, 1); return sp;
   }
 
+  // Bảng TÊN nổi trên đầu NPC (pill tím, chữ trắng) — luôn hiện trên cùng để dễ đọc.
+  function makeLabel(text) {
+    text = String(text || "");
+    var fs = 44, padX = 30, padY = 16, dpr = 2;
+    var mc = document.createElement("canvas").getContext("2d");
+    mc.font = "700 " + fs + "px 'Baloo 2', system-ui, sans-serif";
+    var tw = Math.ceil(mc.measureText(text).width);
+    var W = tw + padX * 2, H = fs + padY * 2;
+    var cv = document.createElement("canvas"); cv.width = W * dpr; cv.height = H * dpr;
+    var ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+    var r = H / 2;
+    ctx.fillStyle = "rgba(29,20,58,0.82)";
+    ctx.beginPath();
+    ctx.moveTo(r, 0); ctx.arcTo(W, 0, W, H, r); ctx.arcTo(W, H, 0, H, r);
+    ctx.arcTo(0, H, 0, 0, r); ctx.arcTo(0, 0, W, 0, r); ctx.closePath(); ctx.fill();
+    ctx.font = "700 " + fs + "px 'Baloo 2', system-ui, sans-serif";
+    ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(text, W / 2, H / 2 + 2);
+    var t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 2;
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, depthTest: false }));
+    var hWorld = 0.42;
+    sp.scale.set(hWorld * W / H, hWorld, 1); sp.renderOrder = 20;
+    return sp;
+  }
+
+  // Dấu "!" đỏ (NPC đang có nhiệm vụ cho người chơi).
+  function makeBang() {
+    var cv = document.createElement("canvas"); cv.width = cv.height = 128;
+    var ctx = cv.getContext("2d");
+    ctx.fillStyle = "#EF4444"; ctx.beginPath(); ctx.arc(64, 64, 50, 0, 7); ctx.fill();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 9; ctx.stroke();
+    ctx.fillStyle = "#fff"; ctx.font = "900 84px system-ui, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("!", 64, 70);
+    var t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 2;
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, depthTest: false }));
+    sp.scale.set(0.5, 0.5, 1); sp.renderOrder = 21;
+    return sp;
+  }
+
   /* ---------- Nhân vật ---------- */
   function makePerson(color, opts) {
     opts = opts || {};
@@ -867,14 +906,13 @@
         new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.0, depthWrite: false }));
       ring.rotation.x = -Math.PI / 2; ring.position.set(e.x, 0.05, e.z); scene.add(ring);
 
-      var markEmo = e.emo || "❗", markSc = 0.8;
-      var _c = clueById(e.id); if (_c) { markEmo = _c.ic; markSc = 0.95; }
-      var mk = makeEmoji(markEmo, 100); mk.scale.set(markSc, markSc, 1); mk.position.set(e.x, 2.5, e.z); scene.add(mk);
-      markers.push(mk);
+      // Bảng TÊN (luôn hiện) + dấu "!" đỏ (chỉ hiện khi NPC đang có nhiệm vụ cho người chơi)
+      var lbl = makeLabel(e.name); lbl.position.set(e.x, 2.55, e.z); scene.add(lbl); markers.push(lbl);
+      var bang = makeBang(); bang.position.set(e.x, 3.15, e.z); bang.visible = false; scene.add(bang); markers.push(bang);
 
       if (e.prop) buildProp(e.prop, e.x, e.z);
       var col = { x: e.x, z: e.z, r: 0.7 }; colliders.push(col);
-      npcs.push({ data: e, group: g, ring: ring, mk: mk, collider: col, wander: (e.wander ? { path: e.wander, i: 0 } : null) });
+      npcs.push({ data: e, group: g, ring: ring, label: lbl, bang: bang, collider: col, wander: (e.wander ? { path: e.wander, i: 0 } : null) });
       interactables.push(npcs[npcs.length - 1]);
     });
     updateMarkers();
@@ -885,9 +923,8 @@
     var ring = new THREE.Mesh(new THREE.RingGeometry(0.85, 1.1, 28),
       new THREE.MeshBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0.55, depthWrite: false }));
     ring.rotation.x = -Math.PI / 2; ring.position.set(e.x, 0.06, e.z); scene.add(ring);
-    var mk = makeEmoji(e.emo || "🚪", 100); mk.position.set(e.x, 1.9, e.z); scene.add(mk);
-    markers.push(mk);
-    var rec = { data: e, group: null, ring: ring, mk: mk, wander: null, isDoor: true };
+    var lbl = makeLabel("🚪 " + (e.name || "Lối đi")); lbl.position.set(e.x, 2.0, e.z); scene.add(lbl); markers.push(lbl);
+    var rec = { data: e, group: null, ring: ring, label: lbl, bang: null, wander: null, isDoor: true };
     npcs.push(rec); interactables.push(rec);
   }
 
@@ -1138,8 +1175,10 @@
     idleT += dt;
     for (var i = 0; i < npcs.length; i++) {
       var n = npcs[i];
-      // marker bob (cả cổng và NPC)
-      if (n.mk && n.mk.visible) { var by = n.isDoor ? 1.9 : 2.5; n.mk.position.y = by + (REDUCED ? 0 : Math.sin(idleT * 2 + i) * 0.12); }
+      // tên + "!" nhún nhẹ (cả cổng và NPC)
+      var lblY = n.isDoor ? 2.0 : 2.55, ob = (REDUCED ? 0 : Math.sin(idleT * 2 + i) * 0.08);
+      if (n.label) n.label.position.y = lblY + ob;
+      if (n.bang) n.bang.position.y = 3.15 + ob;
       if (n.isDoor) { if (n.ring) n.ring.material.opacity = 0.4 + (REDUCED ? 0.15 : Math.sin(idleT * 3) * 0.2); continue; }
       if (!n.group) continue;
       var rig = n.group.userData.rig, moving = false;
@@ -1152,7 +1191,8 @@
           var sp = 1.2 * dt; n.group.position.x += dx / d * sp; n.group.position.z += dz / d * sp;
           n.group.rotation.y = Math.atan2(dx, dz); moving = true;
           if (n.collider) { n.collider.x = n.group.position.x; n.collider.z = n.group.position.z; }
-          n.mk.position.x = n.group.position.x; n.mk.position.z = n.group.position.z;
+          if (n.label) { n.label.position.x = n.group.position.x; n.label.position.z = n.group.position.z; }
+          if (n.bang) { n.bang.position.x = n.group.position.x; n.bang.position.z = n.group.position.z; }
           n.ring.position.x = n.group.position.x; n.ring.position.z = n.group.position.z;
         }
       }
@@ -1317,7 +1357,7 @@
   }
 
   function hideMarker(id) {
-    for (var i = 0; i < npcs.length; i++) if (npcs[i].data.id === id && npcs[i].mk) npcs[i].mk.visible = false;
+    for (var i = 0; i < npcs.length; i++) if (npcs[i].data.id === id && npcs[i].bang) npcs[i].bang.visible = false;
   }
 
   // Hiện ❗/biểu tượng theo NHIỆM VỤ đang hoạt động (do engine quyết định)
@@ -1331,7 +1371,8 @@
         else if (q.type === "collect" && clueById(id) && !cluesGot[id]) show = true;
         else if (q.type === "decision" && q.npc === id) show = true;
       }
-      if (n.mk) n.mk.visible = show;
+      if (n.label) n.label.visible = true;   // tên NPC luôn hiện cho dễ nhận
+      if (n.bang) n.bang.visible = show;       // "!" đỏ chỉ hiện khi NPC đang có nhiệm vụ
     }
   }
 
