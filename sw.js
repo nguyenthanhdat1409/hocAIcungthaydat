@@ -5,10 +5,14 @@
    - Google Fonts: cache-first (SWR).
    Đổi CACHE_VER mỗi khi cần buộc làm mới toàn bộ cache.
    ========================================================= */
-const CACHE_VER = "v15";
+const CACHE_VER = "v16";
 const CACHE = "hocaivui-" + CACHE_VER;
 
-/* App shell — tiền nạp để chạy được offline ngay lần đầu. */
+/* App shell — tiền nạp để chạy được offline ngay lần đầu.
+   LƯU Ý HIỆU NĂNG: KHÔNG tiền nạp asset nặng chỉ dùng cho game 3D
+   (three.module.js ~1.3MB, GLTFLoader, BufferGeometryUtils, RobotExpressive.glb ~456KB).
+   Chúng tự được cache (stale-while-revalidate) khi người chơi mở game 3D,
+   nên lần đầu truy cập không tốn ~1.9MB tải nền vô ích (đặc biệt trên mobile). */
 const PRECACHE = [
   "./",
   "./index.html",
@@ -21,10 +25,6 @@ const PRECACHE = [
   "./minigames.js",
   "./academy3d.data.js",
   "./academy3d.js",
-  "./three.module.js",
-  "./GLTFLoader.module.js",
-  "./BufferGeometryUtils.module.js",
-  "./models/RobotExpressive.glb",
   // Dữ liệu bài học → học offline không cần mạng
   "./curriculum.js",
   "./lessons_content.js",
