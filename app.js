@@ -176,6 +176,7 @@ function go(id){
   window.scrollTo(0, 0);
   if(id === "baihoc") showCurriculum();
   if(id === "baitap") showExercises();
+  if(id === "dauvao") loadPlacement().catch(() => {});   // nạp sẵn dữ liệu test đầu vào
 }
 
 /* ---------- Tải dữ liệu bài học theo yêu cầu (chỉ khi mở trang Bài học) ---------- */
@@ -196,6 +197,25 @@ function loadCurriculumData(){
   _curDataPromise = Promise.all(files.map(f => loadScript(f + "?v=" + ASSET_VER)))
     .catch(err => { _curDataPromise = null; throw err; });   // cho phép thử lại nếu lỗi
   return _curDataPromise;
+}
+/* ---------- Nạp trễ script game/bài tập (chỉ khi mở trang Bài tập) ----------
+   Gỡ khỏi bundle đầu → trang chủ/các trang khác nhẹ hơn ~190KB download+parse.
+   Lưu ý: khi bump phiên bản các file này thì sửa số ?v= ở đây (không còn ở index.html). */
+let _gamesPromise = null;
+function loadGames(){
+  if(_gamesPromise) return _gamesPromise;
+  const files = ["exercises.js?v=32","roleplay.js?v=43","minigames.js?v=12","academy3d.data.js?v=2","academy3d.js?v=8"];
+  _gamesPromise = Promise.all(files.map(loadScript))
+    .catch(err => { _gamesPromise = null; throw err; });
+  return _gamesPromise;
+}
+/* ---------- Nạp trễ bài kiểm tra đầu vào (chỉ khi mở trang Đầu vào) ---------- */
+let _placementPromise = null;
+function loadPlacement(){
+  if(_placementPromise) return _placementPromise;
+  _placementPromise = loadScript("placement.js?v=30")
+    .catch(err => { _placementPromise = null; throw err; });
+  return _placementPromise;
 }
 function showCurriculum(){
   const host = document.getElementById("curriculum");
@@ -941,7 +961,7 @@ function setAge(a){ plAge = a; renderAgeButtons(); }
 
 let comboMode = false, comboData = {};
 function _placementRun(total){
-  if(!window.PLACEMENT){ return; }
+  if(!window.PLACEMENT){ loadPlacement().then(() => _placementRun(total)).catch(() => {}); return; }
   runnerReturn = "dauvao";
   plTotal = total;
   plIdx = 0; plStar = 1; plCorrect = 0; plLevelSum = 0; plLocked = false;
@@ -1410,9 +1430,9 @@ function exCount(code, m){
 function showExercises(){
   const host = document.getElementById("baitap"); if(!host) return;
   if(host.dataset.rendered && window.CURRICULUM) return;
-  if(window.CURRICULUM){ renderExHub(); return; }
+  if(window.CURRICULUM && window.MINIGAMES){ renderExHub(); return; }
   host.innerHTML = `<div class="curLoading"><span class="curSpin">⏳</span> Đang tải bài tập…</div>`;
-  loadCurriculumData().then(renderExHub).catch(() => { host.innerHTML = `<div class="curLoading">😕 Không tải được bài tập. Hãy tải lại trang.</div>`; });
+  Promise.all([loadCurriculumData(), loadGames()]).then(renderExHub).catch(() => { host.innerHTML = `<div class="curLoading">😕 Không tải được bài tập. Hãy tải lại trang.</div>`; });
 }
 function renderExHub(){
   const host = document.getElementById("baitap"); const P = window.CURRICULUM.program;

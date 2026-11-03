@@ -202,19 +202,15 @@
   </div>
 </div>
 
-<!-- Dữ liệu bài học (curriculum, lessons_content, lesson_quiz) nạp ĐỘNG khi mở trang Bài học — xem loadCurriculumData() trong app.js -->
+<!-- Dữ liệu bài học (curriculum, lessons_content, lesson_quiz) nạp ĐỘNG khi mở trang Bài học — xem loadCurriculumData() trong app.js.
+     Script game/bài tập (placement, exercises, roleplay, minigames, academy3d*) nạp ĐỘNG khi mở
+     trang Đầu vào / Bài tập — xem loadGames() & loadPlacement() trong app.js (giảm ~190KB ở bundle đầu). -->
 <script defer src="art.js?v=18"></script>
-<script defer src="placement.js?v=30"></script>
-<script defer src="exercises.js?v=32"></script>
-<script defer src="roleplay.js?v=43"></script>
-<script defer src="minigames.js?v=12"></script>
-<script defer src="academy3d.data.js?v=2"></script>
-<script defer src="academy3d.js?v=8"></script>
 <!-- Nút cài ứng dụng (ẩn; hiện khi trình duyệt cho phép cài) -->
 <button id="installBtn" class="installBtn hidden" onclick="pwaInstall()">📲 Cài ứng dụng</button>
 
 <script defer src="supabase-config.js?v=63"></script>
 <script defer src="cloud.js?v=68"></script>
-<script defer src="app.js?v=87"></script>
+<script defer src="app.js?v=88"></script>
 </body>
 </html>
