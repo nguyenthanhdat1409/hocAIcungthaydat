@@ -278,6 +278,7 @@
     var tasks = [loadChars()];
     if (needRobot) tasks.push(loadRobotGLB());
     if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "fountain", "tree", "bench", "lamp", "bush"]));
+    else if (zone.env === "classroom") tasks.push(loadEnv(["desk_teacher", "desk_student", "chair", "bookshelf", "blackboard", "plant_indoor", "poster_brain", "poster_gear", "wallclock", "screen"]));
     Promise.all(tasks).then(function () { buildZone(zone); });
   }
 
@@ -569,6 +570,35 @@
   }
 
   function buildFurniture() {
+    // Dùng model GLB nếu đã nạp; thiếu thì fallback nội thất primitive.
+    if (!envTpl.desk_teacher || !envTpl.bookshelf) { buildFurniturePrim(); return; }
+    var PI = Math.PI;
+    // Kệ sách sát tường phải (mặt quay vào phòng = -X)
+    placeEnv("bookshelf", 7.1, 2.2, -PI / 2);
+    colliders.push({ x: 7.4, z: 2.2, r: 1.0 });
+    // Bàn giáo viên sau lưng cô Lan (quay vào phòng = +Z)
+    placeEnv("desk_teacher", -5.8, -6.2, 0);
+    colliders.push({ x: -5.8, z: -6.2, r: 1.1 });
+    // 2 bàn học sinh + ghế (ngồi được), sát tường trước, quay vào phòng = -Z
+    [[-2.4, 6.3], [2.4, 6.3]].forEach(function (p, i) {
+      placeEnv("desk_student", p[0], p[1], PI);
+      colliders.push({ x: p[0], z: p[1], r: 0.9 });
+      var ch = placeEnv("chair", p[0], p[1] + 0.95, PI);   // ghế quay -Z (ngồi nhìn vào bàn/phòng)
+      var sy = (ch && ch.seatY) ? ch.seatY : 0.45;
+      interactables.push({ data: { id: "chair_" + benchN++, name: "Ghế", x: p[0], z: p[1] + 0.95 }, group: null, bench: { x: p[0], z: p[1] + 0.95, yaw: PI, y: sy } });
+    });
+    // Bảng xanh có chân, sát tường sau bên phải cửa sổ (quay vào phòng = +Z)
+    placeEnv("blackboard", 3.4, -6.9, 0);
+    colliders.push({ x: 3.4, z: -6.9, r: 1.0 });
+    // Chậu cây 2 góc
+    [[6.7, -6.7], [-6.7, 6.7]].forEach(function (p) { placeEnv("plant_indoor", p[0], p[1], 0); colliders.push({ x: p[0], z: p[1], r: 0.5 }); });
+    // Poster treo tường trái (quay vào phòng = +X), đồng hồ tường sau
+    placeEnv("poster_brain", -7.78, -2.3, PI / 2, 1.95);
+    placeEnv("poster_gear", -7.78, 1.6, PI / 2, 1.95);
+    placeEnv("wallclock", 6.4, -7.82, 0, 2.3);
+  }
+
+  function buildFurniturePrim() {
     // kệ sách (tường phải)
     var shelf = box(0.55, 2.6, 3.4, 0xcf9a63, 7.45, 1.3, 2.4);
     [0, 1, 2].forEach(function (i) {
@@ -837,7 +867,7 @@
 
   // Đặt 1 model bối cảnh tại (x,z), xoay rotY; tự scale về targetHeight (gốc model ở đáy-giữa).
   // Trả về { root, scale, seatY } hoặc null nếu chưa nạp được model (để caller fallback primitive).
-  function placeEnv(type, x, z, rotY) {
+  function placeEnv(type, x, z, rotY, y) {
     var tpl = envTpl[type]; if (!tpl) return null;
     var root = tpl.scene.clone(true);
     root.traverse(function (o) {
@@ -851,7 +881,7 @@
     var ex = tpl.scene.userData || {};
     var s = (ex.targetHeight && ex.size && ex.size[1]) ? ex.targetHeight / ex.size[1] : 1;
     root.scale.setScalar(s);
-    root.position.set(x, 0, z);
+    root.position.set(x, y || 0, z);
     if (rotY) root.rotation.y = rotY;
     scene.add(root);
     return { root: root, scale: s, seatY: (ex.seatHeight ? ex.seatHeight * s : null) };
@@ -1041,8 +1071,10 @@
     var ox = x * 0.78, oz = z * 0.78;
     if (kind === "computer") {
       box(0.7, 0.14, 0.5, 0x8a7bb5, ox, 0.6, oz);                 // bàn nhỏ
-      var mon = box(0.62, 0.42, 0.06, 0x2b2b3a, ox, 0.95, oz - 0.1);
-      mon.material = new THREE.MeshStandardMaterial({ color: 0x1b2340, emissive: 0x3b82f6, emissiveIntensity: 0.6 });
+      if (!placeEnv("screen", ox, oz, 0, 0.67)) {                 // máy tính GLB trên bàn, fallback primitive
+        var mon = box(0.62, 0.42, 0.06, 0x2b2b3a, ox, 0.95, oz - 0.1);
+        mon.material = new THREE.MeshStandardMaterial({ color: 0x1b2340, emissive: 0x3b82f6, emissiveIntensity: 0.6 });
+      }
     } else if (kind === "paper") {
       box(0.7, 0.14, 0.5, 0xb98a5a, ox, 0.6, oz);
       var pp = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.04, 0.5), matSmooth(0xffffff, 0.8));
