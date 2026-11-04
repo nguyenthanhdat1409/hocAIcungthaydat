@@ -1,5 +1,8 @@
 # AI ACADEMY 3D — PROMPT GEN BỐI CẢNH (THẾ GIỚI MỞ COZY STYLIZED)
 
+<!-- 🔴 CẦN GEN TIẾP: Mục 6 — 🔬 LAB (lab_bench, hologram_table, robot_arm, server_tower, microscope). Rồi Mục 7 (nhân vật). Checklist đầy đủ ở Mục 8. -->
+> **🔴 CẦN GEN TIẾP → Mục 6 (🔬 Lab):** `lab_bench, hologram_table, robot_arm, server_tower, microscope`. Xong tới **Mục 7 (nhân vật)**. Toàn bộ còn thiếu xem **Mục 8**.
+
 > Mục đích: gen bộ asset môi trường đồng bộ cho thành phố học AI mở. Dán prompt vào **Meshy AI / Tripo AI / Rodin (Hyper3D)**.
 > Props môi trường là **tĩnh** (không rig, không animation) → gen nhanh hơn nhân vật.
 > Lưu tất cả trong `models/env/`, tên **không dấu, không cách**.
