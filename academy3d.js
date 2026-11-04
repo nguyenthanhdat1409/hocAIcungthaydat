@@ -280,6 +280,7 @@
     if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "fountain", "tree", "bench", "lamp", "bush"]));
     else if (zone.env === "classroom") tasks.push(loadEnv(["desk_teacher", "desk_student", "chair", "bookshelf", "blackboard", "plant_indoor", "poster_brain", "poster_gear", "wallclock", "screen"]));
     else if (zone.env === "library") tasks.push(loadEnv(["bookshelf", "library_table", "armchair", "globe", "plant_indoor", "rug", "poster_brain", "wallclock"]));
+    else if (zone.env === "park") tasks.push(loadEnv(["gazebo", "bridge", "picnic_table", "tree", "bench", "lamp", "bush"]));
     Promise.all(tasks).then(function () { buildZone(zone); });
   }
 
@@ -289,7 +290,7 @@
     dialogOpen = false; overlayOpen = false; vel = { x: 0, z: 0 };
     heroSit = null; heroJump = 0;
     LEVEL = zone; AC = buildAC(zone); ENT = zone.npcs || []; Engine.load(zone);
-    var outdoor = (zone.env === "campus");
+    var outdoor = (zone.env === "campus" || zone.env === "park");
     bounds = outdoor ? 14 : 7.2; camBound = outdoor ? 18 : 7.6;
 
     scene = new THREE.Scene();
@@ -317,6 +318,7 @@
 
   function buildEnv(env) {
     if (env === "campus") { buildCampus(); return; }
+    if (env === "park") { buildPark(); return; }
     buildRoom();
     if (env === "library") buildLibraryFurniture(); else buildFurniture();
   }
@@ -396,6 +398,49 @@
       var cloud = new THREE.Mesh(new THREE.SphereGeometry(c[1] ? 1.6 : 1.6, 10, 8), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, emissive: 0xeef4ff, emissiveIntensity: 0.2 }));
       cloud.position.set(c[0], 10, c[2]); cloud.scale.set(2.2, 1, 1.4); scene.add(cloud);
     });
+  }
+
+  function buildPark() {
+    var PI = Math.PI;
+    // nền cỏ
+    var grassTex = makeTex(function (x, p) {
+      x.fillStyle = "#8fca6e"; x.fillRect(0, 0, p, p);
+      for (var i = 0; i < 90; i++) { x.fillStyle = (i % 2 ? "#85c266" : "#98d077"); x.fillRect((idRand() * p) | 0, (idRand() * p) | 0, 3, 6); }
+    }, 128);
+    grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping; grassTex.repeat.set(10, 10);
+    var ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1 }));
+    ground.rotation.x = -PI / 2; ground.receiveShadow = true; scene.add(ground);
+    // lối đi dọc
+    var path = new THREE.Mesh(new THREE.PlaneGeometry(3, 22), new THREE.MeshStandardMaterial({ color: 0xded7c4, roughness: 0.95 }));
+    path.rotation.x = -PI / 2; path.position.set(0, 0.015, 3); path.receiveShadow = true; scene.add(path);
+    // hồ lớn + viền + cầu bắc qua
+    var lake = new THREE.Mesh(new THREE.CircleGeometry(4.6, 44), new THREE.MeshStandardMaterial({ color: 0x4fb0e6, roughness: 0.15, metalness: 0.15, transparent: true, opacity: 0.92 }));
+    lake.rotation.x = -PI / 2; lake.position.set(0, 0.03, -6.5); scene.add(lake);
+    var lakeRim = new THREE.Mesh(new THREE.RingGeometry(4.6, 5.1, 44), matSmooth(0xd8cba6, 1)); lakeRim.rotation.x = -PI / 2; lakeRim.position.set(0, 0.02, -6.5); scene.add(lakeRim);
+    if (placeEnv("bridge", 0, -6.5, 0)) colliders.push({ x: -3.6, z: -6.5, r: 2 }, { x: 3.6, z: -6.5, r: 2 });
+    else colliders.push({ x: 0, z: -6.5, r: 4.9 });
+    // gazebo landmark
+    if (placeEnv("gazebo", -8, 6.5, 0)) colliders.push({ x: -8, z: 6.5, r: 2.5 });
+    // bàn dã ngoại (ngồi được)
+    [[7, 5, 0], [7.5, 9, 0.5]].forEach(function (p) {
+      if (placeEnv("picnic_table", p[0], p[1], p[2])) {
+        colliders.push({ x: p[0], z: p[1], r: 1.1 });
+        interactables.push({ data: { id: "picnic_" + benchN++, name: "Bàn dã ngoại", x: p[0], z: p[1] }, group: null, bench: { x: p[0], z: p[1] + 0.9, yaw: PI, y: 0.45 } });
+      }
+    });
+    // cây
+    [[-11, 2], [11, 3], [-10, 10], [10, 9], [-12, -3], [12, -4], [-6, 12], [6, 12]].forEach(function (t, i) {
+      if (placeEnv("tree", t[0], t[1], i * 1.3)) colliders.push({ x: t[0], z: t[1], r: 0.6 }); else campusTree(t[0], t[1]);
+    });
+    // ghế đá (ngồi được)
+    [[-4, 9, 0], [4, 9, 0], [-9, -2, PI / 2]].forEach(function (b) { campusBench(b[0], b[1], b[2]); });
+    // bụi + đèn + hoa
+    [[-7, 11, 0.5], [8, 12, 1], [-5, -4, 2], [9, -2, 0.8]].forEach(function (b) { if (placeEnv("bush", b[0], b[1], b[2])) colliders.push({ x: b[0], z: b[1], r: 0.5 }); });
+    [[-3, 1], [3, 1], [-3, 8], [3, 8]].forEach(function (p) { if (placeEnv("lamp", p[0], p[1], 0)) colliders.push({ x: p[0], z: p[1], r: 0.25 }); else campusLamp(p[0], p[1]); });
+    for (var a = 0; a < 8; a++) { var ang = a / 8 * 6.283; flower(Math.cos(ang) * 3.2, Math.sin(ang) * 3.2 + 3, a); }
+    // hàng rào biên
+    [-13.5, 13.5].forEach(function (ex) { for (var z = -13; z <= 13; z += 2) hedge(ex, z); });
+    [-13.5, 13.5].forEach(function (ez) { for (var x = -13; x <= 13; x += 2) hedge(x, ez); });
   }
 
   function campusBuilding(x, z, wallCol, roofCol, emo, label) {

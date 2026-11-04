@@ -21,7 +21,8 @@
       { id: "amb1", kind: "person", name: "Bạn dạo công viên", emo: "🙂", x: 5.5, z: -1.5, color: 0xfca5a5, look: { hair: 0x4a2f1a, skin: 0xf1c79b, style: "short", pants: 0xb45309 }, wander: [[5.5, -1.5], [7.5, -4.5], [4, -4], [6, -1]] },
       { id: "amb2", kind: "person", name: "Học sinh", emo: "🎒", x: -6.5, z: -2.5, color: 0xa7f3d0, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0f766e }, wander: [[-6.5, -2.5], [-6.5, 2.5], [-3.5, 1], [-5, -1]] },
       { id: "door_academy", kind: "door", name: "Học viện AI 🏫", emo: "🏫", to: "academy1", x: -4.2, z: -8.6 },
-      { id: "door_library", kind: "door", name: "Thư viện 📚", emo: "📚", to: "library", x: 4.2, z: -8.6 }
+      { id: "door_library", kind: "door", name: "Thư viện 📚", emo: "📚", to: "library", x: 4.2, z: -8.6 },
+      { id: "door_park", kind: "door", name: "Công viên 🌳", emo: "🌳", to: "park", x: 0, z: 11.5 }
     ],
     quests: [
       {
@@ -190,5 +191,79 @@
     ]
   };
 
-  window.A3D_DATA = { start: "campus", zones: { campus: campus, academy1: academy1, library: library } };
+  /* ---------------- KHU 4: Công viên AI — Dữ liệu từ thiên nhiên (ngoài trời, thu thập dữ liệu) ---------------- */
+  var park = {
+    id: "park", name: "Công viên AI — Dữ liệu từ thiên nhiên", env: "park",
+    questTitle: "🌳 Công viên AI — Dữ liệu từ thiên nhiên",
+    spawn: { x: 0, z: 10, yaw: PI },
+    returnTo: "campus",
+    reward: { xp: 15, coins: 20, badge: "Nhà thu thập dữ liệu", cloudLesson: "ai:game:park" },
+    endTitle: "Dữ liệu đầy đủ, AI thông minh hơn! 🎉",
+    endTier: "Bạn là một Nhà thu thập dữ liệu tài ba!",
+    lesson: "AI học từ <b>DỮ LIỆU (ví dụ)</b>. Càng nhiều ví dụ <b>đa dạng</b>, AI nhận biết càng <b>chính xác</b>. Nếu dữ liệu <b>ít hoặc lệch</b>, AI dễ đoán sai.",
+    npcs: [
+      { id: "ranger", kind: "teacher", name: "Anh Kiểm lâm", emo: "🧑‍🌾", x: -2.5, z: 5, color: 0x86efac, look: { hair: 0x3a2a1a, skin: 0xf1c79b, style: "short", pants: 0x15803d } },
+      { id: "d0", kind: "person", name: "Vịt bên hồ", emo: "🦆", x: 3.5, z: -2.5, color: 0xfcd34d, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "short", pants: 0xd97706 } },
+      { id: "d1", kind: "person", name: "Vườn hoa", emo: "🌸", x: -6, z: 1, color: 0xf6a8c6, look: { hair: 0x4a2f1a, skin: 0xffe0bd, style: "long", pants: 0xdb2777 } },
+      { id: "d2", kind: "person", name: "Rặng cây", emo: "🐦", x: 6, z: 3.5, color: 0x5fb8a8, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0d9488 } },
+      { id: "ai", kind: "robot", name: "App AI", emo: "📱", x: 0, z: 2, color: 0xc4b5fd },
+      { id: "exit", kind: "door", name: "Ra khuôn viên 🚪", emo: "🚪", to: "campus", x: 0, z: 12.5 }
+    ],
+    quests: [
+      {
+        id: "brief", type: "talk", npc: "ranger",
+        objective: "🎧 Nghe anh Kiểm lâm giao nhiệm vụ",
+        avatar: "🧑‍🌾", who: "Anh Kiểm lâm",
+        lines: [
+          "Chào em! App AI nhận diện thiên nhiên của công viên hay <b>nhận nhầm</b> vì nó <span class='a3dHl a3dHl-pink'>mới chỉ học 3 tấm ảnh</span>.",
+          "Giúp anh <span class='a3dHl a3dHl-violet'>thu thêm ví dụ</span> (dữ liệu) quanh công viên để App AI học và đoán chính xác hơn nhé!",
+          "Lại gần chỗ có dấu <b>❗</b> rồi nhấn <b>E</b> để quan sát và thu thập ví dụ."
+        ],
+        requires: {}
+      },
+      {
+        id: "collect", type: "collect",
+        objective: "🔎 Thu thập đủ 3 ví dụ (dữ liệu) quanh công viên",
+        need: 3,
+        items: [
+          { id: "d0", npc: "d0", ic: "🦆", label: "Ảnh con vịt", info: "Quan sát con vịt bơi ở hồ → thêm 1 <b>ví dụ</b> ảnh “con vịt” cho App AI.", verdict: "support", why: "Nhiều ví dụ “vịt” giúp AI nhận ra vịt chính xác hơn." },
+          { id: "d1", npc: "d1", ic: "🌸", label: "Ảnh bông hoa", info: "Quan sát bông hoa hồng → ví dụ cho nhóm “hoa”.", verdict: "support", why: "Dữ liệu đa dạng (nhiều loài) giúp AI phân biệt tốt hơn." },
+          { id: "d2", npc: "d2", ic: "🐦", label: "Ảnh con chim", info: "Quan sát con chim trên cây → ví dụ cho nhóm “chim”.", verdict: "support", why: "Thêm ví dụ mới giúp AI bớt nhận nhầm." }
+        ],
+        requires: { quest: "brief" }
+      },
+      {
+        id: "investigate", type: "investigate",
+        objective: "📋 Mở Bảng điều tra để chọn ví dụ dạy AI",
+        claim: "App AI cần thêm dữ liệu để nhận biết đúng",
+        lead: "Mỗi quan sát là một <b>ví dụ</b>. Với mỗi cái, hãy chọn: nên <b>thêm vào</b> dữ liệu học của AI hay <b>bỏ qua</b>?",
+        opts: [{ k: "support", t: "✅ Ví dụ tốt — thêm vào" }, { k: "refute", t: "🚫 Bỏ, không dùng" }],
+        summary: "🎯 Cả 3 đều là ví dụ tốt → dữ liệu nhiều &amp; đa dạng hơn, AI đoán chính xác hơn!",
+        requires: { items: 3 }
+      },
+      {
+        id: "decision", type: "decision", npc: "ai",
+        objective: "📱 Gặp App AI để chốt cách làm nó giỏi hơn",
+        avatar: "📱", who: "App AI",
+        question: "App AI mới học 3 ảnh nên hay nhận nhầm. Theo em, làm sao để nó giỏi hơn?",
+        options: [
+          { t: "📷 Cho nó học thật nhiều ví dụ đa dạng", good: true, reply: "Chuẩn! Nhiều dữ liệu đa dạng = AI chính xác hơn." },
+          { t: "🙈 Cứ để 3 ảnh, khỏi thêm", good: false, reply: "Ít dữ liệu quá, AI sẽ hay nhầm. Thử lại nhé." },
+          { t: "✅ Thu thêm ví dụ rồi kiểm tra lại", good: true, reply: "Tuyệt! Thu dữ liệu rồi kiểm tra — đúng cách làm AI." }
+        ],
+        result: "App AI học thêm các ví dụ em thu được và <b>nhận biết chính xác hơn hẳn</b>! Nhớ nhé: <b>AI giỏi là nhờ dữ liệu tốt &amp; đa dạng.</b>",
+        explainTitle: "Vì sao AI cần nhiều dữ liệu?",
+        requires: { quest: "investigate" }
+      },
+      {
+        id: "quiz", type: "quiz",
+        objective: "🧠 Trả lời nhanh để chốt kiến thức",
+        intro: "Trả lời nhanh 2 câu về “AI học từ dữ liệu” nhé!",
+        pool: { topics: ["khainiem", "hoatdong", "antoan"], difficulty: 1, count: 2 },
+        requires: { quest: "decision" }
+      }
+    ]
+  };
+
+  window.A3D_DATA = { start: "campus", zones: { campus: campus, academy1: academy1, library: library, park: park } };
 })();
