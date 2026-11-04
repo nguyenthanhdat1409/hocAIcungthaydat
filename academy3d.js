@@ -279,6 +279,7 @@
     if (needRobot) tasks.push(loadRobotGLB());
     if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "fountain", "tree", "bench", "lamp", "bush"]));
     else if (zone.env === "classroom") tasks.push(loadEnv(["desk_teacher", "desk_student", "chair", "bookshelf", "blackboard", "plant_indoor", "poster_brain", "poster_gear", "wallclock", "screen"]));
+    else if (zone.env === "library") tasks.push(loadEnv(["bookshelf", "library_table", "armchair", "globe", "plant_indoor", "rug", "poster_brain", "wallclock"]));
     Promise.all(tasks).then(function () { buildZone(zone); });
   }
 
@@ -314,7 +315,11 @@
     if (aq && aq.type === "talk" && Engine.reqMet(aq)) runTalk(aq, 0);
   }
 
-  function buildEnv(env) { if (env === "campus") buildCampus(); else { buildRoom(); buildFurniture(); } }
+  function buildEnv(env) {
+    if (env === "campus") { buildCampus(); return; }
+    buildRoom();
+    if (env === "library") buildLibraryFurniture(); else buildFurniture();
+  }
 
   function disposeSceneObjects(sc) {
     try {
@@ -596,6 +601,30 @@
     placeEnv("poster_brain", -7.78, -2.3, PI / 2, 1.95);
     placeEnv("poster_gear", -7.78, 1.6, PI / 2, 1.95);
     placeEnv("wallclock", 6.4, -7.82, 0, 2.3);
+  }
+
+  function buildLibraryFurniture() {
+    if (!envTpl.bookshelf || !envTpl.library_table) { buildFurniturePrim(); return; }
+    var PI = Math.PI;
+    // kệ sách dọc 2 tường (trái quay +X, phải quay -X)
+    [-6, -3, 0, 3].forEach(function (z) {
+      placeEnv("bookshelf", -7.2, z, PI / 2); colliders.push({ x: -7.0, z: z, r: 0.8 });
+      placeEnv("bookshelf", 7.2, z, -PI / 2); colliders.push({ x: 7.0, z: z, r: 0.8 });
+    });
+    // bàn đọc + 2 ghế bành (ngồi được) ở giữa
+    placeEnv("rug", 0, 1.6, 0);
+    placeEnv("library_table", 0, 1.6, 0); colliders.push({ x: 0, z: 1.6, r: 1.2 });
+    [[-1.7, PI / 2], [1.7, -PI / 2]].forEach(function (p) {
+      var ch = placeEnv("armchair", p[0], 1.6, p[1]);
+      var sy = (ch && ch.seatY) ? ch.seatY : 0.45;
+      interactables.push({ data: { id: "seat_" + benchN++, name: "Ghế bành", x: p[0], z: 1.6 }, group: null, bench: { x: p[0], z: 1.6, yaw: p[1], y: sy } });
+    });
+    // quả địa cầu cạnh cô thủ thư
+    placeEnv("globe", -6.3, -2.8, 0); colliders.push({ x: -6.3, z: -2.8, r: 0.5 });
+    // chậu cây 2 góc + poster + đồng hồ
+    [[6.6, -6.6], [-6.6, 6.6]].forEach(function (p) { placeEnv("plant_indoor", p[0], p[1], 0); colliders.push({ x: p[0], z: p[1], r: 0.5 }); });
+    placeEnv("poster_brain", -7.78, 6.0, PI / 2, 1.95);
+    placeEnv("wallclock", 0, -7.82, 0, 2.3);
   }
 
   function buildFurniturePrim() {

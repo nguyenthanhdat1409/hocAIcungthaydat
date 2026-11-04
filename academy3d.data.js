@@ -116,5 +116,79 @@
     ]
   };
 
-  window.A3D_DATA = { start: "campus", zones: { campus: campus, academy1: academy1 } };
+  /* ---------------- KHU 3: Thư viện AI — Thật hay tin đồn? (kiểm chứng nguồn) ---------------- */
+  var library = {
+    id: "library", name: "Thư viện AI — Thật hay tin đồn?", env: "library",
+    questTitle: "📚 Thư viện AI — Thật hay tin đồn?",
+    spawn: { x: 0, z: 3.5, yaw: PI },
+    returnTo: "campus",
+    reward: { xp: 15, coins: 20, badge: "Nhà kiểm chứng", cloudLesson: "ai:game:library" },
+    endTitle: "Đã tìm ra sự thật! 🎉",
+    endTier: "Bạn là một Nhà kiểm chứng thông tin tài ba!",
+    lesson: "AI đôi khi trả lời <b>rất tự tin</b> nhưng vẫn <b>sai</b> (gọi là “ảo giác” của AI). Đừng tin ngay — hãy <b>kiểm chứng với nguồn đáng tin</b> (sách, bách khoa) và hỏi AI <b>“dựa vào nguồn nào?”</b>.",
+    npcs: [
+      { id: "lib", kind: "teacher", name: "Cô Thủ thư", emo: "👩‍🏫", x: -4.6, z: -4.6, color: 0x7dd3fc, look: { hair: 0x4a2f1a, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0x2563eb } },
+      { id: "k0", kind: "person", name: "Bạn tin AI", emo: "💬", x: 4.6, z: -4.6, color: 0xfca5a5, look: { hair: 0x2b2b2b, skin: 0xf1c79b, style: "short", pants: 0xb45309 } },
+      { id: "k1", kind: "person", name: "Sách khoa học", emo: "📘", x: -4.6, z: 4.2, color: 0x86efac, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "long", pants: 0x16a34a }, prop: "paper" },
+      { id: "k2", kind: "person", name: "Bách khoa", emo: "📚", x: 4.6, z: 4.2, color: 0xf6c344, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0xca8a04 }, prop: "paper" },
+      { id: "ai", kind: "robot", name: "Máy AI", emo: "🤖", x: 0, z: -5.9, color: 0xc4b5fd },
+      { id: "exit", kind: "door", name: "Ra khuôn viên 🚪", emo: "🚪", to: "campus", x: 0, z: 7.1 }
+    ],
+    quests: [
+      {
+        id: "brief", type: "talk", npc: "lib",
+        objective: "🎧 Nghe cô Thủ thư giao nhiệm vụ",
+        avatar: "👩‍🏫", who: "Cô Thủ thư",
+        lines: [
+          "Chào em! Một bạn vừa hỏi AI: <b>“Cá voi có phải là cá không?”</b> — AI trả lời chắc nịch: <span class='a3dHl a3dHl-pink'>“Đúng, cá voi là cá!”</span>",
+          "Nhưng nói chắc chưa chắc đúng nhé! Nhiệm vụ của em: <span class='a3dHl a3dHl-violet'>kiểm chứng</span> bằng cách tra <b>nguồn đáng tin</b> trong thư viện.",
+          "Lại gần người/kệ có dấu <b>❗</b> rồi nhấn <b>E</b> để đọc và thu thập manh mối."
+        ],
+        requires: {}
+      },
+      {
+        id: "collect", type: "collect",
+        objective: "🔎 Tra 3 nguồn và thu thập đủ 3 manh mối",
+        need: 3,
+        items: [
+          { id: "k0", npc: "k0", ic: "💬", label: "Lời AI", info: "AI nói: “Cá voi <b>sống dưới nước</b> nên nó là <b>cá</b>.”", verdict: "support", why: "AI đoán theo kiểu “ở dưới nước = cá” — nghe hợp lý nhưng <b>chưa kiểm chứng</b>." },
+          { id: "k1", npc: "k1", ic: "📘", label: "Sách khoa học", info: "Sách: Cá voi <b>thở bằng phổi</b>, <b>đẻ con và cho con bú sữa</b> → là <b>động vật có vú</b>.", verdict: "refute", why: "Đặc điểm sinh học cho thấy cá voi <b>không phải cá</b>." },
+          { id: "k2", npc: "k2", ic: "📚", label: "Bách khoa", info: "Bách khoa: Cá voi là <b>thú biển</b> (mammal), cùng nhóm với người, mèo — khác hẳn loài cá.", verdict: "refute", why: "Nguồn uy tín thứ hai cũng khẳng định ngược với AI." }
+        ],
+        requires: { quest: "brief" }
+      },
+      {
+        id: "investigate", type: "investigate",
+        objective: "📋 Mở Bảng điều tra để đối chiếu nguồn",
+        claim: "Cá voi là một loài cá (lời AI)",
+        lead: "AI khẳng định <b>“cá voi là cá”</b>. Với mỗi nguồn, hãy chọn: nó <b>ủng hộ</b> hay <b>phản bác</b> lời AI?",
+        opts: [{ k: "support", t: "✅ Ủng hộ lời AI" }, { k: "refute", t: "📚 Phản bác (dựa vào nguồn)" }],
+        summary: "🎯 Đã rõ: chỉ 1 là phỏng đoán của AI, 2 nguồn uy tín đều nói cá voi là THÚ, không phải cá!",
+        requires: { items: 3 }
+      },
+      {
+        id: "decision", type: "decision", npc: "ai",
+        objective: "🤖 Gặp Máy AI để chốt kết luận",
+        avatar: "🤖", who: "Máy AI",
+        question: "Máy AI vẫn nói “cá voi là cá” với giọng rất chắc chắn. Em quyết định thế nào?",
+        options: [
+          { t: "😮 Tin AI ngay vì nó nói chắc nịch", good: false, reply: "Giọng chắc chắn không có nghĩa là đúng đâu! Thử lại nhé." },
+          { t: "❓ Hỏi AI “dựa vào nguồn nào?”", good: true, reply: "Chuẩn! Luôn bắt AI chỉ ra nguồn." },
+          { t: "📚 Tin sách &amp; bách khoa đã kiểm chứng", good: true, reply: "Xuất sắc! Nguồn uy tín hơn lời AI nói suông." }
+        ],
+        result: "Em đối chiếu nguồn và kết luận: <b>Cá voi là ĐỘNG VẬT CÓ VÚ, không phải cá.</b> AI trả lời sai vì chỉ “đoán”. Thư viện ghi chú mới: <b>luôn kiểm chứng câu trả lời của AI!</b>",
+        explainTitle: "Vì sao AI nói sai mà vẫn tự tin?",
+        requires: { quest: "investigate" }
+      },
+      {
+        id: "quiz", type: "quiz",
+        objective: "🧠 Trả lời nhanh để chốt kiến thức",
+        intro: "Trả lời nhanh 2 câu để chắc kiến thức kiểm chứng nhé!",
+        pool: { topics: ["antoan", "hoatdong", "khainiem"], difficulty: 1, count: 2 },
+        requires: { quest: "decision" }
+      }
+    ]
+  };
+
+  window.A3D_DATA = { start: "campus", zones: { campus: campus, academy1: academy1, library: library } };
 })();
