@@ -439,3 +439,95 @@ and a cute adjustment knob, cream-and-teal colors. Friendly science prop. [+ STY
 3. **Lab**: `lab_bench, hologram_table, robot_arm, server_tower`.
 
 → Gen nhóm nào xong tôi sẽ **dựng zone đó** (layout + NPC + nhiệm vụ học AI) và nối cổng cho đi lại liền mạch.
+
+---
+
+## 7. NHÂN VẬT MỚI (characters) — KHÁC SPEC VỚI ĐỒ VẬT!
+
+> Nhân vật **có rig + animation** (như detective/teacher/student đã làm), KHÁC đồ vật tĩnh.
+> Lưu ở **`models/`** (KHÔNG phải `models/env/`), tên không dấu.
+
+**CHAR-STYLE (dán kèm mỗi prompt nhân vật):**
+```
+CHAR-STYLE: cute chibi 3D character, oversized round head (chibi proportions), big friendly eyes,
+small smile, soft rounded body, warm cozy cartoon game style (Nintendo / Pixar mobile look),
+flat pastel colors, smooth shading, clean game-ready topology, full body, A-pose, facing +Z.
+```
+
+**CHAR-TECH (bắt buộc, ghi/để generator xử lý):**
+- Rig humanoid + animation **`Idle`** và **`Walk`** (đặt đúng tên).
+- Y-up, mặt +Z, A-pose; cao **~1.8**, gốc ở chân (y=0).
+- Texture palette 256px + **`tintCells`** trong extras (để đổi màu NPC), 1 material, GLB **< ~1.2MB**.
+- Tên xương chuẩn: Root, Hips, Spine, Chest, Neck, Head, L/R UpperArm/LowerArm/Hand, L/R UpperLeg/LowerLeg/Foot.
+
+**`models/scientist.glb`** — Nhà khoa học (khu Lab) ⭐⭐⭐
+```
+A cute chibi scientist, a white lab coat over a teal shirt, round safety goggles pushed up on the
+forehead, short tidy dark hair, holding a small pastel flask. Friendly curious researcher. CHAR-STYLE
+```
+
+**`models/librarian.glb`** — Thủ thư (khu Thư viện) ⭐⭐
+```
+A cute chibi librarian, a soft lavender cardigan over a cream blouse, round glasses, hair in a neat
+bun, holding a small stack of pastel books. Warm gentle book-lover. CHAR-STYLE
+```
+
+**`models/ranger.glb`** — Kiểm lâm (khu Công viên) ⭐⭐
+```
+A cute chibi park ranger, a green utility vest over a beige shirt, a wide-brim hat, shorts, a small
+backpack, friendly outdoorsy look. CHAR-STYLE
+```
+
+**`models/grandpa.glb`** — Ông cụ hiền (NPC đời sống) ⭐
+```
+A cute chibi kind elderly man, a cozy brown cardigan over a shirt, round glasses, soft grey hair and
+a short grey beard, a gentle smile, holding a wooden walking cane. Warm wise grandpa. CHAR-STYLE
+```
+
+**`models/shopkeeper.glb`** — Chủ tiệm (khu Phố đi bộ) ⭐
+```
+A cute chibi friendly shopkeeper, a cream apron over a striped shirt with rolled sleeves, a little
+flat cap, rosy cheeks. Cheerful neighbourhood vendor. CHAR-STYLE
+```
+
+**`models/kid_girl.glb`** — Bé gái (đa dạng NPC trẻ) ⭐
+```
+A cute chibi school girl, hair in two pigtails with little bows, a pastel dress over leggings, small
+sneakers, a tiny backpack. Cheerful student. CHAR-STYLE
+```
+
+**`models/kid_boy.glb`** — Bé trai (đa dạng NPC trẻ) ⭐
+```
+A cute chibi school boy, a backward cap, a bright hoodie, shorts, high-top sneakers, a small sling bag.
+Playful energetic student. CHAR-STYLE
+```
+
+---
+
+## 8. CHECKLIST "GEN TẤT CẢ" — còn thiếu gì (gom hết)
+
+### ✅ ĐÃ CÓ (khỏi gen lại)
+Nhân vật: `detective, teacher, student` · Bối cảnh: `academy, library, fountain, tree, bench, lamp, bush`
+· Nội thất: `desk_teacher, desk_student, chair, bookshelf, blackboard, plant_indoor, rug, screen, poster(+brain/gear), wallclock, window_interior`
+· Thư viện: `library_table, armchair, globe` · Công viên: `gazebo, bridge, picnic_table`.
+
+### ⬜ CẦN GEN
+**🔬 Lab (Batch 3 — ưu tiên, mục 6):** `lab_bench`, `hologram_table`, `robot_arm`, `server_tower`, `microscope`, `lab` (vỏ ngoài — mục 2).
+
+**👤 Nhân vật (mục 7):** `scientist`, `librarian`, `ranger`, `grandpa`, `shopkeeper`, `kid_girl`, `kid_boy`.
+
+**🏙️ Mở rộng thành phố (mục 2):** `shop`, `house`, `clocktower`, `arch`, `signpost`, `kiosk`, `bin`, `planter`.
+
+**🌿 Tô điểm thiên nhiên (mục 2):** `tree_blossom`, `flowerbed`, `rock`, `lilypad`.
+
+**📚 Thư viện/Công viên thêm (mục 6):** `book_cart`, `card_catalog`, `ladder`, `floor_lamp` · `statue`, `icecream_cart`, `flower_arch`.
+
+### Thứ tự khuyên gen
+1. **Lab** (5 món) → mình mở khu Phòng thí nghiệm ngay.
+2. **Nhân vật** (scientist/librarian/ranger trước) → NPC mỗi khu khác nhau, hết cảnh dùng chung 1 kiểu.
+3. **Mở rộng thành phố** (shop/house...) → thêm khu Phố đi bộ / Khu dân cư.
+4. **Tô điểm** (blossom/statue/flower_arch...) → đẹp & sinh động hơn.
+
+### Nhắc quy tắc vàng
+- Đồ vật (`models/env/`): tĩnh, gốc đáy-giữa, mặt +Z, có `targetHeight`/`size` (+ `seatHeight`/`seatFacing` nếu ngồi được).
+- Nhân vật (`models/`): rig + `Idle`/`Walk`, cao ~1.8, gốc ở chân, mặt +Z, có `tintCells`.
