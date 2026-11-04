@@ -22,7 +22,8 @@
       { id: "amb2", kind: "person", name: "Học sinh", emo: "🎒", x: -6.5, z: -2.5, color: 0xa7f3d0, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0f766e }, wander: [[-6.5, -2.5], [-6.5, 2.5], [-3.5, 1], [-5, -1]] },
       { id: "door_academy", kind: "door", name: "Học viện AI 🏫", emo: "🏫", to: "academy1", x: -4.2, z: -8.6 },
       { id: "door_library", kind: "door", name: "Thư viện 📚", emo: "📚", to: "library", x: 4.2, z: -8.6 },
-      { id: "door_park", kind: "door", name: "Công viên 🌳", emo: "🌳", to: "park", x: 0, z: 11.5 }
+      { id: "door_park", kind: "door", name: "Công viên 🌳", emo: "🌳", to: "park", x: 0, z: 11.5 },
+      { id: "door_lab", kind: "door", name: "Phòng Lab 🔬", emo: "🔬", to: "lab", x: 9, z: 0.5 }
     ],
     quests: [
       {
@@ -265,5 +266,79 @@
     ]
   };
 
-  window.A3D_DATA = { start: "campus", zones: { campus: campus, academy1: academy1, library: library, park: park } };
+  /* ---------------- KHU 5: Phòng Lab AI — Dạy máy đoán (thực hành dữ liệu) ---------------- */
+  var lab = {
+    id: "lab", name: "Phòng Lab AI — Dạy máy đoán", env: "lab",
+    questTitle: "🔬 Phòng Lab AI — Dạy máy đoán",
+    spawn: { x: 0, z: 3.5, yaw: PI },
+    returnTo: "campus",
+    reward: { xp: 15, coins: 20, badge: "Kỹ sư AI nhí", cloudLesson: "ai:game:lab" },
+    endTitle: "AI đoán đúng rồi! 🎉",
+    endTier: "Bạn là một Kỹ sư AI nhí tài ba!",
+    lesson: "AI đoán dựa trên <b>dữ liệu đã học</b>. Nếu dữ liệu <b>lệch</b> (chỉ một kiểu), AI sẽ <b>thiên vị</b> và đoán sai cái lạ. Thêm dữ liệu <b>đa dạng &amp; cân bằng</b> → AI đoán đúng &amp; công bằng hơn.",
+    npcs: [
+      { id: "sci", kind: "teacher", name: "Cô Kỹ sư", emo: "👩‍🔬", x: -4.6, z: -4.6, color: 0x7dd3fc, look: { hair: 0x2b2b2b, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0x0ea5e9 } },
+      { id: "e0", kind: "person", name: "Máy đoán quả", emo: "🍎", x: 4.6, z: -4.6, color: 0xfca5a5, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "short", pants: 0xdc2626 }, prop: "chart" },
+      { id: "e1", kind: "person", name: "Kho dữ liệu", emo: "🗃️", x: -4.6, z: 4.2, color: 0xa78bfa, look: { hair: 0x1f2937, skin: 0xf1c79b, style: "long", pants: 0x7c3aed }, prop: "computer" },
+      { id: "e2", kind: "person", name: "Bàn thử nghiệm", emo: "🧪", x: 4.6, z: 4.2, color: 0x5fb8a8, look: { hair: 0x4a2f1a, skin: 0xe8b58a, style: "spiky", pants: 0x0d9488 }, prop: "paper" },
+      { id: "ai", kind: "robot", name: "Máy AI", emo: "🤖", x: 0, z: -5.9, color: 0xc4b5fd },
+      { id: "exit", kind: "door", name: "Ra khuôn viên 🚪", emo: "🚪", to: "campus", x: 0, z: 7.1 }
+    ],
+    quests: [
+      {
+        id: "brief", type: "talk", npc: "sci",
+        objective: "🎧 Nghe cô Kỹ sư giao nhiệm vụ",
+        avatar: "👩‍🔬", who: "Cô Kỹ sư",
+        lines: [
+          "Chào em! Mình đang dạy một AI <b>đoán trái cây</b>. Nhưng nó chỉ học toàn <span class='a3dHl a3dHl-pink'>ảnh táo đỏ</span> nên thấy gì <b>tròn &amp; đỏ</b> cũng đoán là “táo”!",
+          "Nhiệm vụ của em: <span class='a3dHl a3dHl-violet'>thử nghiệm</span> ở 3 trạm để hiểu vì sao AI đoán sai và cách sửa.",
+          "Lại gần trạm có dấu <b>❗</b> rồi nhấn <b>E</b> để quan sát và thu kết quả."
+        ],
+        requires: {}
+      },
+      {
+        id: "collect", type: "collect",
+        objective: "🔎 Thử nghiệm ở 3 trạm và thu đủ 3 kết quả",
+        need: 3,
+        items: [
+          { id: "e0", npc: "e0", ic: "🍎", label: "Cho AI xem cà chua", info: "Đưa quả <b>cà chua</b> (tròn, đỏ) cho AI → nó đoán nhầm là <b>“táo”</b>.", verdict: "support", why: "AI chỉ học táo đỏ nên thấy gì tròn-đỏ cũng tưởng là táo." },
+          { id: "e1", npc: "e1", ic: "🗃️", label: "Kiểm tra kho dữ liệu", info: "Xem dữ liệu: AI học <b>20 ảnh, toàn táo đỏ</b> — không có loại quả nào khác.", verdict: "support", why: "Dữ liệu <b>lệch</b> (một kiểu) khiến AI <b>thiên vị</b>." },
+          { id: "e2", npc: "e2", ic: "🧪", label: "Thêm quả đa dạng", info: "Thêm ảnh <b>táo xanh, cam, chuối, cà chua</b> vào dữ liệu → AI bắt đầu <b>phân biệt đúng</b>.", verdict: "support", why: "Dữ liệu <b>đa dạng &amp; cân bằng</b> giúp AI đoán chính xác hơn." }
+        ],
+        requires: { quest: "brief" }
+      },
+      {
+        id: "investigate", type: "investigate",
+        objective: "📋 Mở Bảng điều tra để hiểu vì sao AI sai",
+        claim: "AI đoán sai vì DỮ LIỆU của nó bị lệch",
+        lead: "Với mỗi kết quả thử nghiệm, nó có <b>cho thấy</b> AI sai do dữ liệu lệch, hay <b>không liên quan</b>?",
+        opts: [{ k: "support", t: "✅ Cho thấy: lỗi do dữ liệu" }, { k: "refute", t: "❔ Không liên quan" }],
+        summary: "🎯 Cả 3 đều chỉ ra: AI đoán sai vì dữ liệu LỆCH — và thêm dữ liệu ĐA DẠNG thì nó đúng!",
+        requires: { items: 3 }
+      },
+      {
+        id: "decision", type: "decision", npc: "ai",
+        objective: "🤖 Gặp Máy AI để chốt cách sửa",
+        avatar: "🤖", who: "Máy AI",
+        question: "Làm sao để AI đoán trái cây đúng &amp; công bằng hơn?",
+        options: [
+          { t: "🍎 Cứ cho học thêm thật nhiều táo đỏ", good: false, reply: "Thêm toàn táo đỏ thì càng lệch! Thử lại nhé." },
+          { t: "🌈 Cho học nhiều loại quả đa dạng, cân bằng", good: true, reply: "Chuẩn! Dữ liệu đa dạng = AI công bằng &amp; chính xác." },
+          { t: "🔍 Kiểm tra &amp; sửa dữ liệu bị lệch", good: true, reply: "Tuyệt! Luôn kiểm tra dữ liệu trước khi tin AI." }
+        ],
+        result: "Em bổ sung dữ liệu đa dạng và AI <b>đoán đúng các loại quả</b>! Nhớ nhé: <b>dữ liệu lệch → AI thiên vị; dữ liệu đa dạng &amp; cân bằng → AI công bằng.</b>",
+        explainTitle: "Vì sao dữ liệu lệch làm AI sai?",
+        requires: { quest: "investigate" }
+      },
+      {
+        id: "quiz", type: "quiz",
+        objective: "🧠 Trả lời nhanh để chốt kiến thức",
+        intro: "Trả lời nhanh 2 câu về “dữ liệu &amp; AI” nhé!",
+        pool: { topics: ["hoatdong", "khainiem", "antoan"], difficulty: 1, count: 2 },
+        requires: { quest: "decision" }
+      }
+    ]
+  };
+
+  window.A3D_DATA = { start: "campus", zones: { campus: campus, academy1: academy1, library: library, park: park, lab: lab } };
 })();

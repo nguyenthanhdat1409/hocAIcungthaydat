@@ -277,10 +277,11 @@
     var needRobot = (zone.npcs || []).some(function (n) { return n.kind === "robot"; });
     var tasks = [loadChars()];
     if (needRobot) tasks.push(loadRobotGLB());
-    if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "fountain", "tree", "bench", "lamp", "bush"]));
+    if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "lab", "fountain", "tree", "bench", "lamp", "bush"]));
     else if (zone.env === "classroom") tasks.push(loadEnv(["desk_teacher", "desk_student", "chair", "bookshelf", "blackboard", "plant_indoor", "poster_brain", "poster_gear", "wallclock", "screen"]));
     else if (zone.env === "library") tasks.push(loadEnv(["bookshelf", "library_table", "armchair", "globe", "plant_indoor", "rug", "poster_brain", "wallclock"]));
     else if (zone.env === "park") tasks.push(loadEnv(["gazebo", "bridge", "picnic_table", "tree", "bench", "lamp", "bush"]));
+    else if (zone.env === "lab") tasks.push(loadEnv(["lab_bench", "hologram_table", "robot_arm", "server_tower", "microscope", "chair", "plant_indoor", "poster_gear", "wallclock", "screen"]));
     Promise.all(tasks).then(function () { buildZone(zone); });
   }
 
@@ -320,7 +321,9 @@
     if (env === "campus") { buildCampus(); return; }
     if (env === "park") { buildPark(); return; }
     buildRoom();
-    if (env === "library") buildLibraryFurniture(); else buildFurniture();
+    if (env === "library") buildLibraryFurniture();
+    else if (env === "lab") buildLabFurniture();
+    else buildFurniture();
   }
 
   function disposeSceneObjects(sc) {
@@ -360,6 +363,8 @@
     if (!placeEnv("academy", -4.2, -11.4, 0)) campusBuilding(-4.2, -11.4, 0x6366f1, 0xef9ea0, "🏫", "HỌC VIỆN AI");
     if (!placeEnv("library", 4.2, -11.4, 0)) campusBuilding(4.2, -11.4, 0x0ea5a5, 0xf4c06a, "📚", "THƯ VIỆN");
     colliders.push({ x: -4.2, z: -11.4, r: 2.9 }, { x: 4.2, z: -11.4, r: 2.9 });
+    // Phòng Lab (phía đông, mặt quay vào quảng trường = -X)
+    if (placeEnv("lab", 11, 0.5, -Math.PI / 2)) colliders.push({ x: 11, z: 0.5, r: 2.9 });
 
     // cổng chào trên lối vào
     arch(-4.2, -9.6); arch(4.2, -9.6);
@@ -371,7 +376,7 @@
     colliders.push({ x: 7.5, z: 9, r: 3.3 });
 
     // cây — model GLB (xoay mỗi cây một hướng cho tự nhiên), fallback primitive
-    [[-8, 9], [-9.5, 4], [9.5, 2], [-6, 11], [5, 12], [10.5, 8], [-11, -2], [11, -5]].forEach(function (t, i) {
+    [[-8, 9], [-9.5, 4], [12, 6], [-6, 11], [5, 12], [10.5, 8], [-11, -2], [11, -5]].forEach(function (t, i) {
       if (placeEnv("tree", t[0], t[1], i * 1.3)) colliders.push({ x: t[0], z: t[1], r: 0.6 });
       else campusTree(t[0], t[1]);
     });
@@ -669,6 +674,25 @@
     // chậu cây 2 góc + poster + đồng hồ
     [[6.6, -6.6], [-6.6, 6.6]].forEach(function (p) { placeEnv("plant_indoor", p[0], p[1], 0); colliders.push({ x: p[0], z: p[1], r: 0.5 }); });
     placeEnv("poster_brain", -7.78, 6.0, PI / 2, 1.95);
+    placeEnv("wallclock", 0, -7.82, 0, 2.3);
+  }
+
+  function buildLabFurniture() {
+    if (!envTpl.hologram_table || !envTpl.lab_bench) { buildFurniturePrim(); return; }
+    var PI = Math.PI;
+    // bàn chiếu ba chiều — landmark giữa phòng
+    placeEnv("hologram_table", 0, -1.2, 0); colliders.push({ x: 0, z: -1.2, r: 0.9 });
+    // 2 bàn thí nghiệm sát tường trước (quay vào phòng = -Z) + kính hiển vi trên bàn
+    placeEnv("lab_bench", -5.4, 6.2, PI); colliders.push({ x: -5.4, z: 6.2, r: 1.1 });
+    placeEnv("lab_bench", 5.4, 6.2, PI); colliders.push({ x: 5.4, z: 6.2, r: 1.1 });
+    placeEnv("microscope", 5.4, 6.0, PI, 0.9);
+    // máy chủ AI + cánh tay robot ở 2 góc sau
+    placeEnv("server_tower", 6.8, -6.6, -PI / 2); colliders.push({ x: 6.8, z: -6.6, r: 0.6 });
+    placeEnv("robot_arm", -6.8, -6.6, PI / 2); colliders.push({ x: -6.8, z: -6.6, r: 0.6 });
+    // chậu cây + poster + đồng hồ
+    placeEnv("plant_indoor", 6.8, 6.6, 0); colliders.push({ x: 6.8, z: 6.6, r: 0.5 });
+    placeEnv("plant_indoor", -6.8, 1.0, 0); colliders.push({ x: -6.8, z: 1.0, r: 0.5 });
+    placeEnv("poster_gear", -7.78, -2.3, PI / 2, 1.95);
     placeEnv("wallclock", 0, -7.82, 0, 2.3);
   }
 
