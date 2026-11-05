@@ -275,7 +275,14 @@
     aiMixer = null; aiActions = null; aiCurrent = null; robotGLB = null;
     npcs = []; colliders = []; interactables = []; markers = []; nearest = null;
     var needRobot = (zone.npcs || []).some(function (n) { return n.kind === "robot"; });
-    var tasks = [loadChars()];
+    // model nhân vật cần cho khu này (hero + NPC theo trường model/kind)
+    var charNeed = ["detective"];
+    (zone.npcs || []).forEach(function (n) {
+      if (n.kind === "robot" || n.kind === "door") return;
+      var m = n.model || (n.kind === "teacher" ? "teacher" : "student");
+      if (charNeed.indexOf(m) < 0) charNeed.push(m);
+    });
+    var tasks = [loadChars(charNeed)];
     if (needRobot) tasks.push(loadRobotGLB());
     if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "lab", "fountain", "tree", "bench", "lamp", "bush"]));
     else if (zone.env === "classroom") tasks.push(loadEnv(["desk_teacher", "desk_student", "chair", "bookshelf", "blackboard", "plant_indoor", "poster_brain", "poster_gear", "wallclock", "screen"]));
@@ -929,8 +936,8 @@
   }
 
   /* ======= Nhân vật bằng model GLB (detective / teacher / student) — chibi rig + Idle/Walk ======= */
-  function loadChars() {
-    var types = ["detective", "teacher", "student"];
+  function loadChars(types) {
+    types = types || ["detective", "teacher", "student"];
     var need = types.filter(function (t) { return !charTpl[t]; });
     if (!need.length) return Promise.resolve();
     return import("./GLTFLoader.module.js").then(function (m) {
@@ -1127,8 +1134,12 @@
       if (e.kind === "door") { buildDoorEntity(e); return; }
       var g;
       if (e.kind === "robot") g = robotGLB ? setupRobotGLB() : makeRobot(e.color);
-      else if (e.kind === "teacher") g = charTpl.teacher ? setupCharGLB("teacher") : makePerson(e.color, e.look);
-      else g = charTpl.student ? setupCharGLB("student", { tint: npcTint(e) }) : makePerson(e.color, e.look);
+      else {
+        var mdl = e.model || (e.kind === "teacher" ? "teacher" : "student");   // model riêng nếu có
+        if (charTpl[mdl]) g = setupCharGLB(mdl, mdl === "student" ? { tint: npcTint(e) } : {});
+        else if (charTpl.student) g = setupCharGLB("student", { tint: npcTint(e) });
+        else g = makePerson(e.color, e.look);
+      }
       g.position.set(e.x, 0, e.z);
       g.rotation.y = Math.atan2(-e.x, -e.z);               // quay mặt về giữa khu
       scene.add(g);

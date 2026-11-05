@@ -18,8 +18,8 @@
     spawn: { x: 0, z: 7, yaw: PI },
     npcs: [
       { id: "guide", kind: "person", name: "Bạn Na (hướng dẫn)", emo: "🧭", x: -1.6, z: 3.2, color: 0x7dd3fc, look: { hair: 0x3a2a1a, skin: 0xffe0bd, style: "long", pants: 0x2563eb }, wander: [[-1.6, 3.2], [2.2, 3.4], [2.6, 5], [-1, 5.2]] },
-      { id: "amb1", kind: "person", name: "Bạn dạo công viên", emo: "🙂", x: 5.5, z: -1.5, color: 0xfca5a5, look: { hair: 0x4a2f1a, skin: 0xf1c79b, style: "short", pants: 0xb45309 }, wander: [[5.5, -1.5], [7.5, -4.5], [4, -4], [6, -1]] },
-      { id: "amb2", kind: "person", name: "Học sinh", emo: "🎒", x: -6.5, z: -2.5, color: 0xa7f3d0, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0f766e }, wander: [[-6.5, -2.5], [-6.5, 2.5], [-3.5, 1], [-5, -1]] },
+      { id: "amb1", kind: "person", model: "grandpa", name: "Ông dạo công viên", emo: "🙂", x: 5.5, z: -1.5, color: 0xfca5a5, look: { hair: 0x4a2f1a, skin: 0xf1c79b, style: "short", pants: 0xb45309 }, wander: [[5.5, -1.5], [7.5, -4.5], [4, -4], [6, -1]] },
+      { id: "amb2", kind: "person", model: "kid_boy", name: "Học sinh", emo: "🎒", x: -6.5, z: -2.5, color: 0xa7f3d0, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0f766e }, wander: [[-6.5, -2.5], [-6.5, 2.5], [-3.5, 1], [-5, -1]] },
       { id: "door_academy", kind: "door", name: "Học viện AI 🏫", emo: "🏫", to: "academy1", x: -4.2, z: -8.6 },
       { id: "door_library", kind: "door", name: "Thư viện 📚", emo: "📚", to: "library", x: 4.2, z: -8.6 },
       { id: "door_park", kind: "door", name: "Công viên 🌳", emo: "🌳", to: "park", x: 0, z: 11.5 },
@@ -57,8 +57,8 @@
     npcs: [
       { id: "lan", kind: "teacher", name: "Cô Lan", emo: "👩‍🏫", x: -4.6, z: -4.6, color: 0xec6fb0, look: { hair: 0x5b3a29, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0xb24f86 } },
       { id: "c0", kind: "person", name: "Trực phòng máy", emo: "🖥️", x: 4.6, z: -4.6, color: 0x5b8def, look: { hair: 0x2b2b2b, skin: 0xf1c79b, style: "short", pants: 0x3b5bdb }, prop: "computer" },
-      { id: "c1", kind: "person", name: "Bạn cùng lớp", emo: "📄", x: -4.6, z: 4.2, color: 0xf6c344, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "long", pants: 0xca8a04 }, prop: "paper" },
-      { id: "c2", kind: "person", name: "Kỹ thuật viên", emo: "📊", x: 4.6, z: 4.2, color: 0x58d898, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0ea371 }, prop: "chart" },
+      { id: "c1", kind: "person", model: "kid_girl", name: "Bạn cùng lớp", emo: "📄", x: -4.6, z: 4.2, color: 0xf6c344, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "long", pants: 0xca8a04 }, prop: "paper" },
+      { id: "c2", kind: "person", model: "kid_boy", name: "Kỹ thuật viên", emo: "📊", x: 4.6, z: 4.2, color: 0x58d898, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0ea371 }, prop: "chart" },
       { id: "ai", kind: "robot", name: "Máy AI", emo: "🤖", x: 0, z: -5.9, color: 0xc4b5fd },
       { id: "exit", kind: "door", name: "Ra khuôn viên 🚪", emo: "🚪", to: "campus", x: 0, z: 7.1 }
     ],
@@ -129,7 +129,7 @@
     endTier: "Bạn là một Nhà kiểm chứng thông tin tài ba!",
     lesson: "AI đôi khi trả lời <b>rất tự tin</b> nhưng vẫn <b>sai</b> (gọi là “ảo giác” của AI). Đừng tin ngay — hãy <b>kiểm chứng với nguồn đáng tin</b> (sách, bách khoa) và hỏi AI <b>“dựa vào nguồn nào?”</b>.",
     npcs: [
-      { id: "lib", kind: "teacher", name: "Cô Thủ thư", emo: "👩‍🏫", x: -4.6, z: -4.6, color: 0x7dd3fc, look: { hair: 0x4a2f1a, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0x2563eb } },
+      { id: "lib", kind: "teacher", model: "librarian", name: "Cô Thủ thư", emo: "👩‍🏫", x: -4.6, z: -4.6, color: 0x7dd3fc, look: { hair: 0x4a2f1a, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0x2563eb } },
       { id: "k0", kind: "person", name: "Bạn tin AI", emo: "💬", x: 4.6, z: -4.6, color: 0xfca5a5, look: { hair: 0x2b2b2b, skin: 0xf1c79b, style: "short", pants: 0xb45309 } },
       { id: "k1", kind: "person", name: "Sách khoa học", emo: "📘", x: -4.6, z: 4.2, color: 0x86efac, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "long", pants: 0x16a34a }, prop: "paper" },
       { id: "k2", kind: "person", name: "Bách khoa", emo: "📚", x: 4.6, z: 4.2, color: 0xf6c344, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0xca8a04 }, prop: "paper" },
@@ -203,10 +203,10 @@
     endTier: "Bạn là một Nhà thu thập dữ liệu tài ba!",
     lesson: "AI học từ <b>DỮ LIỆU (ví dụ)</b>. Càng nhiều ví dụ <b>đa dạng</b>, AI nhận biết càng <b>chính xác</b>. Nếu dữ liệu <b>ít hoặc lệch</b>, AI dễ đoán sai.",
     npcs: [
-      { id: "ranger", kind: "teacher", name: "Anh Kiểm lâm", emo: "🧑‍🌾", x: -2.5, z: 5, color: 0x86efac, look: { hair: 0x3a2a1a, skin: 0xf1c79b, style: "short", pants: 0x15803d } },
-      { id: "d0", kind: "person", name: "Vịt bên hồ", emo: "🦆", x: 3.5, z: -2.5, color: 0xfcd34d, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "short", pants: 0xd97706 } },
-      { id: "d1", kind: "person", name: "Vườn hoa", emo: "🌸", x: -6, z: 1, color: 0xf6a8c6, look: { hair: 0x4a2f1a, skin: 0xffe0bd, style: "long", pants: 0xdb2777 } },
-      { id: "d2", kind: "person", name: "Rặng cây", emo: "🐦", x: 6, z: 3.5, color: 0x5fb8a8, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0d9488 } },
+      { id: "ranger", kind: "teacher", model: "ranger", name: "Anh Kiểm lâm", emo: "🧑‍🌾", x: -2.5, z: 5, color: 0x86efac, look: { hair: 0x3a2a1a, skin: 0xf1c79b, style: "short", pants: 0x15803d } },
+      { id: "d0", kind: "person", model: "kid_boy", name: "Vịt bên hồ", emo: "🦆", x: 3.5, z: -2.5, color: 0xfcd34d, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "short", pants: 0xd97706 } },
+      { id: "d1", kind: "person", model: "kid_girl", name: "Vườn hoa", emo: "🌸", x: -6, z: 1, color: 0xf6a8c6, look: { hair: 0x4a2f1a, skin: 0xffe0bd, style: "long", pants: 0xdb2777 } },
+      { id: "d2", kind: "person", model: "grandpa", name: "Rặng cây", emo: "🐦", x: 6, z: 3.5, color: 0x5fb8a8, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x0d9488 } },
       { id: "ai", kind: "robot", name: "App AI", emo: "📱", x: 0, z: 2, color: 0xc4b5fd },
       { id: "exit", kind: "door", name: "Ra khuôn viên 🚪", emo: "🚪", to: "campus", x: 0, z: 12.5 }
     ],
@@ -277,7 +277,7 @@
     endTier: "Bạn là một Kỹ sư AI nhí tài ba!",
     lesson: "AI đoán dựa trên <b>dữ liệu đã học</b>. Nếu dữ liệu <b>lệch</b> (chỉ một kiểu), AI sẽ <b>thiên vị</b> và đoán sai cái lạ. Thêm dữ liệu <b>đa dạng &amp; cân bằng</b> → AI đoán đúng &amp; công bằng hơn.",
     npcs: [
-      { id: "sci", kind: "teacher", name: "Cô Kỹ sư", emo: "👩‍🔬", x: -4.6, z: -4.6, color: 0x7dd3fc, look: { hair: 0x2b2b2b, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0x0ea5e9 } },
+      { id: "sci", kind: "teacher", model: "scientist", name: "Cô Kỹ sư", emo: "👩‍🔬", x: -4.6, z: -4.6, color: 0x7dd3fc, look: { hair: 0x2b2b2b, skin: 0xffe0bd, style: "bun", glasses: true, pants: 0x0ea5e9 } },
       { id: "e0", kind: "person", name: "Máy đoán quả", emo: "🍎", x: 4.6, z: -4.6, color: 0xfca5a5, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "short", pants: 0xdc2626 }, prop: "chart" },
       { id: "e1", kind: "person", name: "Kho dữ liệu", emo: "🗃️", x: -4.6, z: 4.2, color: 0xa78bfa, look: { hair: 0x1f2937, skin: 0xf1c79b, style: "long", pants: 0x7c3aed }, prop: "computer" },
       { id: "e2", kind: "person", name: "Bàn thử nghiệm", emo: "🧪", x: 4.6, z: 4.2, color: 0x5fb8a8, look: { hair: 0x4a2f1a, skin: 0xe8b58a, style: "spiky", pants: 0x0d9488 }, prop: "paper" },
