@@ -1,7 +1,7 @@
 # AI ACADEMY 3D — PROMPT GEN BỐI CẢNH (THẾ GIỚI MỞ COZY STYLIZED)
 
-<!-- 🔴 CẦN GEN TIẾP: Mục 7 — NHÂN VẬT (scientist, librarian, ranger, grandpa, shopkeeper, kid_girl, kid_boy). Rồi Mục 2 (mở rộng thành phố: shop/house...). Checklist ở Mục 8. ĐÃ XONG: Lab. -->
-> **🔴 CẦN GEN TIẾP → Mục 7 (👤 Nhân vật):** `scientist, librarian, ranger, grandpa, shopkeeper, kid_girl, kid_boy` (lưu `models/`). ✅ Lab đã xong & ghép. Toàn bộ còn thiếu xem **Mục 8**.
+<!-- 🔴 CẦN GEN TIẾP: Mục 2 — MỞ RỘNG THÀNH PHỐ (shop, house, clocktower, arch, signpost, kiosk, bin, planter) → mở Phố đi bộ / Khu dân cư. Rồi tô điểm (Mục 2+6). ĐÃ XONG: Lab, 7 nhân vật. -->
+> **🔴 CẦN GEN TIẾP → Mục 2 (🏙️ Mở rộng thành phố):** `shop, house, clocktower, arch, signpost, kiosk, bin, planter` (lưu `models/env/`) → mở **Phố đi bộ / Khu dân cư**. ✅ Lab + 7 nhân vật đã xong & ghép. Toàn bộ còn thiếu xem **Mục 8**.
 
 > Mục đích: gen bộ asset môi trường đồng bộ cho thành phố học AI mở. Dán prompt vào **Meshy AI / Tripo AI / Rodin (Hyper3D)**.
 > Props môi trường là **tĩnh** (không rig, không animation) → gen nhanh hơn nhân vật.
