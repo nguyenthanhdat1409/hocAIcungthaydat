@@ -12,3 +12,7 @@ claude.exe
 
 # Ảnh chụp QA tạm của Playwright MCP — không commit
 .playwright-mcp/
+
+# Gói nguồn/ảnh preview model — không commit
+models/**/*.zip
+models/**/preview_*.png
