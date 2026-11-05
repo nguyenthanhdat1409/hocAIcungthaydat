@@ -23,7 +23,8 @@
       { id: "door_academy", kind: "door", name: "Học viện AI 🏫", emo: "🏫", to: "academy1", x: -4.2, z: -8.6 },
       { id: "door_library", kind: "door", name: "Thư viện 📚", emo: "📚", to: "library", x: 4.2, z: -8.6 },
       { id: "door_park", kind: "door", name: "Công viên 🌳", emo: "🌳", to: "park", x: 0, z: 11.5 },
-      { id: "door_lab", kind: "door", name: "Phòng Lab 🔬", emo: "🔬", to: "lab", x: 9, z: 0.5 }
+      { id: "door_lab", kind: "door", name: "Phòng Lab 🔬", emo: "🔬", to: "lab", x: 9, z: 0.5 },
+      { id: "door_street", kind: "door", name: "Phố đi bộ 🏙️", emo: "🏙️", to: "street", x: -9, z: 0.5 }
     ],
     quests: [
       {
@@ -340,5 +341,79 @@
     ]
   };
 
-  window.A3D_DATA = { start: "campus", zones: { campus: campus, academy1: academy1, library: library, park: park, lab: lab } };
+  /* ---------------- KHU 6: Phố đi bộ AI — Gợi ý thông minh (ngoài trời, recommendation) ---------------- */
+  var street = {
+    id: "street", name: "Phố đi bộ AI — Gợi ý thông minh", env: "street",
+    questTitle: "🏙️ Phố đi bộ AI — Gợi ý thông minh",
+    spawn: { x: 0, z: 9, yaw: PI },
+    returnTo: "campus",
+    reward: { xp: 15, coins: 20, badge: "Người dùng thông minh", cloudLesson: "ai:game:street" },
+    endTitle: "Dùng AI thông minh rồi! 🎉",
+    endTier: "Bạn là một Người dùng AI thông minh!",
+    lesson: "AI <b>gợi ý</b> dựa trên thói quen &amp; dữ liệu cũ của bạn → rất tiện, nhưng dễ chỉ hiện <b>một kiểu</b> (bong bóng lọc). Hãy xem gợi ý là <b>tham khảo</b>, tự <b>thử cái mới</b> — con người quyết định.",
+    npcs: [
+      { id: "keeper", kind: "teacher", model: "shopkeeper", name: "Cô Chủ tiệm", emo: "🧑‍🍳", x: -3, z: 3, color: 0xf6a8c6, look: { hair: 0x4a2f1a, skin: 0xffe0bd, style: "bun", pants: 0xdb2777 } },
+      { id: "s0", kind: "person", model: "kid_girl", name: "Bạn hay mua truyện", emo: "📚", x: 4, z: -1, color: 0x86efac, look: { hair: 0x6b4a2a, skin: 0xffe0bd, style: "long", pants: 0x16a34a } },
+      { id: "s1", kind: "person", model: "kid_boy", name: "Bạn xem đồ bán chạy", emo: "🔥", x: -5, z: -4, color: 0xfca5a5, look: { hair: 0x2b2b2b, skin: 0xf1c79b, style: "short", pants: 0xb45309 } },
+      { id: "s2", kind: "person", model: "grandpa", name: "Bác thử đồ mới", emo: "✨", x: 5, z: 4, color: 0xa78bfa, look: { hair: 0x1f2937, skin: 0xe8b58a, style: "spiky", pants: 0x7c3aed } },
+      { id: "ai", kind: "robot", name: "AI gợi ý", emo: "💡", x: 0, z: 1, color: 0xc4b5fd },
+      { id: "exit", kind: "door", name: "Ra khuôn viên 🚪", emo: "🚪", to: "campus", x: 0, z: 11.5 }
+    ],
+    quests: [
+      {
+        id: "brief", type: "talk", npc: "keeper",
+        objective: "🎧 Nghe cô Chủ tiệm giao nhiệm vụ",
+        avatar: "🧑‍🍳", who: "Cô Chủ tiệm",
+        lines: [
+          "Chào em! Phố mình có một <b>AI gợi ý</b> đồ cho khách dựa trên thứ họ <span class='a3dHl a3dHl-pink'>từng thích</span>. Tiện thật, nhưng nó cứ gợi mãi <b>một kiểu</b>!",
+          "Giúp cô <span class='a3dHl a3dHl-violet'>tìm hiểu</span> xem AI gợi ý hoạt động sao, và dùng nó cho thông minh nhé.",
+          "Lại gần người có dấu <b>❗</b> rồi nhấn <b>E</b> để hỏi chuyện."
+        ],
+        requires: {}
+      },
+      {
+        id: "collect", type: "collect",
+        objective: "🔎 Hỏi 3 người và thu đủ 3 manh mối",
+        need: 3,
+        items: [
+          { id: "s0", npc: "s0", ic: "📚", label: "Người mê truyện", info: "Bạn này hay mua truyện tranh → AI chỉ gợi <b>toàn truyện tranh</b>, chẳng có sách loại khác.", verdict: "support", why: "AI gợi theo <b>thói quen cũ</b> nên dễ lặp lại một kiểu." },
+          { id: "s1", npc: "s1", ic: "🔥", label: "Đồ bán chạy", info: "AI gợi <b>“món bán chạy”</b> cho mọi người → ai cũng thấy <b>giống hệt nhau</b>.", verdict: "support", why: "Gợi theo số đông → thiếu đa dạng, ít cái mới." },
+          { id: "s2", npc: "s2", ic: "✨", label: "Thử thứ mới", info: "Khi khách <b>chủ động thử thứ mới lạ</b>, AI bắt đầu gợi <b>đa dạng hơn</b>.", verdict: "support", why: "Mình tự thử cái mới → AI học và gợi phong phú hơn." }
+        ],
+        requires: { quest: "brief" }
+      },
+      {
+        id: "investigate", type: "investigate",
+        objective: "📋 Mở Bảng điều tra để hiểu AI gợi ý",
+        claim: "AI gợi ý tiện, nhưng dễ cho ta xem mãi một kiểu",
+        lead: "Mỗi điều em nghe được — nó có <b>cho thấy</b> AI gợi ý dễ lặp một kiểu không?",
+        opts: [{ k: "support", t: "✅ Đúng, dễ lặp một kiểu" }, { k: "refute", t: "❌ Không, luôn đa dạng" }],
+        summary: "🎯 AI gợi ý rất tiện nhưng hay lặp lại sở thích cũ — mình nên tự thử cái mới!",
+        requires: { items: 3 }
+      },
+      {
+        id: "decision", type: "decision", npc: "ai",
+        objective: "💡 Gặp AI gợi ý để chốt cách dùng",
+        avatar: "💡", who: "AI gợi ý",
+        question: "Nên dùng AI gợi ý thế nào cho thông minh?",
+        options: [
+          { t: "🤖 Để AI chọn hết, khỏi suy nghĩ", good: false, reply: "Vậy em chỉ xem mãi một kiểu thôi! Thử lại nhé." },
+          { t: "🧭 Tham khảo gợi ý, tự khám phá thêm", good: true, reply: "Chuẩn! Gợi ý là tham khảo, mình vẫn tự quyết." },
+          { t: "🌈 Thỉnh thoảng thử thứ mới, khác sở thích", good: true, reply: "Tuyệt! Thử cái mới giúp mở mang &amp; tránh bong bóng." }
+        ],
+        result: "Em dùng AI gợi ý như một trợ lý — tham khảo rồi tự chọn. Nhớ nhé: <b>AI gợi ý, con người quyết định; hãy tự thử cái mới.</b>",
+        explainTitle: "AI gợi ý hoạt động thế nào?",
+        requires: { quest: "investigate" }
+      },
+      {
+        id: "quiz", type: "quiz",
+        objective: "🧠 Trả lời nhanh để chốt kiến thức",
+        intro: "Trả lời nhanh 2 câu về “AI gợi ý” nhé!",
+        pool: { topics: ["antoan", "hoatdong", "khainiem"], difficulty: 1, count: 2 },
+        requires: { quest: "decision" }
+      }
+    ]
+  };
+
+  window.A3D_DATA = { start: "campus", zones: { campus: campus, academy1: academy1, library: library, park: park, lab: lab, street: street } };
 })();
