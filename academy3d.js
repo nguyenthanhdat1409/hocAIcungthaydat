@@ -284,10 +284,10 @@
     });
     var tasks = [loadChars(charNeed)];
     if (needRobot) tasks.push(loadRobotGLB());
-    if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "lab", "fountain", "tree", "bench", "lamp", "bush"]));
+    if (zone.env === "campus") tasks.push(loadEnv(["academy", "library", "lab", "fountain", "tree", "bench", "lamp", "bush", "tree_blossom", "flowerbed"]));
     else if (zone.env === "classroom") tasks.push(loadEnv(["desk_teacher", "desk_student", "chair", "bookshelf", "blackboard", "plant_indoor", "poster_brain", "poster_gear", "wallclock", "screen"]));
-    else if (zone.env === "library") tasks.push(loadEnv(["bookshelf", "library_table", "armchair", "globe", "plant_indoor", "rug", "poster_brain", "wallclock"]));
-    else if (zone.env === "park") tasks.push(loadEnv(["gazebo", "bridge", "picnic_table", "tree", "bench", "lamp", "bush"]));
+    else if (zone.env === "library") tasks.push(loadEnv(["bookshelf", "library_table", "armchair", "globe", "plant_indoor", "rug", "poster_brain", "wallclock", "book_cart", "card_catalog", "ladder", "floor_lamp"]));
+    else if (zone.env === "park") tasks.push(loadEnv(["gazebo", "bridge", "picnic_table", "tree", "bench", "lamp", "bush", "statue", "flower_arch", "icecream_cart", "lilypad", "rock", "tree_blossom", "flowerbed"]));
     else if (zone.env === "lab") tasks.push(loadEnv(["lab_bench", "hologram_table", "robot_arm", "server_tower", "microscope", "chair", "plant_indoor", "poster_gear", "wallclock", "screen"]));
     else if (zone.env === "street") tasks.push(loadEnv(["shop", "house", "clocktower", "arch", "kiosk", "signpost", "bin", "planter", "lamp", "tree", "bench"]));
     Promise.all(tasks).then(function () { buildZone(zone); });
@@ -397,6 +397,9 @@
     });
     // luống hoa quanh quảng trường
     for (var a = 0; a < 10; a++) { var ang = a / 10 * 6.283, r = 6.2; flower(Math.cos(ang) * r, Math.sin(ang) * r, a); }
+    // tô điểm: cây hoa + luống hoa
+    [[-7, 7], [7.5, 5]].forEach(function (p, i) { if (placeEnv("tree_blossom", p[0], p[1], i * 2)) colliders.push({ x: p[0], z: p[1], r: 0.6 }); });
+    [[-2.6, 3.4], [2.6, 3.4]].forEach(function (p) { placeEnv("flowerbed", p[0], p[1], 0); });
 
     // hàng rào cây thấp quanh biên (trang trí; va chạm bằng giới hạn bounds)
     [-13.5, 13.5].forEach(function (ex) { for (var z = -13; z <= 13; z += 2) hedge(ex, z); });
@@ -452,6 +455,14 @@
     [[-7, 11, 0.5], [8, 12, 1], [-5, -4, 2], [9, -2, 0.8]].forEach(function (b) { if (placeEnv("bush", b[0], b[1], b[2])) colliders.push({ x: b[0], z: b[1], r: 0.5 }); });
     [[-3, 1], [3, 1], [-3, 8], [3, 8]].forEach(function (p) { if (placeEnv("lamp", p[0], p[1], 0)) colliders.push({ x: p[0], z: p[1], r: 0.25 }); else campusLamp(p[0], p[1]); });
     for (var a = 0; a < 8; a++) { var ang = a / 8 * 6.283; flower(Math.cos(ang) * 3.2, Math.sin(ang) * 3.2 + 3, a); }
+    // tô điểm: tượng landmark, cổng hoa lối vào, xe kem, lá sen trên hồ, đá, cây hoa, luống hoa
+    if (placeEnv("statue", -3, -3, 0)) colliders.push({ x: -3, z: -3, r: 0.7 });
+    placeEnv("flower_arch", 0, 8.4, 0);
+    if (placeEnv("icecream_cart", 9.5, 2, -0.6)) colliders.push({ x: 9.5, z: 2, r: 0.8 });
+    [[-2.4, -7.2, 0.3], [2.4, -5.8, 1], [-1.6, -5.4, 2]].forEach(function (p) { placeEnv("lilypad", p[0], p[1], p[2], 0.06); });
+    [[-10, -7], [11, 7]].forEach(function (p) { if (placeEnv("rock", p[0], p[1], 0)) colliders.push({ x: p[0], z: p[1], r: 0.5 }); });
+    [[-9, 12], [9, -6]].forEach(function (p, i) { if (placeEnv("tree_blossom", p[0], p[1], i * 2)) colliders.push({ x: p[0], z: p[1], r: 0.6 }); });
+    [[-4, 7], [4, 7], [-8, 2.5]].forEach(function (p) { placeEnv("flowerbed", p[0], p[1], 0); });
     // hàng rào biên
     [-13.5, 13.5].forEach(function (ex) { for (var z = -13; z <= 13; z += 2) hedge(ex, z); });
     [-13.5, 13.5].forEach(function (ez) { for (var x = -13; x <= 13; x += 2) hedge(x, ez); });
@@ -721,6 +732,11 @@
     [[6.6, -6.6], [-6.6, 6.6]].forEach(function (p) { placeEnv("plant_indoor", p[0], p[1], 0); colliders.push({ x: p[0], z: p[1], r: 0.5 }); });
     placeEnv("poster_brain", -7.78, 6.0, PI / 2, 1.95);
     placeEnv("wallclock", 0, -7.82, 0, 2.3);
+    // tô điểm: đèn cây cạnh bàn đọc, tủ phiếu, xe đẩy sách, thang dựa kệ
+    placeEnv("floor_lamp", -3.3, 1.6, 0);
+    if (placeEnv("card_catalog", 6.9, -2, -PI / 2)) colliders.push({ x: 6.9, z: -2, r: 0.5 });
+    if (placeEnv("book_cart", 3.3, -5.6, 0)) colliders.push({ x: 3.3, z: -5.6, r: 0.5 });
+    placeEnv("ladder", -6.9, -0.5, 0);
   }
 
   function buildLabFurniture() {
