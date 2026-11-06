@@ -204,7 +204,7 @@ function loadCurriculumData(){
 let _gamesPromise = null;
 function loadGames(){
   if(_gamesPromise) return _gamesPromise;
-  const files = ["exercises.js?v=32","roleplay.js?v=43","minigames.js?v=12","academy3d.data.js?v=9","academy3d.js?v=20"];
+  const files = ["exercises.js?v=32","roleplay.js?v=43","minigames.js?v=12","academy3d.data.js?v=9","academy3d.js?v=21"];
   _gamesPromise = Promise.all(files.map(loadScript))
     .catch(err => { _gamesPromise = null; throw err; });
   return _gamesPromise;

@@ -1,8 +1,7 @@
 # AI ACADEMY 3D — PROMPT GEN BỐI CẢNH (THẾ GIỚI MỞ COZY STYLIZED)
 
-<!-- 🟢 CORE WORLD XONG (6 khu). CÒN TUỲ CHỌN - TÔ ĐIỂM: tree_blossom, flowerbed, rock, lilypad, statue, icecream_cart, flower_arch, book_cart, card_catalog, ladder, floor_lamp (Mục 2+6). -->
-> **🟢 CORE WORLD ĐÃ XONG — 6 khu chơi được** (Khuôn viên · Học viện · Thư viện · Công viên · Lab · Phố đi bộ) + 11 nhân vật.
-> **CÒN LẠI (tuỳ chọn, chỉ để đẹp hơn) → tô điểm Mục 2+6:** `tree_blossom, flowerbed, rock, lilypad, statue, icecream_cart, flower_arch, book_cart, card_catalog, ladder, floor_lamp`.
+<!-- 🟢 HOÀN TẤT: đã gen & ghép TẤT CẢ assets (11 nhân vật + ~43 đồ vật). 6 khu + đồ tô điểm đều xong. -->
+> **🟢 HOÀN TẤT — đã gen & ghép HẾT:** 6 khu chơi được (Khuôn viên · Học viện · Thư viện · Công viên · Lab · Phố đi bộ), 11 nhân vật, và toàn bộ đồ tô điểm (cây hoa, luống hoa, đá, lá sen, tượng, cổng hoa, xe kem, xe sách, tủ phiếu, thang, đèn cây). Danh mục tham khảo vẫn giữ bên dưới nếu muốn gen thêm biến thể.
 
 > Mục đích: gen bộ asset môi trường đồng bộ cho thành phố học AI mở. Dán prompt vào **Meshy AI / Tripo AI / Rodin (Hyper3D)**.
 > Props môi trường là **tĩnh** (không rig, không animation) → gen nhanh hơn nhân vật.
